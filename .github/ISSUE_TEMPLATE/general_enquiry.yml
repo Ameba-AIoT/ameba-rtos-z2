@@ -1,0 +1,50 @@
+name: General Enquiry
+description: Raise general enquires
+title: '[Enquiry] Describe the enquiry briefly'
+labels: ['Type: General Enquiry']
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Answers checklist.
+      description: Before submitting a new enquiry, please follow the checklist and try to find the answer.
+      options:
+        - label: I have read the documentation but did not find the answer.
+          required: true
+        - label: I have searched the enquiry tracker([closed](https://github.com/Ameba-AIoT/ameba-rtos-z2/issues?q=is%3Aissue+label%3AType%3A+General+Enquiry+is%3Aclosed) and [existing](https://github.com/Ameba-AIoT/ameba-rtos-z2/issues?q=is%3Aissue+label%3AType%3A+General+Enquiry+is%3Aopen)) but did not find a similar enquiry.
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Ameba-rtos-z2 version.
+      description: On which version does this issue occur? Indicate the commit ID.
+      placeholder: 'ex. SHA-1: 778a36a48daacdfd67389bd739fc6e8f6d9f475a'
+    validations:
+      required: true
+  - type: input
+    id: chip
+    attributes:
+      label: Ameba-rtos-z2 chip.
+      description: On which chip does your application run? Check the build project.
+      placeholder: ex. amebaz2/amebaz2plus
+    validations:
+      required: true
+  - type: textarea
+    id: enquiry-related
+    attributes:
+        label: General Enquiry
+        description: 'What do you want to know?'
+        value: |
+            1.
+            2.
+            3.
+            ...
+    validations:
+        required: true
+  - type: textarea
+    id: additional-info
+    attributes:
+        label: Additional information.
+        description: Please provide additional information (e.g., Links, References, Images), if applicable.
+    validations:
+        required: false
