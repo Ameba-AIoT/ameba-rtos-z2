@@ -40,6 +40,7 @@ int wext_set_pmk_cache_enable(const char *ifname, __u8 value);
 #endif
 int wext_set_key_ext(const char *ifname, __u16 alg, const __u8 *addr, int key_idx, int set_tx, const __u8 *seq, __u16 seq_len, __u8 *key, __u16 key_len);
 int wext_get_enc_ext(const char *ifname, __u16 *alg, __u8 *key_idx, __u8 *passphrase);
+int wext_get_auth_type(const char *ifname, __u32 *auth_type);
 int wext_set_passphrase(const char *ifname, const __u8 *passphrase, __u16 passphrase_len);
 int wext_get_passphrase(const char *ifname, __u8 *passphrase);
 int wext_set_mode(const char *ifname, int mode);
@@ -54,8 +55,8 @@ int wext_register_multicast_address(const char *ifname, rtw_mac_t *mac);
 int wext_unregister_multicast_address(const char *ifname, rtw_mac_t *mac);
 int wext_set_scan(const char *ifname, char *buf, __u16 buf_len, __u16 flags);
 int wext_get_scan(const char *ifname, char *buf, __u16 buf_len);
-int wext_set_mac_address(const char *ifname, char * mac);
-int wext_get_mac_address(const char *ifname, char * mac);
+int wext_set_mac_address(const char *ifname, char *mac);
+int wext_get_mac_address(const char *ifname, char *mac);
 int wext_enable_powersave(const char *ifname, __u8 lps_mode, __u8 ips_mode);
 int wext_resume_powersave(const char *ifname);
 int wext_disable_powersave(const char *ifname);
@@ -67,8 +68,8 @@ int wext_set_beacon_mode(const char *ifname, __u8 mode);
 int wext_set_lps_level(const char *ifname, __u8 lps_level);
 int wext_get_tx_power(const char *ifname, __u8 *poweridx);
 int wext_set_txpower(const char *ifname, int poweridx);
-int wext_get_associated_client_list(const char *ifname, void * client_list_buffer, __u16 buffer_length);
-int wext_get_ap_info(const char *ifname, rtw_bss_info_t * ap_info, rtw_security_t* security);
+int wext_get_associated_client_list(const char *ifname, void *client_list_buffer, __u16 buffer_length);
+int wext_get_ap_info(const char *ifname, rtw_bss_info_t *ap_info, rtw_security_t *security);
 int wext_mp_command(const char *ifname, char *cmd, int show_msg);
 int wext_private_command(const char *ifname, char *cmd, int show_msg);
 int wext_private_command_with_retval(const char *ifname, char *cmd, char *ret_buf, int ret_len);
@@ -81,20 +82,22 @@ int wext_set_adaptivity_th_l2h_ini(__u8 l2h_threshold);
 int wext_set_anti_interference(__u8 enable);
 int wext_set_trp_tis(__u8 enable);
 int wext_set_support_wpa3(__u8 enable);
+u8 wext_get_support_wpa3(void);
 int wext_get_auto_chl(const char *ifname, unsigned char *channel_set, unsigned char channel_num);
 int wext_set_sta_num(unsigned char ap_sta_num);
-int wext_del_station(const char *ifname, unsigned char* hwaddr);
+int wext_del_station(const char *ifname, unsigned char *hwaddr);
 int wext_init_mac_filter(void);
 int wext_deinit_mac_filter(void);
-int wext_add_mac_filter(unsigned char* hwaddr);
-int wext_del_mac_filter(unsigned char* hwaddr);
+int wext_add_mac_filter(unsigned char *hwaddr);
+int wext_del_mac_filter(unsigned char *hwaddr);
+void wext_wifi_connect_monitor_mgnt(int enable);
 void wext_set_indicate_mgnt(int enable);
 #ifdef CONFIG_SW_MAILBOX_EN
 int wext_mailbox_to_wifi(const char *ifname, char *buf, __u16 buf_len);
 #endif
 #ifdef CONFIG_CUSTOM_IE
-int wext_add_custom_ie(const char *ifname, void * cus_ie, int ie_num);
-int wext_update_custom_ie(const char *ifname, void * cus_ie, int ie_index);
+int wext_add_custom_ie(const char *ifname, void *cus_ie, int ie_num);
+int wext_update_custom_ie(const char *ifname, void *cus_ie, int ie_index);
 int wext_del_custom_ie(const char *ifname);
 #endif
 
@@ -107,7 +110,7 @@ int wext_get_drv_ability(const char *ifname, __u32 *ability);
 int wext_enable_forwarding(const char *ifname);
 int wext_disable_forwarding(const char *ifname);
 int wext_set_ch_deauth(const char *ifname, __u8 enable);
-void wext_set_lowrssi_use_b(int enable,int rssi);
+void wext_set_lowrssi_use_b(int enable, int rssi);
 
 #ifdef CONFIG_WOWLAN
 int wext_wowlan_ctrl(const char *ifname, int enable);
@@ -115,7 +118,19 @@ int wext_wowlan_set_pattern(const char *ifname, wowlan_pattern_t pattern);
 int wext_wlan_redl_fw(const char *ifname);
 #endif
 
+#ifdef CONFIG_80211N_HT
+void wext_set_wifi_ampdu_tx(__u8 enable);
+#endif
+
 extern int (*p_wlan_mgmt_filter)(__u8 *ie, __u16 ie_len, __u16 frame_type);
+#if defined(CONFIG_RX_FRAME_INFO_INDICATE) && (CONFIG_RX_FRAME_INFO_INDICATE == 1)
+void wext_set_indicate_rx_frame(int enable, void (*user_rx_frame_callback)(unsigned char *buf, unsigned int buf_len, struct rtw_rx_frame_info *pkt_info,
+								void *user_data), void *user_data);
+#endif
+void wext_set_user_mgnt_rate(unsigned char rate_idx);
+#if defined(CONFIG_DYNAMIC_IGI) && (CONFIG_DYNAMIC_IGI == 1)
+void wext_config_dyn_igi(unsigned char en, unsigned char low_th, unsigned char high_th, unsigned int intvl_ms);
+#endif
 
 #ifdef	__cplusplus
 }

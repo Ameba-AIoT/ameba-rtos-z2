@@ -424,12 +424,20 @@ void cmd_ping(int argc, char **argv)
 					goto Exit;
 				}
 				ping_count = (int) atoi(argv[argv_count]);
+				if (ping_count <= 0) {
+					printf("\n\rPing: Number of echo requests to send should be larger than zero.\n\r");
+					goto Exit;
+				}
 				argv_count += 2;
 			} else if (strcmp(argv[argv_count - 1], "-l") == 0) {
 				if (argc < (argv_count + 1)) {
 					goto Exit;
 				}
 				data_size = (int) atoi(argv[argv_count]);
+				if (data_size < 0) {
+					printf("\n\rPing: Send buffer size cannot be less than zero.\n\r");
+					goto Exit;
+				}
 				argv_count += 2;
 			} else {
 				goto Exit;

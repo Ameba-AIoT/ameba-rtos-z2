@@ -20,7 +20,7 @@ MEMORY
   DTCM_RAM (wrx) 		: ORIGIN = 0x10000500, LENGTH = 0x1003FA00 - 0x10000500
 
   /* 0x1003FE70 - 0x1003FA00 is reserved for ROM(NS) code */
-    
+
   /* External PSRAM for text, rodata & data */
   PSRAM (rwx)           : ORIGIN = 0x60000000, LENGTH = 0x60400000 - 0x60000000
   BTRACE (rx)          : ORIGIN = 0x00800000, LENGTH = 0x00C00000 -0x00800000	/* Bluetooth Trace */
@@ -127,27 +127,6 @@ SECTIONS
 		*(.sram.data*)
 		*(.data*)
 
-		. = ALIGN(4);
-		/* preinit data */
-		PROVIDE_HIDDEN (__preinit_array_start = .);
-		KEEP(*(.preinit_array))
-		PROVIDE_HIDDEN (__preinit_array_end = .);
-
-		. = ALIGN(4);
-		/* init data */
-		PROVIDE_HIDDEN (__init_array_start = .);
-		KEEP(*(SORT(.init_array.*)))
-		KEEP(*(.init_array))
-		PROVIDE_HIDDEN (__init_array_end = .);
-
-
-		. = ALIGN(4);
-		/* finit data */
-		PROVIDE_HIDDEN (__fini_array_start = .);
-		KEEP(*(SORT(.fini_array.*)))
-		KEEP(*(.fini_array))
-		PROVIDE_HIDDEN (__fini_array_end = .);
-
 		KEEP(*(.jcr*))
 		. = ALIGN(4);
 		/* All data end */
@@ -192,19 +171,6 @@ SECTIONS
 		__psram_code_rodata_end__ = .;
 	} > PSRAM
 
-	.psram.bss :
-	{
-		. = ALIGN(16);
-		__psram_bss_start__ = .;
-
-		*(.psram.bss*)
-
-		__psram_bss_end__ = .;
-
-		. = ALIGN(32);
-		__eram_bss_end__ = .;
-	} > PSRAM
-	
 	.ram.code_text :
 	{
 		. = ALIGN(32);
@@ -218,18 +184,12 @@ SECTIONS
 		/* SPI flash controller related code should be located in SRAM, never locates them in XIP */
 		*hal_spic*.o(.text*)
 		*hal_flash*.o(.text*)
-
+		
 		/* LPDDR controller related code should be located in SRAM, never locates them in LPDDR */
 		*hal_lpcram*.o(.text*)
 
 		*ram_start*.o(.text*)
 		*hal_power_mode*.o(.text*)
-		*hal_sys_ctrl*.o(.text*)
-		*rtl8710c_pinmux_patch*.o(.text*)
-		*hal_syson*.o(.text*)
-		*hal_pinmux*.o(.text*)
-		*hal_efuse*.o(.text*)
-		*sys_irq*.o(.text*)
 
 		*(.lpddr.text*)
 		*(.sram.text*)
@@ -251,13 +211,6 @@ SECTIONS
 
 		*ram_start*.o(.rodata*)
 		*hal_power_mode*.o(.rodata*)
-		*hal_sys_ctrl*.o(.rodata*)
-		*rtl8710c_pinmux_patch*.o(.rodata*)
-		*hal_syson*.o(.rodata*)
-		*hal_pinmux*.o(.rodata*)
-		*hal_efuse*.o(.rodata*)
-		*sys_irq*.o(.rodata*)
-
 		. = ALIGN(4);
 		__ram_code_rodata_end__ = .;
 	} > DTCM_RAM
@@ -291,9 +244,41 @@ SECTIONS
 		*(.rodata*)
 		*(.rodata.str1*)
 		
+		/* Add This for C++ support */
+		. = ALIGN(4);
+		__preinit_array_start = .;
+		KEEP(*(.preinit_array))
+		__preinit_array_end = .;
+		. = ALIGN(4);
+		__init_array_start = .;
+		KEEP(*(SORT(.init_array.*)))
+		KEEP(*(.init_array))
+		__init_array_end = .;
+		. = ALIGN(4);
+		__fini_array_start = .;
+		KEEP(*(SORT(.fini_array.*)))
+		KEEP(*(.fini_array))
+		__fini_array_end = .;	
+		/*-----------------*/		
+		
 		. = ALIGN(4);
 		__xip_code_rodata_end__ = .;
 	} > XIP_FLASH_P
+
+	/* Add This for C++ support */
+	.ARM.extab  : 
+	{
+		*(.ARM.extab* .gnu.linkonce.armextab.*) 
+
+	} > XIP_FLASH_P
+
+	.ARM.exidx :
+	{
+		__exidx_start = .;
+		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
+		__exidx_end = .;
+	} > XIP_FLASH_P
+	/*-----------------*/
 
 	.system_restore_data :
 	{
@@ -303,7 +288,22 @@ SECTIONS
 		*(.sys_restore.bss*)
 		*(.ram.bss.noinit*)
 	} > DTCM_RAM
+
+	/* .psram.bss must be after .psram.data and .psram.text, because the region after .psram.bss will be used as heap */
+	.psram.bss :
+	{
+		. = ALIGN(16);
+		__psram_bss_start__ = .;
+
+		*(.psram.bss*)
+
+		__psram_bss_end__ = .;
+
+		. = ALIGN(32);
+		__eram_bss_end__ = .;
+	} > PSRAM
 	
+	/* .bss must be after .data and .text, because the region after .bss will be used as heap */
 	.bss :
 	{
 		. = ALIGN(16);
@@ -352,4 +352,10 @@ SECTIONS
 
 	/* Check if data + heap + stack exceeds RAM limit */
 /* TODO:	ASSERT(__StackLimit >= __HeapLimit, "region RAM overflowed with stack") */
+	ASSERT(__bss_start__ >= __ram_code_text_end__, "sram heap will overwrite sram text")
+	ASSERT(__bss_start__ >= __ram_code_rodata_end__, "sram heap will overwrite sram rodata")
+	ASSERT(__bss_start__ >= __data_end__, "sram heap will overwrite sram data")
+	ASSERT(__psram_bss_start__ >= __psram_code_text_end__, "psram heap will overwrite psram text")
+	ASSERT(__psram_bss_start__ >= __psram_code_rodata_end__, "psram heap will overwrite psram rodata")
+	ASSERT(__psram_bss_start__ >= __psram_data_end__, "psram heap will overwrite psram data")
 }

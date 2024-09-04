@@ -60,6 +60,7 @@ extern "C" {
 #define WSEC_SWFLAG             0x0008                /**< WSEC SWFLAG */
 #define AES_CMAC_ENABLED        0x0010                /**< aes cmac enable */
 #define ENTERPRISE_ENABLED      0x0020                /**< enterprise enable */
+#define OWE_ENABLED             0x0040
 
 #define SHARED_ENABLED          0x00008000            /**< shared enable */
 #define WPA_SECURITY            0x00200000            /**< wpa */
@@ -73,8 +74,22 @@ extern "C" {
 #define RTW_MIN_PSK_LEN         (8)                   /**< minimum psk length */
 #define RTW_MAX_SSID_LEN        (32)                  /**< maximum ssid length */
 #define RTW_MIN_SSID_LEN        (0)                   /**< minimum ssid length */
+#define RTW_OWE_KEY_LEN         32
 
 #define MCSSET_LEN              16                    /**<mcsset length */
+
+/**
+  * @}defgroup WLAN_Reason_Defs
+  */
+#define REASON_4WAY_HNDSHK_TIMEOUT               15     /**< Fourway handshake timeout */
+#define REASON_AP_UNABLE_TO_HANDLE_NEW_STA       17     /**< AP denied due to max sta */
+#define REASON_SAE_HASH_TO_ELEMENT               126    /**< Special status code to indicate H2E extension*/
+#define REASON_SAE_CONFIRM_MISMATCH              65529  /**< SAE confirm mismatch */
+#define REASON_SA_QUERY_TIMEOUT                  65530  /**< SA Query Timeout */
+#define REASON_STA_IN_BLACKLIST                  65531  /**< STA gets blacklisted by AP */
+#define REASON_AP_BEACON_CHANGED                 65534  /**< AP configuration changed causing beacon info changed */
+#define REASON_EXPIRATION_CHK                    65535  /**< STA disconnected due to no beacon for a long time */
+
 /**
   * @}
   */
@@ -188,7 +203,7 @@ typedef enum {
 
 	RTW_SECURITY_WPA3_AES_PSK              = (WPA3_SECURITY | AES_ENABLED),                                                      /**< WPA3-SAE with AES security                                  */
 	RTW_SECURITY_WPA2_WPA3_MIXED           = (WPA2_SECURITY | WPA3_SECURITY | AES_ENABLED),                                      /**< WPA3-SAE/WPA2 with AES security                             */
-
+	RTW_SECURITY_WPA3_OWE                  = (WPA3_SECURITY | OWE_ENABLED),
 	RTW_SECURITY_UNKNOWN                   = (-1),                                                                               /**< May be returned by scan function if security is unknown. Do not pass this to the join function! */
 
 	RTW_SECURITY_FORCE_32_BIT              = (0x7fffffff)                                                                        /**< Exists only to force rtw_security_t type to 32 bits        */
@@ -469,7 +484,6 @@ typedef enum {
 	RTW_MODE_AP,        /**< AP mode */
 	RTW_MODE_STA_AP,    /**< AP and STA mode */
 	RTW_MODE_PROMISC,   /**< Promisc mode */
-	RTW_MODE_P2P        /**< P2P mode */
 } rtw_mode_t;
 
 typedef enum {
@@ -649,6 +663,8 @@ typedef enum {
 	WIFI_EVENT_TARGET_SSID_RSSI = 26,      /**< Indicate to get the RSSI value of the target SSID */
 	WIFI_EVENT_DHCP_RENEW = 27,            /**< Reserved, Indicate DHCP renew */
 	WIFI_EVENT_SWITCH_CHANNE = 28,         /**< Indicate CSA switch channel */
+	WIFI_EVENT_DHCP6_DONE = 29,            /**< Indicate DHCP6 has been completed */
+	WIFI_EVENT_SKB_UNAVAILABLE = 30,       /**< Indicate number of skb is not enough */
 	WIFI_EVENT_MAX,
 } rtw_event_indicate_t;
 

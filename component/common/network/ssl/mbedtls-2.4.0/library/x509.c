@@ -435,7 +435,7 @@ int mbedtls_x509_get_name( unsigned char **p, const unsigned char *end,
                    mbedtls_x509_name *cur )
 {
     int ret;
-    size_t set_len;
+    size_t set_len = 0;
     const unsigned char *end_set;
 
     /* don't use recursion, we'd risk stack overflow if not optimized */
@@ -530,7 +530,7 @@ int mbedtls_x509_get_time( unsigned char **p, const unsigned char *end,
                    mbedtls_x509_time *time )
 {
     int ret;
-    size_t len;
+    size_t len = 0;
     unsigned char tag;
 
     if( ( end - *p ) < 1 )
@@ -594,7 +594,7 @@ int mbedtls_x509_get_time( unsigned char **p, const unsigned char *end,
 int mbedtls_x509_get_sig( unsigned char **p, const unsigned char *end, mbedtls_x509_buf *sig )
 {
     int ret;
-    size_t len;
+    size_t len = 0;
     int tag_type;
 
     if( ( end - *p ) < 1 )
@@ -671,7 +671,7 @@ int mbedtls_x509_get_ext( unsigned char **p, const unsigned char *end,
                   mbedtls_x509_buf *ext, int tag )
 {
     int ret;
-    size_t len;
+    size_t len = 0;
 
     if( *p == end )
         return( 0 );

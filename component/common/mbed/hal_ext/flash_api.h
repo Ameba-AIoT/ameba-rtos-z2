@@ -1,7 +1,7 @@
 /** mbed Microcontroller Library
   ******************************************************************************
   * @file    flash_api.h
-  * @author 
+  * @author
   * @version V1.0.0
   * @brief   This file provides mbed FLASH API
   ******************************************************************************
@@ -12,7 +12,7 @@
   *
   * This module is a confidential and proprietary property of RealTek and
   * possession or use of this module requires written permission of RealTek.
-  ****************************************************************************** 
+  ******************************************************************************
   */
 
 #ifndef MBED_EXT_FLASH_API_EXT_H
@@ -49,7 +49,7 @@ void flash_erase_sector(flash_t *obj, uint32_t address);
   * @param  address: Specifies the starting address to be erased.LSB 16bits will be masked.
   * @retval none
   */
-void flash_erase_block(flash_t * obj, uint32_t address);
+void flash_erase_block(flash_t *obj, uint32_t address);
 
 /**
   * @brief  Read a word from specified address
@@ -59,7 +59,7 @@ void flash_erase_block(flash_t * obj, uint32_t address);
   * @retval 1: Success
   * @note auto mode read is ok, because we have flash cache
   */
-int flash_read_word(flash_t *obj, uint32_t address, uint32_t * data);
+int flash_read_word(flash_t *obj, uint32_t address, uint32_t *data);
 
 /**
   * @brief  Write a word to specified address
@@ -80,7 +80,7 @@ int flash_write_word(flash_t *obj, uint32_t address, uint32_t data);
   * @retval 1: Success
   * @note auto mode is ok, because we have flash cache
   */
-int flash_stream_read(flash_t *obj, uint32_t address, uint32_t len, uint8_t * data);
+int flash_stream_read(flash_t *obj, uint32_t address, uint32_t len, uint8_t *data);
 
 /**
   * @brief  Write a stream of data to specified address
@@ -90,7 +90,7 @@ int flash_stream_read(flash_t *obj, uint32_t address, uint32_t len, uint8_t * da
   * @param  data: Pointer to a byte array that is to be written.
   * @retval 1: Success
   */
-int flash_stream_write(flash_t *obj, uint32_t address, uint32_t len, uint8_t * data);
+int flash_stream_write(flash_t *obj, uint32_t address, uint32_t len, uint8_t *data);
 
 /**
   * @brief  Control the flash chip write protect enable/disable.
@@ -99,15 +99,15 @@ int flash_stream_write(flash_t *obj, uint32_t address, uint32_t len, uint8_t * d
   *             @arg 1: Protect the whole chip from being programmed/erased.
   *             @arg 0: Unprotect the whole chip from being programmed/erased.
   * @retval none
-  */   
+  */
 void flash_write_protect(flash_t *obj, uint32_t protect);
 
 /**
   * @brief  Get the value of status register1
   * @param  obj: Flash object define in application software.
   * @retval : The value of status register1.
-  */   
-int flash_get_status(flash_t * obj);
+  */
+int flash_get_status(flash_t *obj);
 
 /**
 * @brief  Read Status register 2 to check flash status
@@ -127,18 +127,18 @@ int flash_get_status3(flash_t *obj);
   * @brief  Set Status register to enable desired operation
   * @param  obj: Specifies the parameter of flash object.
   * @param  data: Specifies which bit users like to set.
-  *        ex: if users want to set the third bit, data = 0x8. 
+  *        ex: if users want to set the third bit, data = 0x8.
   * @retval 1: Success
   * @note  Please refer to the datatsheet of flash for more details of the content of status register.
   *        The block protected area and the corresponding control bits are provided in the flash datasheet.
-  */  
-int flash_set_status(flash_t * obj, uint32_t data);
+  */
+int flash_set_status(flash_t *obj, uint32_t data);
 
 /**
 * @brief  Set Status register 2 to enable desired operation
 * @param  obj: Specifies the parameter of flash object.
 * @param  data: Specifies which bit users like to set
-   ex: if users want to set the third bit, data = 0x8. 
+   ex: if users want to set the third bit, data = 0x8.
 * @retval   status: Success:1 or Failure: Others.
 */
 int flash_set_status2(flash_t *obj, uint32_t data);
@@ -147,7 +147,7 @@ int flash_set_status2(flash_t *obj, uint32_t data);
 * @brief  Set Status register 3 to enable desired operation
 * @param  obj: Specifies the parameter of flash object.
 * @param  data: Specifies which bit users like to set
-   ex: if users want to set the third bit, data = 0x8. 
+   ex: if users want to set the third bit, data = 0x8.
 * @retval   status: Success:1 or Failure: Others.
 */
 int flash_set_status3(flash_t *obj, uint32_t data);
@@ -155,9 +155,9 @@ int flash_set_status3(flash_t *obj, uint32_t data);
 /**
   * @brief This function aims to reset the status register, please make sure the operation is appropriate.
   * @param obj: Specifies the parameter of flash object.
-  * @retval none 
+  * @retval none
   */
-void flash_reset_status(flash_t * obj);
+void flash_reset_status(flash_t *obj);
 
 /**
   * @brief  It is the same with flash_stream_write function which is used to write a stream of data to specified address.
@@ -167,8 +167,11 @@ void flash_reset_status(flash_t * obj);
   * @param  data: Pointer to a byte array that is to be written.
   * @retval 1: Success
   */
-int flash_burst_write(flash_t * obj, uint32_t address, uint32_t Length, uint8_t * data);
-
+#if defined(CONFIG_MATTER) && CONFIG_MATTER
+int flash_burst_write(flash_t *obj, uint32_t address, uint32_t Length, const uint8_t *data);
+#else
+int flash_burst_write(flash_t *obj, uint32_t address, uint32_t Length, uint8_t *data);
+#endif
 /**
   * @brief   It is the same with flash_stream_read function which is used to read a stream of data from specified address
   * @param  obj: Flash object define in application software.
@@ -177,7 +180,7 @@ int flash_burst_write(flash_t * obj, uint32_t address, uint32_t Length, uint8_t 
   * @param  data: Specified the address to save the readback data.
   * @retval 1: Success
   */
-int flash_burst_read(flash_t * obj, uint32_t address, uint32_t Length, uint8_t * data);
+int flash_burst_read(flash_t *obj, uint32_t address, uint32_t Length, uint8_t *data);
 
 /**
   * @brief   This function is only for Micron 128MB flash to access beyond 16MB by switching between eight 16MB-area(segment).
@@ -186,7 +189,7 @@ int flash_burst_read(flash_t * obj, uint32_t address, uint32_t Length, uint8_t *
   * @param  data: Specified which segment to choose.
   * @retval 1: Success
   */
-int flash_set_extend_addr(flash_t * obj, uint32_t data);
+int flash_set_extend_addr(flash_t *obj, uint32_t data);
 
 /**
   * @brief   This function is only for Micron 128MB flash to read from Extended Address Register, which shows the current segment.
@@ -194,10 +197,10 @@ int flash_set_extend_addr(flash_t * obj, uint32_t data);
   * @param  obj: Flash object define in application software.
   * @retval : The value of current Extended Address Register.
   */
-int flash_get_extend_addr(flash_t * obj);
+int flash_get_extend_addr(flash_t *obj);
 
 /**
-  * @brief  Get flash ID (command: 0x9F). 
+  * @brief  Get flash ID (command: 0x9F).
   * @param  obj: Flash object define in application software.
   * @param  buf: Pointer to a byte array to save the readback ID.
   * @param  len: Specifies the length of the buf. It should be 3.
@@ -259,7 +262,7 @@ void flash_individual_unlock(uint32_t address);
 /**
   * @brief  This function is only for Winbond flash to get the individual lock state on certain address.
   * @param  address
-  * @retval 1: the target sector/block is locked. 
+  * @retval 1: the target sector/block is locked.
   *			0: the target sector/block is not locked.
   * @note But not all Winbond flash supports the function, plase refer to data sheets of the target flashes.
   */
@@ -294,7 +297,7 @@ void flash_mxic_lock_otp(void);
 
 #if (defined(CONFIG_PLATFORM_8711B) && (CONFIG_PLATFORM_8711B)) \
     || (defined(CONFIG_PLATFORM_8710C) && (CONFIG_PLATFORM_8710C))
-///@name AmebaZ/AmebaZ2 
+///@name AmebaZ/AmebaZ2
 ///@{
 /**
   * @brief  Erase the whole flash chip

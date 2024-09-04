@@ -23,11 +23,15 @@ Setup Guide
 ~~~~~~~~~~~
 	To execute this example automatically when booting, the CONFIG_EXAMPLE_MDNS in platform_opts.h
         must be enabled as the follows. LWIP IGMP should also be enabled to support multicast.
+	Following conditions maybe modified or included for compile:
 
-        /* lwipopts.h */
+1.        /* lwipopts.h */
         #define LWIP_IGMP 1
-        /* platform_opts.h *.
+2.        /* platform_opts.h *.
         #define CONFIG_EXAMPLE_MDNS 1
+3.       /*application.is.mk*/
+        (1) link lib_mdns.a 
+        (2) add src file example_mdns.c
 
         In example, operations on mDNS responder and service are presented. 
         If device Wi-Fi connection is setup by fast reconnect (Please refer to readme of fast reconnect example), 

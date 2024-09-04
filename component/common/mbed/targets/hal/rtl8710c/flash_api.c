@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file     dma_api.c
  * @brief    This file implements the DMA Mbed HAL API functions.
- * 
+ *
  * @version  V1.00
  * @date     2017-05-04
  *
@@ -42,7 +42,7 @@ flash_pin_sel_t flash_pin_sel;
   * @retval  none
   * @note  This api can be used to define IC specified operations before flash processing. Please check the project about its implementation.
   */
-__weak void flash_resource_lock( void );
+__weak void flash_resource_lock(void);
 
 /**
   * @brief  Unlock resource after flash processing
@@ -50,7 +50,7 @@ __weak void flash_resource_lock( void );
   * @retval  none
   * @note  This api can be used to define IC specified operations after flash processing. Please check the project about its implementation.
   */
-__weak void flash_resource_unlock( void );
+__weak void flash_resource_unlock(void);
 
 /**
   * @brief  Init Flash Pinmux
@@ -60,31 +60,31 @@ __weak void flash_resource_unlock( void );
   */
 void flash_pinmux_init(flash_t *obj, spic_pin_sel_t pin_sel)
 {
-    phal_spic_adaptor_t phal_spic_adaptor = obj->phal_spic_adaptor;
-    obj->flash_pin_sel = pin_sel;
+	phal_spic_adaptor_t phal_spic_adaptor = obj->phal_spic_adaptor;
+	obj->flash_pin_sel = pin_sel;
 
-    if (pin_sel == SpicPinS0) {
-        (phal_spic_adaptor->flash_pin_sel).pin_cs = FLASH_CS_PIN_SEL0;
-        (phal_spic_adaptor->flash_pin_sel).pin_clk = FLASH_CLK_PIN_SEL0;
-        (phal_spic_adaptor->flash_pin_sel).pin_d0 = FLASH_D0_PIN_SEL0;
-        (phal_spic_adaptor->flash_pin_sel).pin_d1 = FLASH_D1_PIN_SEL0;
-        (phal_spic_adaptor->flash_pin_sel).pin_d2 = FLASH_D2_PIN_SEL0;
-        (phal_spic_adaptor->flash_pin_sel).pin_d3 = FLASH_D3_PIN_SEL0;
-    } else {
-        (phal_spic_adaptor->flash_pin_sel).pin_cs = FLASH_CS_PIN_SEL1;
-        (phal_spic_adaptor->flash_pin_sel).pin_clk = FLASH_CLK_PIN_SEL1;
-        (phal_spic_adaptor->flash_pin_sel).pin_d0 = FLASH_D0_PIN_SEL1;
-        (phal_spic_adaptor->flash_pin_sel).pin_d1 = FLASH_D1_PIN_SEL1;
-        (phal_spic_adaptor->flash_pin_sel).pin_d2 = FLASH_D2_PIN_SEL1;
-        (phal_spic_adaptor->flash_pin_sel).pin_d3 = FLASH_D3_PIN_SEL1;
-    }
+	if (pin_sel == SpicPinS0) {
+		(phal_spic_adaptor->flash_pin_sel).pin_cs = FLASH_CS_PIN_SEL0;
+		(phal_spic_adaptor->flash_pin_sel).pin_clk = FLASH_CLK_PIN_SEL0;
+		(phal_spic_adaptor->flash_pin_sel).pin_d0 = FLASH_D0_PIN_SEL0;
+		(phal_spic_adaptor->flash_pin_sel).pin_d1 = FLASH_D1_PIN_SEL0;
+		(phal_spic_adaptor->flash_pin_sel).pin_d2 = FLASH_D2_PIN_SEL0;
+		(phal_spic_adaptor->flash_pin_sel).pin_d3 = FLASH_D3_PIN_SEL0;
+	} else {
+		(phal_spic_adaptor->flash_pin_sel).pin_cs = FLASH_CS_PIN_SEL1;
+		(phal_spic_adaptor->flash_pin_sel).pin_clk = FLASH_CLK_PIN_SEL1;
+		(phal_spic_adaptor->flash_pin_sel).pin_d0 = FLASH_D0_PIN_SEL1;
+		(phal_spic_adaptor->flash_pin_sel).pin_d1 = FLASH_D1_PIN_SEL1;
+		(phal_spic_adaptor->flash_pin_sel).pin_d2 = FLASH_D2_PIN_SEL1;
+		(phal_spic_adaptor->flash_pin_sel).pin_d3 = FLASH_D3_PIN_SEL1;
+	}
 
-    flash_pin_sel.pin_cs = (phal_spic_adaptor->flash_pin_sel).pin_cs;
-    flash_pin_sel.pin_clk = (phal_spic_adaptor->flash_pin_sel).pin_clk;
-    flash_pin_sel.pin_d0 = (phal_spic_adaptor->flash_pin_sel).pin_d0;
-    flash_pin_sel.pin_d1 = (phal_spic_adaptor->flash_pin_sel).pin_d1;
-    flash_pin_sel.pin_d2 = (phal_spic_adaptor->flash_pin_sel).pin_d2;
-    flash_pin_sel.pin_d3 = (phal_spic_adaptor->flash_pin_sel).pin_d3;
+	flash_pin_sel.pin_cs = (phal_spic_adaptor->flash_pin_sel).pin_cs;
+	flash_pin_sel.pin_clk = (phal_spic_adaptor->flash_pin_sel).pin_clk;
+	flash_pin_sel.pin_d0 = (phal_spic_adaptor->flash_pin_sel).pin_d0;
+	flash_pin_sel.pin_d1 = (phal_spic_adaptor->flash_pin_sel).pin_d1;
+	flash_pin_sel.pin_d2 = (phal_spic_adaptor->flash_pin_sel).pin_d2;
+	flash_pin_sel.pin_d3 = (phal_spic_adaptor->flash_pin_sel).pin_d3;
 }
 
 
@@ -94,20 +94,20 @@ void flash_pinmux_init(flash_t *obj, spic_pin_sel_t pin_sel)
   * @retval   none
   */
 void flash_init(flash_t *obj)
-{    
-    hal_status_t ret;
-    
-    if (pglob_spic_adaptor == NULL) {
-        ret = spic_init(&hal_spic_adaptor, SpicQuadIOMode, &(hal_spic_adaptor.flash_pin_sel));
-        if (ret != HAL_OK) {
-            DBG_SPIF_ERR ("flash_init err(%d)\r\n", ret);
-        }
-    }
-    obj->phal_spic_adaptor = pglob_spic_adaptor;
+{
+	hal_status_t ret;
+
+	if (pglob_spic_adaptor == NULL) {
+		ret = spic_init(&hal_spic_adaptor, SpicQuadIOMode, &(hal_spic_adaptor.flash_pin_sel));
+		if (ret != HAL_OK) {
+			DBG_SPIF_ERR("flash_init err(%d)\r\n", ret);
+		}
+	}
+	obj->phal_spic_adaptor = pglob_spic_adaptor;
 }
 
 /**
-  * @brief  Get flash ID (command: 0x9F), works in SPI mode only. 
+  * @brief  Get flash ID (command: 0x9F), works in SPI mode only.
   * @param  obj: Flash object define in application software.
   * @param  buf: Pointer to a byte array to save the readback ID.
   * @param  len: Specifies the length of the buf. It should be 3.
@@ -115,27 +115,27 @@ void flash_init(flash_t *obj)
   */
 int flash_read_id(flash_t *obj, uint8_t *buf, uint8_t len)
 {
-    phal_spic_adaptor_t phal_spic_adaptor;
-    u8 index;
+	phal_spic_adaptor_t phal_spic_adaptor;
+	u8 index;
 
-    flash_init(obj);
-    phal_spic_adaptor = (obj->phal_spic_adaptor);
-    
-    if (len < 3) {
-        DBG_SPIF_ERR("ID length should be >= 3\n");
-    }
+	flash_init(obj);
+	phal_spic_adaptor = (obj->phal_spic_adaptor);
 
-    if ((phal_spic_adaptor->flash_id[0] == 0x0) 
-        || (phal_spic_adaptor->flash_id[0] == 0xFF)) {
-        DBG_SPIF_ERR("Invalide ID\n");
-        return -1;
-    } else {
-        for (index = 0; index < 3; index++) {
-            buf[index] = phal_spic_adaptor->flash_id[index];
-        }
-    }
+	if (len < 3) {
+		DBG_SPIF_ERR("ID length should be >= 3\n");
+	}
 
-    return len;
+	if ((phal_spic_adaptor->flash_id[0] == 0x0)
+		|| (phal_spic_adaptor->flash_id[0] == 0xFF)) {
+		DBG_SPIF_ERR("Invalide ID\n");
+		return -1;
+	} else {
+		for (index = 0; index < 3; index++) {
+			buf[index] = phal_spic_adaptor->flash_id[index];
+		}
+	}
+
+	return len;
 }
 
 /**
@@ -147,24 +147,24 @@ int flash_read_id(flash_t *obj, uint8_t *buf, uint8_t len)
   */
 int flash_read_unique_id(flash_t *obj, uint8_t *buf, uint8_t len)
 {
-    phal_spic_adaptor_t phal_spic_adaptor;
-    
-    flash_init(obj);
-    phal_spic_adaptor = (obj->phal_spic_adaptor);
+	phal_spic_adaptor_t phal_spic_adaptor;
 
-    if (phal_spic_adaptor->flash_type != FLASH_TYPE_WINBOND) {
-        return -1;
-    } else {
-        flash_resource_lock();
-        hal_flash_read_unique_id(phal_spic_adaptor, buf, len);
-        flash_resource_unlock();
-    }
+	flash_init(obj);
+	phal_spic_adaptor = (obj->phal_spic_adaptor);
 
-    return len;
+	if (phal_spic_adaptor->flash_type != FLASH_TYPE_WINBOND) {
+		return -1;
+	} else {
+		flash_resource_lock();
+		hal_flash_read_unique_id(phal_spic_adaptor, buf, len);
+		flash_resource_unlock();
+	}
+
+	return len;
 }
 
 /**
-  * @brief  Erase flash sector, usually 1 sector = 4K bytes 
+  * @brief  Erase flash sector, usually 1 sector = 4K bytes
     Please refer to flash data sheet to confirm the actual sector size.
     The actual address which being erased always aligned with sector size.
   * @param  address: Specifies the starting address to be erased.
@@ -172,15 +172,15 @@ int flash_read_unique_id(flash_t *obj, uint8_t *buf, uint8_t len)
   */
 void flash_erase_sector(flash_t *obj, uint32_t address)
 {
-    flash_init(obj);
-    
-    flash_resource_lock();
-    hal_flash_sector_erase((obj->phal_spic_adaptor), address);
-    flash_resource_unlock();
+	flash_init(obj);
+
+	flash_resource_lock();
+	hal_flash_sector_erase((obj->phal_spic_adaptor), address);
+	flash_resource_unlock();
 }
 
 /**
-  * @brief  Erase flash block, usually 1 block = 64K bytes  
+  * @brief  Erase flash block, usually 1 block = 64K bytes
     Please refer to flash data sheet to confirm the actual block size.
     The actual address which being erased always aligned with block size.
   * @param  address: Specifies the starting address to be erased.
@@ -188,11 +188,11 @@ void flash_erase_sector(flash_t *obj, uint32_t address)
   */
 void flash_erase_block(flash_t *obj, uint32_t address)
 {
-    flash_init(obj);
-    
-    flash_resource_lock();
-    hal_flash_64k_block_erase((obj->phal_spic_adaptor), address);
-    flash_resource_unlock();
+	flash_init(obj);
+
+	flash_resource_lock();
+	hal_flash_64k_block_erase((obj->phal_spic_adaptor), address);
+	flash_resource_unlock();
 }
 
 
@@ -203,11 +203,11 @@ void flash_erase_block(flash_t *obj, uint32_t address)
   */
 void flash_erase_chip(flash_t *obj)
 {
-    flash_init(obj);
-    
-    flash_resource_lock();
-    hal_flash_chip_erase(obj->phal_spic_adaptor);
-    flash_resource_unlock();
+	flash_init(obj);
+
+	flash_resource_lock();
+	hal_flash_chip_erase(obj->phal_spic_adaptor);
+	flash_resource_unlock();
 }
 
 /**
@@ -217,13 +217,13 @@ void flash_erase_chip(flash_t *obj)
   * @param  data: Specified the address to save the readback data.
   * @retval   status: Success:1 or Failure: Others.
   */
-int  flash_read_word(flash_t *obj, uint32_t address, uint32_t * data)
+int  flash_read_word(flash_t *obj, uint32_t address, uint32_t *data)
 {
-    flash_init(obj);
-    
-    dcache_invalidate_by_addr((uint32_t *) (SPI_FLASH_BASE + address), 4);
-    hal_flash_stream_read((obj->phal_spic_adaptor), 4, address, (u8*)data);
-    return 1;
+	flash_init(obj);
+
+	dcache_invalidate_by_addr((uint32_t *)(SPI_FLASH_BASE + address), 4);
+	hal_flash_stream_read((obj->phal_spic_adaptor), 4, address, (u8 *)data);
+	return 1;
 }
 
 /**
@@ -235,12 +235,12 @@ int  flash_read_word(flash_t *obj, uint32_t address, uint32_t * data)
   */
 int  flash_write_word(flash_t *obj, uint32_t address, uint32_t data)
 {
-    flash_init(obj);
+	flash_init(obj);
 
-    flash_resource_lock();
-    hal_flash_burst_write((obj->phal_spic_adaptor), 4, address, (u8*)&data);
-    flash_resource_unlock();
-    return 1;
+	flash_resource_lock();
+	hal_flash_burst_write((obj->phal_spic_adaptor), 4, address, (u8 *)&data);
+	flash_resource_unlock();
+	return 1;
 }
 
 
@@ -252,13 +252,13 @@ int  flash_write_word(flash_t *obj, uint32_t address, uint32_t data)
   * @param  data: Specified the address to save the readback data.
   * @retval   status: Success:1 or Failure: Others.
   */
-int  flash_stream_read(flash_t *obj, uint32_t address, uint32_t len, uint8_t * data)
+int  flash_stream_read(flash_t *obj, uint32_t address, uint32_t len, uint8_t *data)
 {
-    flash_init(obj);
+	flash_init(obj);
 
-    dcache_invalidate_by_addr((uint32_t *) (SPI_FLASH_BASE + address), len);
-    hal_flash_stream_read((obj->phal_spic_adaptor), len, address, data);
-    return 1;
+	dcache_invalidate_by_addr((uint32_t *)(SPI_FLASH_BASE + address), len);
+	hal_flash_stream_read((obj->phal_spic_adaptor), len, address, data);
+	return 1;
 }
 
 /**
@@ -274,14 +274,14 @@ int  flash_stream_read(flash_t *obj, uint32_t address, uint32_t len, uint8_t * d
             If the address is in the flash, full address is required, i.e. SPI_FLASH_BASE + Offset
   * @retval   status: Success:1 or Failure: Others.
   */
-int  flash_stream_write(flash_t *obj, uint32_t address, uint32_t len, uint8_t * data)
+int  flash_stream_write(flash_t *obj, uint32_t address, uint32_t len, uint8_t *data)
 {
-    flash_init(obj);
+	flash_init(obj);
 
-    flash_resource_lock();
-    hal_flash_burst_write((obj->phal_spic_adaptor), len, address, data);
-    flash_resource_unlock();
-    return 1;
+	flash_resource_lock();
+	hal_flash_burst_write((obj->phal_spic_adaptor), len, address, data);
+	flash_resource_unlock();
+	return 1;
 }
 
 /**
@@ -292,14 +292,14 @@ int  flash_stream_write(flash_t *obj, uint32_t address, uint32_t len, uint8_t * 
   * @param  data: Specified the address to save the readback data.
   * @retval   status: Success:1 or Failure: Others.
   */
-int  flash_burst_read(flash_t *obj, uint32_t address, uint32_t Length, uint8_t * data)
+int  flash_burst_read(flash_t *obj, uint32_t address, uint32_t Length, uint8_t *data)
 {
-    flash_init(obj);
+	flash_init(obj);
 
-    flash_resource_lock();
-    hal_flash_burst_read((obj->phal_spic_adaptor), Length, address, data);
-    flash_resource_unlock();
-    return 1;
+	flash_resource_lock();
+	hal_flash_burst_read((obj->phal_spic_adaptor), Length, address, data);
+	flash_resource_unlock();
+	return 1;
 }
 
 /*
@@ -317,14 +317,18 @@ Users can use either of functions depending on their needs.
 * @retval   status: Success:1 or Failure: Others.
 
 */
-int flash_burst_write(flash_t *obj, uint32_t address ,uint32_t Length, uint8_t * data)
+#if defined(CONFIG_MATTER) && CONFIG_MATTER
+int flash_burst_write(flash_t *obj, uint32_t address, uint32_t Length, const uint8_t *data)
+#else
+int flash_burst_write(flash_t *obj, uint32_t address, uint32_t Length, uint8_t *data)
+#endif
 {
-    flash_init(obj);
+	flash_init(obj);
 
-    flash_resource_lock();
-    hal_flash_burst_write((obj->phal_spic_adaptor), Length, address, data);
-    flash_resource_unlock();
-    return 1;
+	flash_resource_lock();
+	hal_flash_burst_write((obj->phal_spic_adaptor), Length, address, data);
+	flash_resource_unlock();
+	return 1;
 }
 
 
@@ -340,19 +344,19 @@ Please refer to the datatsheet of flash for more details of the content of statu
 */
 int flash_get_status(flash_t *obj)
 {
-    phal_spic_adaptor_t phal_spic_adaptor;
-    pflash_cmd_t cmd;
-    u8 status = 0;
+	phal_spic_adaptor_t phal_spic_adaptor;
+	pflash_cmd_t cmd;
+	u8 status = 0;
 
-    flash_init(obj);
-    phal_spic_adaptor = (obj->phal_spic_adaptor);
-    cmd = phal_spic_adaptor->cmd;
+	flash_init(obj);
+	phal_spic_adaptor = (obj->phal_spic_adaptor);
+	cmd = phal_spic_adaptor->cmd;
 
-    flash_resource_lock();
-    status = hal_flash_get_status(phal_spic_adaptor, cmd->rdsr);
-    flash_resource_unlock();
-    
-    return status;
+	flash_resource_lock();
+	status = hal_flash_get_status(phal_spic_adaptor, cmd->rdsr);
+	flash_resource_unlock();
+
+	return status;
 }
 
 /*
@@ -367,25 +371,25 @@ Please refer to the datatsheet of flash for more details of the content of statu
 */
 int flash_get_status2(flash_t *obj)
 {
-    phal_spic_adaptor_t phal_spic_adaptor;
-    pflash_cmd_t cmd;
-    u8 status = 0;
+	phal_spic_adaptor_t phal_spic_adaptor;
+	pflash_cmd_t cmd;
+	u8 status = 0;
 
-    flash_init(obj);
-    phal_spic_adaptor = (obj->phal_spic_adaptor);
-    cmd = phal_spic_adaptor->cmd;
+	flash_init(obj);
+	phal_spic_adaptor = (obj->phal_spic_adaptor);
+	cmd = phal_spic_adaptor->cmd;
 
-    flash_resource_lock();
-    status = hal_flash_get_status(phal_spic_adaptor, cmd->rdsr2);
-    flash_resource_unlock();
-    
-    return status;
+	flash_resource_lock();
+	status = hal_flash_get_status(phal_spic_adaptor, cmd->rdsr2);
+	flash_resource_unlock();
+
+	return status;
 }
 
 /*
 Function Description:
 This function aims to read the value of the status register 3.
-It can be used to check the current status of the flash 
+It can be used to check the current status of the flash
 Please refer to the datatsheet of flash for more details of the content of status register.
 
 * @brief  Read Status register 3 to check flash status
@@ -394,19 +398,19 @@ Please refer to the datatsheet of flash for more details of the content of statu
 */
 int flash_get_status3(flash_t *obj)
 {
-    phal_spic_adaptor_t phal_spic_adaptor;
-    pflash_cmd_t cmd;
-    u8 status = 0;
+	phal_spic_adaptor_t phal_spic_adaptor;
+	pflash_cmd_t cmd;
+	u8 status = 0;
 
-    flash_init(obj);
-    phal_spic_adaptor = (obj->phal_spic_adaptor);
-    cmd = phal_spic_adaptor->cmd;
+	flash_init(obj);
+	phal_spic_adaptor = (obj->phal_spic_adaptor);
+	cmd = phal_spic_adaptor->cmd;
 
-    flash_resource_lock();
-    status = hal_flash_get_status(phal_spic_adaptor, cmd->rdsr3);
-    flash_resource_unlock();
+	flash_resource_lock();
+	status = hal_flash_get_status(phal_spic_adaptor, cmd->rdsr3);
+	flash_resource_unlock();
 
-    return status;
+	return status;
 }
 
 /*
@@ -419,46 +423,46 @@ The block protected area and the corresponding control bits are provided in the 
 * @brief  Set Status register to enable desired operation
 * @param  obj: Specifies the parameter of flash object.
 * @param  data: Specifies which bit users like to set
-   ex: if users want to set the third bit, data = 0x8. 
+   ex: if users want to set the third bit, data = 0x8.
 * @retval   status: Success:1 or Failure: Others.
 */
 int flash_set_status(flash_t *obj, uint32_t data)
-{   
-    phal_spic_adaptor_t phal_spic_adaptor;
-    pflash_cmd_t cmd;
-    u8 status_value = 0;
+{
+	phal_spic_adaptor_t phal_spic_adaptor;
+	pflash_cmd_t cmd;
+	u8 status_value = 0;
 
-    flash_init(obj);
-    phal_spic_adaptor = (obj->phal_spic_adaptor);
-    cmd = phal_spic_adaptor->cmd;
-    
-    status_value = flash_get_status2(obj);
-    flash_resource_lock();
-    
-    if (phal_spic_adaptor->quad_pin_sel) {
-        switch (phal_spic_adaptor->flash_type) {
-            case FLASH_TYPE_GD:
-            case FLASH_TYPE_XTX:
-            case FLASH_TYPE_TSTE:
-                data = ((status_value << 8) | (data & 0xFF));
-                hal_flash_set_write_enable(phal_spic_adaptor);
-                spic_tx_cmd(phal_spic_adaptor, cmd->wrsr, 2, (u8*)&data);
-                break;
-        
-            case FLASH_TYPE_MXIC:
-                hal_flash_set_status(phal_spic_adaptor, cmd->wrsr, (u8)(data | 0x40));                
-                break;
-        
-            default:
-                hal_flash_set_status(phal_spic_adaptor, cmd->wrsr, (u8)data);
-        }
-    } else {       
-        hal_flash_set_status(phal_spic_adaptor, cmd->wrsr, (u8)data);
-    }
-    
-    flash_resource_unlock();
+	flash_init(obj);
+	phal_spic_adaptor = (obj->phal_spic_adaptor);
+	cmd = phal_spic_adaptor->cmd;
 
-    return 1;
+	status_value = flash_get_status2(obj);
+	flash_resource_lock();
+
+	if (phal_spic_adaptor->quad_pin_sel) {
+		switch (phal_spic_adaptor->flash_type) {
+		case FLASH_TYPE_GD:
+		case FLASH_TYPE_XTX:
+		case FLASH_TYPE_TSTE:
+			data = ((status_value << 8) | (data & 0xFF));
+			hal_flash_set_write_enable(phal_spic_adaptor);
+			spic_tx_cmd(phal_spic_adaptor, cmd->wrsr, 2, (u8 *)&data);
+			break;
+
+		case FLASH_TYPE_MXIC:
+			hal_flash_set_status(phal_spic_adaptor, cmd->wrsr, (u8)(data | 0x40));
+			break;
+
+		default:
+			hal_flash_set_status(phal_spic_adaptor, cmd->wrsr, (u8)data);
+		}
+	} else {
+		hal_flash_set_status(phal_spic_adaptor, cmd->wrsr, (u8)data);
+	}
+
+	flash_resource_unlock();
+
+	return 1;
 }
 
 /*
@@ -471,60 +475,60 @@ The block protected area and the corresponding control bits are provided in the 
 * @brief  Set Status register to enable desired operation
 * @param  obj: Specifies the parameter of flash object.
 * @param  data: Specifies which bit users like to set
-   ex: if users want to set the third bit, data = 0x8. 
+   ex: if users want to set the third bit, data = 0x8.
 * @retval   status: Success:1 or Failure: Others.
 */
 int flash_set_status2(flash_t *obj, uint32_t data)
-{   
-    phal_spic_adaptor_t phal_spic_adaptor;
-    pflash_cmd_t cmd;
-    u8 status_value = 0;
+{
+	phal_spic_adaptor_t phal_spic_adaptor;
+	pflash_cmd_t cmd;
+	u8 status_value = 0;
 
-    flash_init(obj);
-    phal_spic_adaptor = (obj->phal_spic_adaptor);
-    cmd = phal_spic_adaptor->cmd;
-    
-    status_value = flash_get_status(obj) & 0xFF;
-    flash_resource_lock();
-    
-    if (phal_spic_adaptor->quad_pin_sel) {
-        switch (phal_spic_adaptor->flash_type) {
-            case FLASH_TYPE_GD:
-            case FLASH_TYPE_XTX:
-            case FLASH_TYPE_TSTE:
-                data = status_value | ((0x2 | data) << 8);            
-                hal_flash_set_write_enable(phal_spic_adaptor);
-                spic_tx_cmd(phal_spic_adaptor, cmd->wrsr, 2, (u8*)&data);
-                break;
-        
-            case FLASH_TYPE_MXIC:
-                data = (status_value | ((data & 0xFF) << 8));
-                hal_flash_set_write_enable(phal_spic_adaptor);
-                spic_tx_cmd(phal_spic_adaptor, cmd->wrsr, 2, (u8*)&data);
-                break;
-        
-            default:
-                data |= 0x2;
-                hal_flash_set_status(phal_spic_adaptor, cmd->wrsr2, (u8)data);
-        }
-    } else {       
-        switch (phal_spic_adaptor->flash_type) {
-            case FLASH_TYPE_GD:
-            case FLASH_TYPE_XTX:
-            case FLASH_TYPE_MXIC:
-            case FLASH_TYPE_TSTE:
-                data = status_value | ((data & 0xFF) << 8);
-                hal_flash_set_write_enable(phal_spic_adaptor);
-                spic_tx_cmd(phal_spic_adaptor, cmd->wrsr, 2, (u8*)&data);
-                break;
-        
-            default:
-                hal_flash_set_status(phal_spic_adaptor, cmd->wrsr2, (u8)data);
-        }
-    }
-    
-    flash_resource_unlock();
-    return 1;
+	flash_init(obj);
+	phal_spic_adaptor = (obj->phal_spic_adaptor);
+	cmd = phal_spic_adaptor->cmd;
+
+	status_value = flash_get_status(obj) & 0xFF;
+	flash_resource_lock();
+
+	if (phal_spic_adaptor->quad_pin_sel) {
+		switch (phal_spic_adaptor->flash_type) {
+		case FLASH_TYPE_GD:
+		case FLASH_TYPE_XTX:
+		case FLASH_TYPE_TSTE:
+			data = status_value | ((0x2 | data) << 8);
+			hal_flash_set_write_enable(phal_spic_adaptor);
+			spic_tx_cmd(phal_spic_adaptor, cmd->wrsr, 2, (u8 *)&data);
+			break;
+
+		case FLASH_TYPE_MXIC:
+			data = (status_value | ((data & 0xFF) << 8));
+			hal_flash_set_write_enable(phal_spic_adaptor);
+			spic_tx_cmd(phal_spic_adaptor, cmd->wrsr, 2, (u8 *)&data);
+			break;
+
+		default:
+			data |= 0x2;
+			hal_flash_set_status(phal_spic_adaptor, cmd->wrsr2, (u8)data);
+		}
+	} else {
+		switch (phal_spic_adaptor->flash_type) {
+		case FLASH_TYPE_GD:
+		case FLASH_TYPE_XTX:
+		case FLASH_TYPE_MXIC:
+		case FLASH_TYPE_TSTE:
+			data = status_value | ((data & 0xFF) << 8);
+			hal_flash_set_write_enable(phal_spic_adaptor);
+			spic_tx_cmd(phal_spic_adaptor, cmd->wrsr, 2, (u8 *)&data);
+			break;
+
+		default:
+			hal_flash_set_status(phal_spic_adaptor, cmd->wrsr2, (u8)data);
+		}
+	}
+
+	flash_resource_unlock();
+	return 1;
 }
 
 /*
@@ -535,22 +539,22 @@ Please refer to the datatsheet of flash for more details of the content of statu
 * @brief  Set Status register 3 to enable desired operation
 * @param  obj: Specifies the parameter of flash object.
 * @param  data: Specifies which bit users like to set
-   ex: if users want to set the third bit, data = 0x8. 
+   ex: if users want to set the third bit, data = 0x8.
 * @retval   status: Success:1 or Failure: Others.
 */
 int flash_set_status3(flash_t *obj, uint32_t data)
 {
-    phal_spic_adaptor_t phal_spic_adaptor;
-    pflash_cmd_t cmd;
+	phal_spic_adaptor_t phal_spic_adaptor;
+	pflash_cmd_t cmd;
 
-    flash_init(obj);
-    phal_spic_adaptor = (obj->phal_spic_adaptor);
-    cmd = phal_spic_adaptor->cmd;
+	flash_init(obj);
+	phal_spic_adaptor = (obj->phal_spic_adaptor);
+	cmd = phal_spic_adaptor->cmd;
 
-    flash_resource_lock();
-    hal_flash_set_status(phal_spic_adaptor, cmd->wrsr3, (u8)data);
-    flash_resource_unlock();
-    return 1;
+	flash_resource_lock();
+	hal_flash_set_status(phal_spic_adaptor, cmd->wrsr3, (u8)data);
+	flash_resource_unlock();
+	return 1;
 }
 
 /*
@@ -562,7 +566,7 @@ This function aims to reset the status register, please make sure the operation 
 */
 void flash_reset_status(flash_t *obj)
 {
-    flash_set_status(obj, 0x00);
+	flash_set_status(obj, 0x00);
 }
 
 /*
@@ -574,14 +578,14 @@ This function aims to get the density of the flash.
 */
 void flash_get_size(flash_t *obj)
 {
-    phal_spic_adaptor_t phal_spic_adaptor;
-    u8 size = 0;
+	phal_spic_adaptor_t phal_spic_adaptor;
+	u8 size = 0;
 
-    flash_init(obj);
-    phal_spic_adaptor = (obj->phal_spic_adaptor);
-    size = hal_flash_get_size(phal_spic_adaptor);
+	flash_init(obj);
+	phal_spic_adaptor = (obj->phal_spic_adaptor);
+	size = hal_flash_get_size(phal_spic_adaptor);
 
-    dbg_printf("Flash Size = %d Mbit\r\n", size);
+	dbg_printf("Flash Size = %d Mbit\r\n", size);
 }
 
 /*
@@ -594,12 +598,12 @@ Please refer to flash datasheet for more information about memory mapping.
 */
 int flash_set_extend_addr(flash_t *obj, uint32_t data)
 {
-    flash_init(obj);
-    
-    flash_resource_lock();
-    hal_flash_set_extended_addr((obj->phal_spic_adaptor), (u8)data);
-    flash_resource_unlock();
-    return 1;
+	flash_init(obj);
+
+	flash_resource_lock();
+	hal_flash_set_extended_addr((obj->phal_spic_adaptor), (u8)data);
+	flash_resource_unlock();
+	return 1;
 }
 
 /*
@@ -613,18 +617,18 @@ This function returns the status of the extend address register
 */
 int flash_get_extend_addr(flash_t *obj)
 {
-    u8 extend_addr_state = 0;
-    flash_init(obj);
+	u8 extend_addr_state = 0;
+	flash_init(obj);
 
-    flash_resource_lock();
-    extend_addr_state = hal_flash_get_extended_addr((obj->phal_spic_adaptor));
-    flash_resource_unlock();
-    
-    return extend_addr_state;
+	flash_resource_lock();
+	extend_addr_state = hal_flash_get_extended_addr((obj->phal_spic_adaptor));
+	flash_resource_unlock();
+
+	return extend_addr_state;
 }
 
 /***********************************************************************************
-The following functions are compatile with Winbond flash only. 
+The following functions are compatile with Winbond flash only.
 But not all Winbond flash supports these functions,
 plase refer to data sheets of the target flashes.
 ************************************************************************************/
@@ -634,41 +638,41 @@ plase refer to data sheets of the target flashes.
 */
 void flash_set_lock_mode(uint32_t mode)
 {
-    if (pglob_spic_adaptor == NULL) {
-        spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
-    }
-    
-    flash_resource_lock();
-    hal_flash_set_write_protect_mode(pglob_spic_adaptor, mode);
-    flash_resource_unlock();
+	if (pglob_spic_adaptor == NULL) {
+		spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
+	}
+
+	flash_resource_lock();
+	hal_flash_set_write_protect_mode(pglob_spic_adaptor, mode);
+	flash_resource_unlock();
 }
 
 /*Lock whole flash chip*/
 void flash_global_lock(void)
 {
-    if (pglob_spic_adaptor == NULL) {
-        spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
-    }
-    
-    flash_resource_lock();
-    hal_flash_global_lock(pglob_spic_adaptor);
-    flash_resource_unlock();
+	if (pglob_spic_adaptor == NULL) {
+		spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
+	}
+
+	flash_resource_lock();
+	hal_flash_global_lock(pglob_spic_adaptor);
+	flash_resource_unlock();
 }
 
 /*Unlock whole flash chip*/
 void flash_global_unlock(void)
 {
-    if (pglob_spic_adaptor == NULL) {
-        spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
-    }
-    
-    flash_resource_lock();
-    hal_flash_global_unlock(pglob_spic_adaptor);
-    flash_resource_unlock();
+	if (pglob_spic_adaptor == NULL) {
+		spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
+	}
+
+	flash_resource_lock();
+	hal_flash_global_unlock(pglob_spic_adaptor);
+	flash_resource_unlock();
 }
 
 /***********************************************************************************
-The following functions are compatile with some of Winbond flash only. 
+The following functions are compatile with some of Winbond flash only.
 Not all Winbond flash supports these functions,
 plase refer to data sheets of the target flashes.
 ************************************************************************************/
@@ -676,25 +680,25 @@ plase refer to data sheets of the target flashes.
 /*Lock individual sector or block region, should refer to the datasheet for more details*/
 void flash_individual_lock(uint32_t address)
 {
-    if (pglob_spic_adaptor == NULL) {
-        spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
-    }
-    
-    flash_resource_lock();
-    hal_flash_protect_sector(pglob_spic_adaptor, address);
-    flash_resource_unlock();
+	if (pglob_spic_adaptor == NULL) {
+		spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
+	}
+
+	flash_resource_lock();
+	hal_flash_protect_sector(pglob_spic_adaptor, address);
+	flash_resource_unlock();
 }
 
 /*Unlock individual sector or block region, should refer to the datasheet for more details*/
 void flash_individual_unlock(uint32_t address)
 {
-    if (pglob_spic_adaptor == NULL) {
-        spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
-    }
-    
-    flash_resource_lock();
-    hal_flash_unprotect_sector(pglob_spic_adaptor, address);
-    flash_resource_unlock();
+	if (pglob_spic_adaptor == NULL) {
+		spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
+	}
+
+	flash_resource_lock();
+	hal_flash_unprotect_sector(pglob_spic_adaptor, address);
+	flash_resource_unlock();
 }
 
 /*
@@ -703,37 +707,37 @@ void flash_individual_unlock(uint32_t address)
 */
 int flash_read_individual_lock_state(uint32_t address)
 {
-    if (pglob_spic_adaptor == NULL) {
-        spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
-    }
-    
-    phal_spic_adaptor_t phal_spic_adaptor;
-    u8 flash_type;
-    u8 state = 0;
+	if (pglob_spic_adaptor == NULL) {
+		spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
+	}
 
-    phal_spic_adaptor = pglob_spic_adaptor;
-    flash_type = phal_spic_adaptor->flash_type;
+	phal_spic_adaptor_t phal_spic_adaptor;
+	u8 flash_type;
+	u8 state = 0;
 
-    flash_resource_lock();
-    state = hal_flash_query_sector_protect_state(phal_spic_adaptor, address);
-    flash_resource_unlock();
+	phal_spic_adaptor = pglob_spic_adaptor;
+	flash_type = phal_spic_adaptor->flash_type;
 
-    if (FLASH_TYPE_WINBOND == flash_type) {
-        if (state & 0x1) {
-            DBG_SPIF_WARN("The section is protected\r\n");
-        } else {
-            DBG_SPIF_WARN("The section is not protected\r\n");
-        }
-    } else {
-        DBG_SPIF_ERR("This flash type does not support this featrue\r\n");
-        return 0;
-    }
+	flash_resource_lock();
+	state = hal_flash_query_sector_protect_state(phal_spic_adaptor, address);
+	flash_resource_unlock();
 
-    return 1;    
+	if (FLASH_TYPE_WINBOND == flash_type) {
+		if (state & 0x1) {
+			DBG_SPIF_WARN("The section is protected\r\n");
+		} else {
+			DBG_SPIF_WARN("The section is not protected\r\n");
+		}
+	} else {
+		DBG_SPIF_ERR("This flash type does not support this featrue\r\n");
+		return 0;
+	}
+
+	return 1;
 }
 
 /***********************************************************************************
-The following functions are compatile with MXIC flash only. 
+The following functions are compatile with MXIC flash only.
 Not all MXIC flash supports these functions,
 plase refer to data sheets of the target flashes.
 ************************************************************************************/
@@ -749,11 +753,11 @@ Standard write / command commands can be performed on the OTP region.
 */
 void flash_mxic_enter_otp(void)
 {
-    if (pglob_spic_adaptor == NULL) {
-        spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
-    }
-    
-    spic_tx_cmd_no_check(pglob_spic_adaptor, FLASH_CMD_ENSO, 0, 0);
+	if (pglob_spic_adaptor == NULL) {
+		spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
+	}
+
+	spic_tx_cmd_no_check(pglob_spic_adaptor, FLASH_CMD_ENSO, 0, 0);
 }
 
 /*
@@ -766,11 +770,11 @@ This function sends the command to exit OTP region.
 */
 void flash_mxic_exit_otp(void)
 {
-    if (pglob_spic_adaptor == NULL) {
-        spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
-    }
-    
-    spic_tx_cmd_no_check(pglob_spic_adaptor, FLASH_CMD_EXSO, 0, 0);
+	if (pglob_spic_adaptor == NULL) {
+		spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
+	}
+
+	spic_tx_cmd_no_check(pglob_spic_adaptor, FLASH_CMD_EXSO, 0, 0);
 }
 
 /*
@@ -783,20 +787,20 @@ This function locks the otp region permanently, the data on the OTP region canno
 */
 void flash_mxic_lock_otp(void)
 {
-    phal_spic_adaptor_t phal_spic_adaptor;
+	phal_spic_adaptor_t phal_spic_adaptor;
 
-    if (pglob_spic_adaptor == NULL) {
-        spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
-    }
+	if (pglob_spic_adaptor == NULL) {
+		spic_init(&hal_spic_adaptor, SpicQuadIOMode, &flash_pin_sel);
+	}
 
-    phal_spic_adaptor = pglob_spic_adaptor;
-        
-    hal_flash_set_write_enable(phal_spic_adaptor);
-    
-    do {
-        spic_tx_cmd_no_check(phal_spic_adaptor, FLASH_CMD_WRSCUR, 0, 0);
-    } while ((hal_flash_get_status(phal_spic_adaptor, FLASH_CMD_RDSCUR) & 0x2) != 0x2);
+	phal_spic_adaptor = pglob_spic_adaptor;
 
-    spic_tx_cmd_no_check(phal_spic_adaptor, (phal_spic_adaptor->cmd)->wrdi, 0, 0);
+	hal_flash_set_write_enable(phal_spic_adaptor);
+
+	do {
+		spic_tx_cmd_no_check(phal_spic_adaptor, FLASH_CMD_WRSCUR, 0, 0);
+	} while ((hal_flash_get_status(phal_spic_adaptor, FLASH_CMD_RDSCUR) & 0x2) != 0x2);
+
+	spic_tx_cmd_no_check(phal_spic_adaptor, (phal_spic_adaptor->cmd)->wrdi, 0, 0);
 }
 

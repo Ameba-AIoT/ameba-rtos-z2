@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_SOCKET_TCP_TRX) && (CONFIG_EXAMPLE_SOCKET_TCP_TRX == 2)
 #include "FreeRTOS.h"
 #include "task.h"
 #include <platform/platform_stdlib.h>
@@ -16,20 +19,22 @@ static void tx_thread(void *param)
 	memset(buffer, 1, sizeof(buffer));
 	printf("\n%s start\n", __FUNCTION__);
 
-	while(1) {
+	while (1) {
 		int retry = 0;
 
 		// retry send if socket busy
-		for(retry = 0; retry < MAX_RETRY; retry ++) {
-			if(write(client_fd, buffer, sizeof(buffer)) == -1)
+		for (retry = 0; retry < MAX_RETRY; retry ++) {
+			if (write(client_fd, buffer, sizeof(buffer)) == -1) {
 				printf("\nwrite retry=%d\n", retry);
-			else
+			} else {
 				break;
+			}
 		}
 
 		// socket may be closed if max retry reached
-		if(retry == MAX_RETRY)
+		if (retry == MAX_RETRY) {
 			goto exit;
+		}
 
 		vTaskDelay(100);
 	}
@@ -46,9 +51,10 @@ static void rx_thread(void *param)
 	unsigned char buffer[1024];
 	printf("\n%s start\n", __FUNCTION__);
 
-	while(1) {
-		if(read(client_fd, buffer, sizeof(buffer)) <= 0)
+	while (1) {
+		if (read(client_fd, buffer, sizeof(buffer)) <= 0) {
 			goto exit;
+		}
 	}
 
 exit:
@@ -72,43 +78,45 @@ static void example_socket_tcp_trx_thread(void *param)
 	server_addr.sin_port = htons(SERVER_PORT);
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 
-	if(bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0) {
+	if (bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0) {
 		printf("ERROR: bind\n");
 		goto exit;
 	}
 
-	if(listen(server_fd, LISTEN_QLEN) != 0) {
+	if (listen(server_fd, LISTEN_QLEN) != 0) {
 		printf("ERROR: listen\n");
 		goto exit;
 	}
 
-	while(1) {
+	while (1) {
 		client_addr_size = sizeof(client_addr);
 		client_fd = accept(server_fd, (struct sockaddr *) &client_addr, &client_addr_size);
 
-		if(client_fd >= 0) {
+		if (client_fd >= 0) {
 			tx_exit = 1;
 			rx_exit = 1;
 
-			if(xTaskCreate(tx_thread, ((const char*)"tx_thread"), 512, &client_fd, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+			if (xTaskCreate(tx_thread, ((const char *)"tx_thread"), 1024, &client_fd, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 				printf("\n\r%s xTaskCreate(tx_thread) failed", __FUNCTION__);
-			else
+			} else {
 				tx_exit = 0;
+			}
 
 			vTaskDelay(10);
 
-			if(xTaskCreate(rx_thread, ((const char*)"rx_thread"), 512, &client_fd, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+			if (xTaskCreate(rx_thread, ((const char *)"rx_thread"), 1024, &client_fd, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 				printf("\n\r%s xTaskCreate(rx_thread) failed", __FUNCTION__);
-			else
+			} else {
 				rx_exit = 0;
+			}
 
-			while(1) {
-				if(tx_exit && rx_exit) {
+			while (1) {
+				if (tx_exit && rx_exit) {
 					close(client_fd);
 					break;
-				}
-				else
+				} else {
 					vTaskDelay(1000);
+				}
 			}
 		}
 	}
@@ -120,6 +128,9 @@ exit:
 
 void example_socket_tcp_trx_2(void)
 {
-	if(xTaskCreate(example_socket_tcp_trx_thread, ((const char*)"example_socket_tcp_trx_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+	if (xTaskCreate(example_socket_tcp_trx_thread, ((const char *)"example_socket_tcp_trx_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate(example_socket_tcp_trx_thread) failed", __FUNCTION__);
+	}
 }
+
+#endif //#if defined(CONFIG_EXAMPLE_SOCKET_TCP_TRX) && (CONFIG_EXAMPLE_SOCKET_TCP_TRX == 2)

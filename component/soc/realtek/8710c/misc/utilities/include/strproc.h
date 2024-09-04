@@ -37,7 +37,7 @@ extern "C" {
 #include <stddef.h> /* for size_t */
 #include <stdarg.h>
 
-/** 
+/**
  * @addtogroup util_strproc String Process
  * @ingroup 8710c_util
  * @{
@@ -48,38 +48,38 @@ extern "C" {
   \brief  The data structure of the stubs functions of the string processing functions in ROM.
 */
 typedef struct strproc_func_stubs_s {
-    char *(*strcat)(char *dest,  char const *src);
-    char *(*strchr)(const char *s, int c);
-    int (*strcmp)(char const *cs, char const *ct);
-    int (*strncmp)(char const *cs, char const *ct, size_t count);
-    int (*strnicmp)(char const *s1, char const *s2, size_t len);
-    char *(*strcpy)(char *dest, char const *src);
-    char *(*strncpy)(char *dest, char const *src, size_t count);
-    size_t (*strlcpy)(char *dst, char const *src, size_t s);
-    size_t (*strlen)(char const *s);
-    size_t (*strnlen)(char const *s, size_t count);
-    char *(*strncat)(char *dest, char const *src, size_t count);
-    char *(*strpbrk)(char const *cs, char const *ct);
-    size_t (*strspn)(char const *s, char const *accept);
-    char *(*strstr)(char const *s1, char const *s2);
-    char *(*strtok)(char *s, char const *ct);
-    size_t (*strxfrm)(char *dest, const char *src, size_t n);
-    char *(*strsep)(char **s, const char *ct);    
-    double (*strtod)(const char *str, char **endptr);
-    float (*strtof)(const char *str, char **endptr);
-    long double (*strtold)(const char *str, char **endptr);
-    long (*strtol)(const char *nptr, char **endptr, int base);
-    long long (*strtoll)(const char *nptr, char **endptr, int base);
-    unsigned long (*strtoul)(const char *nptr, char **endptr, int base);
-    unsigned long long (*strtoull)(const char *nptr, char **endptr, int base);
-    int (*atoi)(const char *num);
-    unsigned int (*atoui)(const char *num);
-    long (*atol)(const char *num);
-    unsigned long (*atoul)(const char *num);
-    unsigned long long (*atoull)(const char *num);
-    double (*atof)(const char *str);    
+	char *(*strcat)(char *dest,  char const *src);
+	char *(*strchr)(const char *s, int c);
+	int (*strcmp)(char const *cs, char const *ct);
+	int (*strncmp)(char const *cs, char const *ct, size_t count);
+	int (*strnicmp)(char const *s1, char const *s2, size_t len);
+	char *(*strcpy)(char *dest, char const *src);
+	char *(*strncpy)(char *dest, char const *src, size_t count);
+	size_t (*strlcpy)(char *dst, char const *src, size_t s);
+	size_t (*strlen)(char const *s);
+	size_t (*strnlen)(char const *s, size_t count);
+	char *(*strncat)(char *dest, char const *src, size_t count);
+	char *(*strpbrk)(char const *cs, char const *ct);
+	size_t (*strspn)(char const *s, char const *accept);
+	char *(*strstr)(char const *s1, char const *s2);
+	char *(*strtok)(char *s, char const *ct);
+	size_t (*strxfrm)(char *dest, const char *src, size_t n);
+	char *(*strsep)(char **s, const char *ct);
+	double (*strtod)(const char *str, char **endptr);
+	float (*strtof)(const char *str, char **endptr);
+	long double (*strtold)(const char *str, char **endptr);
+	long (*strtol)(const char *nptr, char **endptr, int base);
+	long long (*strtoll)(const char *nptr, char **endptr, int base);
+	unsigned long (*strtoul)(const char *nptr, char **endptr, int base);
+	unsigned long long (*strtoull)(const char *nptr, char **endptr, int base);
+	int (*atoi)(const char *num);
+	unsigned int (*atoui)(const char *num);
+	long (*atol)(const char *num);
+	unsigned long (*atoul)(const char *num);
+	unsigned long long (*atoull)(const char *num);
+	double (*atof)(const char *str);
 
-    uint32_t reserved[16];  // reserved space for next ROM code version function table extending.
+	uint32_t reserved[16];  // reserved space for next ROM code version function table extending.
 } strproc_func_stubs_t;
 
 #if defined(ROM_REGION)
@@ -106,10 +106,10 @@ float _strtof(const char *str, char **endptr);
 long double _strtold(const char *str, char **endptr);
 double _atof(const char *str);
 
-long _strtol (const char *nptr, char **endptr, int base);
-long long _strtoll (const char *nptr, char **endptr, int base);
-unsigned long _strtoul (const char *nptr, char **endptr, int base);
-unsigned long long _strtoull (const char *nptr, char **endptr, int base);
+long _strtol(const char *nptr, char **endptr, int base);
+long long _strtoll(const char *nptr, char **endptr, int base);
+unsigned long _strtoul(const char *nptr, char **endptr, int base);
+unsigned long long _strtoull(const char *nptr, char **endptr, int base);
 
 #else   // else of "#if defined(ROM_REGION)"
 
@@ -117,9 +117,9 @@ extern const strproc_func_stubs_t strproc_stubs;
 
 /**
   \brief   String concatenation
-  \details Appends the src string to the dest string, overwriting the 
+  \details Appends the src string to the dest string, overwriting the
            terminating null byte ('\0') at the end of dest, and
-           then adds a terminating null byte. 
+           then adds a terminating null byte.
            The strings may not overlap, and the dest string must have
            enough space for the result.  If dest is not large enough,
            program behavior is unpredictable.
@@ -129,7 +129,7 @@ extern const strproc_func_stubs_t strproc_stubs;
 */
 __STATIC_INLINE char *strcat(char *dest,  char const *src)
 {
-    return strproc_stubs.strcat(dest, src);
+	return strproc_stubs.strcat(dest, src);
 }
 
 /**
@@ -137,12 +137,12 @@ __STATIC_INLINE char *strcat(char *dest,  char const *src)
          in the string s.
   \param[in]   s    The destination string buffer address.
   \param[in]   c    The character to find.
-  \return   A pointer to the matched character or 
+  \return   A pointer to the matched character or
             NULL if the character is not found.
 */
 __STATIC_INLINE char *strchr(const char *s, int c)
 {
-    return strproc_stubs.strchr(s, c);
+	return strproc_stubs.strchr(s, c);
 }
 
 /**
@@ -158,7 +158,7 @@ __STATIC_INLINE char *strchr(const char *s, int c)
 */
 __STATIC_INLINE int strcmp(char const *cs, char const *ct)
 {
-    return strproc_stubs.strcmp(cs, ct);
+	return strproc_stubs.strcmp(cs, ct);
 }
 
 /**
@@ -174,7 +174,7 @@ __STATIC_INLINE int strcmp(char const *cs, char const *ct)
 */
 __STATIC_INLINE int strncmp(char const *cs, char const *ct, size_t count)
 {
-    return strproc_stubs.strncmp(cs, ct, count);
+	return strproc_stubs.strncmp(cs, ct, count);
 }
 
 /**
@@ -195,7 +195,7 @@ __STATIC_INLINE int strncmp(char const *cs, char const *ct, size_t count)
 */
 __STATIC_INLINE int strnicmp(char const *s1, char const *s2, size_t len)
 {
-    return strproc_stubs.strnicmp(s1, s2, len);
+	return strproc_stubs.strnicmp(s1, s2, len);
 }
 
 /**
@@ -209,7 +209,7 @@ __STATIC_INLINE int strnicmp(char const *s1, char const *s2, size_t len)
 */
 __STATIC_INLINE char *strcpy(char *dest, char const *src)
 {
-    return strproc_stubs.strcpy(dest, src);
+	return strproc_stubs.strcpy(dest, src);
 }
 
 /**
@@ -225,7 +225,7 @@ __STATIC_INLINE char *strcpy(char *dest, char const *src)
 */
 __STATIC_INLINE char *strncpy(char *dest, char const *src, size_t count)
 {
-    return strproc_stubs.strncpy(dest, src, count);
+	return strproc_stubs.strncpy(dest, src, count);
 }
 
 /**
@@ -237,7 +237,7 @@ __STATIC_INLINE char *strncpy(char *dest, char const *src, size_t count)
 */
 __STATIC_INLINE size_t strlcpy(char *dst, char const *src, size_t s)
 {
-    return strproc_stubs.strlcpy(dst, src, s);
+	return strproc_stubs.strlcpy(dst, src, s);
 }
 
 /**
@@ -247,12 +247,12 @@ __STATIC_INLINE size_t strlcpy(char *dst, char const *src, size_t s)
 */
 __STATIC_INLINE size_t strlen(char const *s)
 {
-    return strproc_stubs.strlen(s);
+	return strproc_stubs.strlen(s);
 }
 
 /**
   \brief    Determine the length of a fixed-size string.
-  \details  Determine  the number of characters in the string 
+  \details  Determine  the number of characters in the string
             pointed to by s, excluding the terminating null byte ('\0'),
             but at most count.
   \param[in]   s        The input string.
@@ -261,16 +261,19 @@ __STATIC_INLINE size_t strlen(char const *s)
   \return   Return "count" if there is no null terminating ('\0') among the
             first "count" characters pointed to by s.
 */
-__STATIC_INLINE size_t strnlen(char const *s, size_t count)
+#ifndef CONFIG_MATTER
+__STATIC_INLINE
+#endif
+size_t strnlen(char const *s, size_t count)
 {
-    return strproc_stubs.strnlen(s, count);
+	return strproc_stubs.strnlen(s, count);
 }
 
 /**
   \brief    Concatenate two strings.
   \details  Appends the src string to the dest string with will use at most
             "count" bytes from src, overwriting the terminating null byte ('\0')
-            at the end of dest, and then adds a terminating null byte. 
+            at the end of dest, and then adds a terminating null byte.
             The strings may not overlap, and the dest string must have enough space
             for the result. If dest is not large enough, program behavior is unpredictable.
   \param[in]   dest   The destination string buffer address.
@@ -280,26 +283,26 @@ __STATIC_INLINE size_t strnlen(char const *s, size_t count)
 */
 __STATIC_INLINE char *strncat(char *dest, char const *src, size_t count)
 {
-    return strproc_stubs.strncat(dest, src, count);
+	return strproc_stubs.strncat(dest, src, count);
 }
 
 /**
   \brief    Search a string for any of a set of bytes.
-  \details  Locates the first occurrence in the string cs 
+  \details  Locates the first occurrence in the string cs
             of any of the bytes in the string ct.
   \param[in]   cs   The string pattern for the searching.
   \param[in]   ct   The target string to be located for the searching.
-  \return   A pointer to the byte in cs that matches one of the bytes 
+  \return   A pointer to the byte in cs that matches one of the bytes
             in ct, or NULL if no such byte is found.
 */
 __STATIC_INLINE char *strpbrk(char const *cs, char const *ct)
 {
-    return strproc_stubs.strpbrk(cs, ct);
+	return strproc_stubs.strpbrk(cs, ct);
 }
 
 /**
   \brief    Get length of a prefix substring.
-  \details  Calculates the length (in bytes) of the initial segment 
+  \details  Calculates the length (in bytes) of the initial segment
             of s which consists entirely of bytes in accept.
   \param[in]   s   The target string.
   \param[in]   accept   The string of the match pattern.
@@ -307,12 +310,12 @@ __STATIC_INLINE char *strpbrk(char const *cs, char const *ct)
 */
 __STATIC_INLINE size_t strspn(char const *s, char const *accept)
 {
-    return strproc_stubs.strspn(s, accept);
+	return strproc_stubs.strspn(s, accept);
 }
 
 /**
   \brief    Locate a substring.
-  \details  Finds the first occurrence of the substring s2 in the string s1. 
+  \details  Finds the first occurrence of the substring s2 in the string s1.
             The terminating null bytes are not compared.
   \param[in]   s1  The target string.
   \param[in]   s2  The string of the searching pattern.
@@ -320,14 +323,14 @@ __STATIC_INLINE size_t strspn(char const *s, char const *accept)
 */
 __STATIC_INLINE char *strstr(char const *s1, char const *s2)
 {
-    return strproc_stubs.strstr(s1, s2);
+	return strproc_stubs.strstr(s1, s2);
 }
 
 /**
   \brief    Extract tokens from strings.
   \details  Breaks a string into a sequence of zero or more nonempty tokens.
             On the first call to strtok(), the string to be parsed should be
-            specified in s.  In each subsequent call that should parse the 
+            specified in s.  In each subsequent call that should parse the
             same string, s must be NULL.
   \param[in]   s  The target string for the tokens to be get from.
   \param[in]   ct  Specifies a set of bytes that delimit the tokens in the parsed string.
@@ -337,7 +340,7 @@ __STATIC_INLINE char *strstr(char const *s1, char const *s2)
 */
 __STATIC_INLINE char *strtok(char *s, char const *ct)
 {
-    return strproc_stubs.strtok(s, ct);
+	return strproc_stubs.strtok(s, ct);
 }
 
 /**
@@ -345,7 +348,7 @@ __STATIC_INLINE char *strtok(char *s, char const *ct)
   \details  Transforms the src string into a form such that the result of strcmp()
             on two strings that have been transformed with strxfrm() is the same as
             the result of strcoll() on the two strings before their transformation.
-            The first n bytes of the transformed string are placed in dest. 
+            The first n bytes of the transformed string are placed in dest.
   \param[in]   dest The buffer to store the transformed string.
   \param[in]   src  The target string to be transformed.
   \return   The number of bytes required to store the transformed string in dest
@@ -354,7 +357,7 @@ __STATIC_INLINE char *strtok(char *s, char const *ct)
 */
 __STATIC_INLINE size_t strxfrm(char *dest, const char *src, size_t n)
 {
-    return strproc_stubs.strxfrm(dest, src, n);
+	return strproc_stubs.strxfrm(dest, src, n);
 }
 
 /**
@@ -372,7 +375,7 @@ __STATIC_INLINE size_t strxfrm(char *dest, const char *src, size_t n)
 */
 __STATIC_INLINE char *strsep(char **s, const char *ct)
 {
-    return strproc_stubs.strsep(s, ct);
+	return strproc_stubs.strsep(s, ct);
 }
 
 /**
@@ -387,7 +390,7 @@ __STATIC_INLINE char *strsep(char **s, const char *ct)
 */
 __STATIC_INLINE double strtod(const char *str, char **endptr)
 {
-    return strproc_stubs.strtod(str, endptr);
+	return strproc_stubs.strtod(str, endptr);
 }
 
 /**
@@ -402,7 +405,7 @@ __STATIC_INLINE double strtod(const char *str, char **endptr)
 */
 __STATIC_INLINE float strtof(const char *str, char **endptr)
 {
-    return strproc_stubs.strtof(str, endptr);
+	return strproc_stubs.strtof(str, endptr);
 }
 
 /**
@@ -417,7 +420,7 @@ __STATIC_INLINE float strtof(const char *str, char **endptr)
 */
 __STATIC_INLINE long double strtold(const char *str, char **endptr)
 {
-    return strproc_stubs.strtold(str, endptr);
+	return strproc_stubs.strtold(str, endptr);
 }
 
 /**
@@ -428,7 +431,7 @@ __STATIC_INLINE long double strtold(const char *str, char **endptr)
 */
 __STATIC_INLINE double atof(const char *str)
 {
-    return strproc_stubs.atof(str);
+	return strproc_stubs.atof(str);
 }
 
 /**
@@ -441,9 +444,9 @@ __STATIC_INLINE double atof(const char *str)
   \param[in]   base    The conversion base, which must be 10 or 16, or be the special value 0.
   \return   The converted value.
 */
-__STATIC_INLINE long strtol (const char *nptr, char **endptr, int base)
+__STATIC_INLINE long strtol(const char *nptr, char **endptr, int base)
 {
-    return strproc_stubs.strtol(nptr, endptr, base);
+	return strproc_stubs.strtol(nptr, endptr, base);
 }
 
 /**
@@ -456,9 +459,9 @@ __STATIC_INLINE long strtol (const char *nptr, char **endptr, int base)
   \param[in]   base    The conversion base, which must be 10 or 16, or be the special value 0.
   \return   The converted value.
 */
-__STATIC_INLINE long long strtoll (const char *nptr, char **endptr, int base)
+__STATIC_INLINE long long strtoll(const char *nptr, char **endptr, int base)
 {
-    return strproc_stubs.strtoll (nptr, endptr, base);
+	return strproc_stubs.strtoll(nptr, endptr, base);
 }
 
 /**
@@ -471,9 +474,9 @@ __STATIC_INLINE long long strtoll (const char *nptr, char **endptr, int base)
   \param[in]   base    The conversion base, which must be 10 or 16, or be the special value 0.
   \return   The converted value.
 */
-__STATIC_INLINE unsigned long strtoul (const char *nptr, char **endptr, int base)
+__STATIC_INLINE unsigned long strtoul(const char *nptr, char **endptr, int base)
 {
-    return strproc_stubs.strtoul (nptr, endptr, base);
+	return strproc_stubs.strtoul(nptr, endptr, base);
 }
 
 /**
@@ -486,9 +489,9 @@ __STATIC_INLINE unsigned long strtoul (const char *nptr, char **endptr, int base
   \param[in]   base    The conversion base, which must be 10 or 16, or be the special value 0.
   \return   The converted value.
 */
-__STATIC_INLINE unsigned long long strtoull (const char *nptr, char **endptr, int base)
+__STATIC_INLINE unsigned long long strtoull(const char *nptr, char **endptr, int base)
 {
-    return strproc_stubs.strtoull (nptr, endptr, base);
+	return strproc_stubs.strtoull(nptr, endptr, base);
 }
 
 /**
@@ -499,7 +502,7 @@ __STATIC_INLINE unsigned long long strtoull (const char *nptr, char **endptr, in
 */
 __STATIC_INLINE int atoi(const char *num)
 {
-    return strproc_stubs.atoi(num);
+	return strproc_stubs.atoi(num);
 }
 
 /**
@@ -510,7 +513,7 @@ __STATIC_INLINE int atoi(const char *num)
 */
 __STATIC_INLINE unsigned int atoui(const char *num)
 {
-    return strproc_stubs.atoui(num);
+	return strproc_stubs.atoui(num);
 }
 
 /**
@@ -521,7 +524,7 @@ __STATIC_INLINE unsigned int atoui(const char *num)
 */
 __STATIC_INLINE long atol(const char *num)
 {
-    return strproc_stubs.atol(num);
+	return strproc_stubs.atol(num);
 }
 
 /**
@@ -532,7 +535,7 @@ __STATIC_INLINE long atol(const char *num)
 */
 __STATIC_INLINE unsigned long atoul(const char *num)
 {
-    return strproc_stubs.atoul(num);
+	return strproc_stubs.atoul(num);
 }
 
 /**
@@ -543,7 +546,7 @@ __STATIC_INLINE unsigned long atoul(const char *num)
 */
 __STATIC_INLINE unsigned long long atoull(const char *num)
 {
-    return strproc_stubs.atoull(num);
+	return strproc_stubs.atoull(num);
 }
 #endif  // defined(ROM_REGION)
 

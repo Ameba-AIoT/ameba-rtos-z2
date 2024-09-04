@@ -6,5 +6,5 @@ echo $ELFNAME
 
 #===============================================================================
 
-echo "file $ELFNAME" > debug.gdb
+echo "file $ELFNAME" > debug.gdb 
 exit

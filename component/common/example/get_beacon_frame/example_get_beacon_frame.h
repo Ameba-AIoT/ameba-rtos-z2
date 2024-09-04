@@ -8,7 +8,7 @@
  *
  ******************************************************************************/
 
-typedef struct beacon_info_str{
+typedef struct beacon_info_str {
 	//802.11 MAC header
 	unsigned char frame_ctl[2];
 	unsigned char duration_id[2];
@@ -18,7 +18,7 @@ typedef struct beacon_info_str{
 	unsigned char seq_ctl[2];
 	//802.11 beacon IE
 	unsigned char timestamp[8];
-}BEACON_INFO_T;
+} BEACON_INFO_T;
 
 void example_get_beacon_frame(void);
 int get_beacon_frame_func(BEACON_INFO_T beacon_frame);

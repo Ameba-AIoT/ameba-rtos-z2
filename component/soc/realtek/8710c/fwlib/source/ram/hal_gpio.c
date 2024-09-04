@@ -154,7 +154,7 @@ hal_status_t hal_gpio_port_init (phal_gpio_port_adapter_t pgpio_port_adapter, ui
                                  uint32_t mask, gpio_dir_t dir)
 {
     hal_status_t ret = HAL_OK;
-    gpio_pin_t pin;
+    gpio_pin_t pin = {0};
     uint32_t i;
 
     pin.pin_name_b.port = port_idx;
@@ -185,7 +185,7 @@ hal_status_t hal_gpio_port_init (phal_gpio_port_adapter_t pgpio_port_adapter, ui
  */
 void hal_gpio_port_deinit (phal_gpio_port_adapter_t pgpio_port_adapter)
 {
-    gpio_pin_t pin;
+    gpio_pin_t pin = {0};
     uint32_t i;
     uint32_t mask;
 

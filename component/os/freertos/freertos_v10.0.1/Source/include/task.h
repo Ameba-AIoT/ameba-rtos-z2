@@ -2359,6 +2359,11 @@ void *pvTaskIncrementMutexHeldCount( void ) PRIVILEGED_FUNCTION;
  */
 void vTaskInternalSetTimeOutState( TimeOut_t * const pxTimeOut ) PRIVILEGED_FUNCTION;
 
+/*
+ * For internal use only. To get stacksize and freestacksize.
+ */
+uint32_t uxTaskGetStackSize( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+uint32_t uxTaskGetFreeStackSize( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
 
 #ifdef __cplusplus
 }

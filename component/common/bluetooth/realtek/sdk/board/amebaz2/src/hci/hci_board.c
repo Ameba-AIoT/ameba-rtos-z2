@@ -56,6 +56,7 @@ extern uint32_t bt_dck_write(uint8_t q_dck, uint8_t i_dck);
 extern uint32_t bt_lok_write(uint16_t idac, uint16_t qdac, uint16_t idac2, uint16_t qdac2);
 extern uint32_t bt_iqk_8710c(BT_Cali_TypeDef *cal_data, BOOLEAN store);
 extern uint32_t bt_flatk_8710c(uint16_t txgain_flatk);
+extern uint8_t hal_get_chip_ver(void);
 
 #if defined(CONFIG_BT_ONLY_WITHOUT_WLAN) && CONFIG_BT_ONLY_WITHOUT_WLAN
 extern hal_status_t hal_wlan_pwr_off(void);
@@ -391,9 +392,6 @@ uint16_t fix_config_len(void)
 
 bool hci_rtk_find_patch(uint8_t bt_hci_chip_id)
 {
-    extern unsigned char rtlbt_config[];
-    extern unsigned int  rtlbt_config_len;
-
     uint8_t            *fw_buf = NULL;
     uint8_t            *config_buf;
     uint16_t            fw_len = 0;
@@ -424,6 +422,10 @@ bool hci_rtk_find_patch(uint8_t bt_hci_chip_id)
 #else
         p_merge_addr = (uint8_t *)rltk_bt_get_patch_code();
 #endif
+        if (p_merge_addr == NULL){
+            hci_board_debug("address is null\r\n");
+            return false;
+        }
         //hci_board_debug("use default patch = %x\r\n", p_merge_addr);
     }
     else
@@ -499,6 +501,10 @@ bool hci_rtk_find_patch(uint8_t bt_hci_chip_id)
 #else
         fw_len = rltk_bt_get_patch_code_len();
 #endif
+        if (fw_len == 0){
+            hci_board_debug("fw_len length is 0\r\n");
+            return false;
+        }
         fw_buf = os_mem_zalloc(RAM_TYPE_DATA_ON, fw_len);
         if(fw_buf == NULL)
         {
@@ -690,6 +696,15 @@ bool hci_board_init(void)
   return true;
 }
 
+void hci_board_init_done(void)
+{
+	if(hal_get_chip_ver() >= 3) { // Only for chip versions above C.
+		if (!rltk_wlan_is_mp()) {
+			wifi_resume_powersave();
+		}
+	}
+}
+
 void bt_power_on(void)
 {
     set_reg_value(0x40000214, BIT24 |BIT25, 3);
@@ -702,8 +717,10 @@ void bt_power_off(void)
 	hal_wlan_pwr_off();
 #else
 	rltk_coex_bt_enable(0);
-	if (!rltk_wlan_is_mp() ) {
-		wifi_resume_powersave();
+	if(hal_get_chip_ver() < 3) { // A, B, C cut still have to resume powersave mode.
+		if (!rltk_wlan_is_mp() ) {
+			wifi_resume_powersave();
+		}
 	}
 #endif
 }

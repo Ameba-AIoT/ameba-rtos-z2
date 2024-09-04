@@ -523,7 +523,7 @@ static int pk_get_rsapubkey( unsigned char **p,
                              mbedtls_rsa_context *rsa )
 {
     int ret;
-    size_t len;
+    size_t len = 0;
 
     if( ( ret = mbedtls_asn1_get_tag( p, end, &len,
             MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE ) ) != 0 )
@@ -593,7 +593,7 @@ int mbedtls_pk_parse_subpubkey( unsigned char **p, const unsigned char *end,
                         mbedtls_pk_context *pk )
 {
     int ret;
-    size_t len;
+    size_t len = 0;
     mbedtls_asn1_buf alg_params;
     mbedtls_pk_type_t pk_alg = MBEDTLS_PK_NONE;
     const mbedtls_pk_info_t *pk_info;
@@ -657,7 +657,7 @@ static int pk_parse_key_pkcs1_der( mbedtls_rsa_context *rsa,
                                    size_t keylen )
 {
     int ret;
-    size_t len;
+    size_t len = 0;
     unsigned char *p, *end;
 
     p = (unsigned char *) key;
@@ -863,8 +863,8 @@ static int pk_parse_key_pkcs8_unencrypted_der(
                                     const unsigned char* key,
                                     size_t keylen )
 {
-    int ret, version;
-    size_t len;
+    int ret, version = 0;
+    size_t len = 0;
     mbedtls_asn1_buf params;
     unsigned char *p = (unsigned char *) key;
     unsigned char *end = p + keylen;

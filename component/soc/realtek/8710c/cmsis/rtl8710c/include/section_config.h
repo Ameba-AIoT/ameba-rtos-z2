@@ -4,7 +4,7 @@
  *           them to a specific address.
  *
  * @version  V1.00
- * @date     2016-07-20
+ * @date     2020-04-23
  *
  * @note
  *
@@ -41,6 +41,12 @@
 #define START_RAM_FUN_A_SECTION                 SECTION(".start.ram.data.a")
 
 #define START_RAM_SIGNATURE_SECTION             SECTION(".start.ram.sign")
+
+#define XIP_RAM_SIGNATURE_SECTION_S             SECTION(".xip.ram.sign.s")
+
+#define XIP_RAM_SIGNATURE_SECTION_NSC           SECTION(".xip.ram.sign.nsc")
+
+#define XIP_RAM_SIGNATURE_SECTION_NS            SECTION(".xip.ram.sign.ns")
 
 #define SECTION_RAM_VECTOR_TABLE                SECTION(".ram_vector_table")
 
@@ -79,6 +85,15 @@
 
 #define SSL_RAM_MAP_SECTION                            \
         SECTION(".rom.ssl.bss")
+
+#define SRAM_DATA_SECTION								\
+		SECTION(".sram.data")
+
+#define SRAM_BSS_SECTION								\
+		SECTION(".sram.bss")
+
+#define SRAM_TEXT_SECTION								\
+		SECTION(".sram.text")
 
 //For external ram section(PSRAM and LPDDR)
 #define SDRAM_DATA_SECTION								\

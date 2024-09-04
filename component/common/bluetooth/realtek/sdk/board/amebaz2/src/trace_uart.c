@@ -35,6 +35,8 @@ bool trace_uart_init(void)
 
         serial_format(&trace_sobj, 8, ParityNone, 1);
 
+        serial_clear_tx(&trace_sobj);
+
         g_uart_obj.tx_switch = true;
     }
     else

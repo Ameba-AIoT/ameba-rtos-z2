@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_HTTPD) && CONFIG_EXAMPLE_HTTPD
 #include <FreeRTOS.h>
 #include <task.h>
 #include <platform_stdlib.h>
@@ -7,12 +10,8 @@
 #define USE_HTTPS    0
 
 #if USE_HTTPS
-// use test_srv_crt, test_srv_key, test_ca_list in PolarSSL certs.c
-#if (HTTPD_USE_TLS == HTTPD_TLS_POLARSSL)
-#include <polarssl/certs.h>
-#elif (HTTPD_USE_TLS == HTTPD_TLS_MBEDTLS)
+// use test_srv_crt, test_srv_key, test_ca_list in certs.c
 #include <mbedtls/certs.h>
-#endif
 #endif
 
 void homepage_cb(struct httpd_conn *conn)
@@ -176,11 +175,7 @@ static void example_httpd_thread(void *param)
 	/* To avoid gcc warnings */
 	(void) param;
 #if USE_HTTPS
-#if (HTTPD_USE_TLS == HTTPD_TLS_POLARSSL)
-	if (httpd_setup_cert(test_srv_crt, test_srv_key, test_ca_crt) != 0) {
-#elif (HTTPD_USE_TLS == HTTPD_TLS_MBEDTLS)
 	if (httpd_setup_cert(mbedtls_test_srv_crt, mbedtls_test_srv_key, mbedtls_test_ca_crt) != 0) {
-#endif
 		printf("\nERROR: httpd_setup_cert\n");
 		goto exit;
 	}
@@ -204,8 +199,11 @@ exit:
 	vTaskDelete(NULL);
 }
 
-void example_httpd(void) {
+void example_httpd(void)
+{
 	if (xTaskCreate(example_httpd_thread, ((const char *)"example_httpd_thread"), 2048, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate(example_httpd_thread) failed", __FUNCTION__);
 	}
 }
+
+#endif //#if defined(CONFIG_EXAMPLE_HTTPD) && CONFIG_EXAMPLE_HTTPD

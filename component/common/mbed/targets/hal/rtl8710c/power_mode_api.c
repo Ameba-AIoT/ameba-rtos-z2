@@ -34,6 +34,8 @@
 #include "gpio_irq_api.h"
 #include "gpio_irq_ex_api.h"
 
+extern void sys_interrupt_enable(void);
+extern void sys_interrupt_disable(void);
 /**
   * @brief The stubs functions table to exports POWER MODE HAL functions in ROM.
   */
@@ -75,8 +77,10 @@ void DeepSleep (u8 Option, u32 SDuration, u8 Clock)
  */
 void SleepCG (u16 Option, u32 SDuration, u8 Clock, u8 GpioOption)
 {
+    sys_interrupt_disable();
     hal_gpio_pull_ctrl(PA_1, Pin_PullDown);
     hal_SleepCG(Option, SDuration, Clock, GpioOption);
+    sys_interrupt_enable();
 }
 
 /** 

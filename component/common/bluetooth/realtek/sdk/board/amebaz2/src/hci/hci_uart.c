@@ -308,6 +308,7 @@ bool hci_uart_init(P_UART_RX_CB rx_ind)
 #if defined(HCI_UART_TX_DMA) && HCI_UART_TX_DMA
     serial_send_comp_handler(&hci_serial_obj, (void *)uart_send_done, (uint32_t)hci_uart_obj);
 #endif
+    serial_clear_tx(&hci_serial_obj);
     serial_clear_rx(&hci_serial_obj);
     serial_irq_handler(&hci_serial_obj, hciuart_irq, (uint32_t)&hci_serial_obj);
     serial_irq_set(&hci_serial_obj, RxIrq, 0);

@@ -347,7 +347,6 @@ void spic_flush_fifo_rtl8710c(SPIC_Type *spic_dev);
 
 /// @endcond /* End of condition DOXYGEN_ROM_HAL_API */
 
-
 /** *@} */ /* End of group hs_hal_spic */
 
 #endif /* RTL8710C_SPIC_H */

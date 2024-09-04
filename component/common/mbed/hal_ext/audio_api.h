@@ -3,7 +3,7 @@
   * @file    audio_api.h
   * @author
   * @version V1.0.0
-  * @brief
+  * @brief   This file provides following mbed Audio API
   ******************************************************************************
   * @attention
   *
@@ -26,7 +26,7 @@
 #ifndef MBED_EXT_AUDIO_API_EXT_H
 #define MBED_EXT_AUDIO_API_EXT_H
 #if defined(CONFIG_PLATFORM_8195BHP) && (CONFIG_PLATFORM_8195BHP == 1)
-///@name AmebaPro Only 
+///@name AmebaPro Only
 ///@{
 #include "device.h"
 
@@ -42,74 +42,74 @@ extern "C" {
 
 typedef enum {
 	WL_16BIT = AUDIO_WL_16,
-    WL_24BIT = AUDIO_WL_24,
-    WL_8BIT = AUDIO_WL_8
+	WL_24BIT = AUDIO_WL_24,
+	WL_8BIT = AUDIO_WL_8
 } audio_wl;
 
 typedef enum {
-    ASR_8KHZ = AUDIO_SR_8KHZ,
-    ASR_16KHZ = AUDIO_SR_16KHZ,
+	ASR_8KHZ = AUDIO_SR_8KHZ,
+	ASR_16KHZ = AUDIO_SR_16KHZ,
 	ASR_32KHZ = AUDIO_SR_32KHZ,
-    ASR_44p1KHZ = AUDIO_SR_44p1KHZ,
+	ASR_44p1KHZ = AUDIO_SR_44p1KHZ,
 	ASR_48KHZ = AUDIO_SR_48KHZ,
-    ASR_88p2KHZ = AUDIO_SR_88p2KHZ,
-    ASR_96KHZ = AUDIO_SR_96KHZ
+	ASR_88p2KHZ = AUDIO_SR_88p2KHZ,
+	ASR_96KHZ = AUDIO_SR_96KHZ
 } audio_sr;
 
 typedef enum {
-    OUTPUT_DISABLE = 0,
-    OUTPUT_SINGLE_EDNED = 1,
-    OUTPUT_DIFFERENTIAL = 2,
+	OUTPUT_DISABLE = 0,
+	OUTPUT_SINGLE_EDNED = 1,
+	OUTPUT_DIFFERENTIAL = 2,
 	OUTPUT_CAPLESS = 3
 } audio_output_mode;
 
 typedef enum {
-    INPUT_DISABLE = 0,
-    LINE_IN_MODE = 1,
-    MIC_DIFFERENTIAL = 2,
-    MIC_SINGLE_EDNED = 3
+	INPUT_DISABLE = 0,
+	LINE_IN_MODE = 1,
+	MIC_DIFFERENTIAL = 2,
+	MIC_SINGLE_EDNED = 3
 } audio_input_mode;
 
 typedef enum {
 	BIAS_0p9_AVDD = AUDIO_BIAS_0p9_AVDD,
-    BIAS_0p86_AVDD = AUDIO_BIAS_0p86_AVDD,
-    BIAS_0p75_AVDD = AUDIO_BIAS_0p75_AVDD
+	BIAS_0p86_AVDD = AUDIO_BIAS_0p86_AVDD,
+	BIAS_0p75_AVDD = AUDIO_BIAS_0p75_AVDD
 } audio_bias_voltage;
 
 typedef enum {
 	MIC_0DB = AUDIO_MIC_0DB,
-    MIC_20DB = AUDIO_MIC_20DB,
-    MIC_30DB = AUDIO_MIC_30DB,
-    MIC_40DB = AUDIO_MIC_40DB
+	MIC_20DB = AUDIO_MIC_20DB,
+	MIC_30DB = AUDIO_MIC_30DB,
+	MIC_40DB = AUDIO_MIC_40DB
 } audio_mic_gain;
 
 typedef enum {
 	VREF_0p52VDD = AUDIO_VREF_0p52_VDD,
-    VREF_0p51VDD = AUDIO_VREF_0p51_VDD,
-    VREF_0p50VDD = AUDIO_VREF_0p50_VDD,
-    VREF_0p49VDD = AUDIO_VREF_0p49_VDD
+	VREF_0p51VDD = AUDIO_VREF_0p51_VDD,
+	VREF_0p50VDD = AUDIO_VREF_0p50_VDD,
+	VREF_0p49VDD = AUDIO_VREF_0p49_VDD
 } audio_vref_voltage;
 
 typedef enum {
 	SIDETONE_120HZ = AUDIO_ST_120HZ,
-    SIDETONE_239HZ = AUDIO_ST_239HZ,
-    SIDETONE_358HZ = AUDIO_ST_358HZ,
-    SIDETONE_477HZ = AUDIO_ST_477HZ,
+	SIDETONE_239HZ = AUDIO_ST_239HZ,
+	SIDETONE_358HZ = AUDIO_ST_358HZ,
+	SIDETONE_477HZ = AUDIO_ST_477HZ,
 	SIDETONE_597HZ = AUDIO_ST_597HZ,
-    SIDETONE_716HZ = AUDIO_ST_716HZ,
-    SIDETONE_835HZ = AUDIO_ST_835HZ,
-    SIDETONE_955HZ = AUDIO_ST_955HZ
+	SIDETONE_716HZ = AUDIO_ST_716HZ,
+	SIDETONE_835HZ = AUDIO_ST_835HZ,
+	SIDETONE_955HZ = AUDIO_ST_955HZ
 } audio_sidetone_hpf;
 
 typedef enum {
 	DVOL_ADC_0DB = 0x2F,
-    DVOL_DAC_0DB = 0xAF,
-    SIDETONE_0DB = 0x1F
+	DVOL_DAC_0DB = 0xAF,
+	SIDETONE_0DB = 0x1F
 } audio_dvol_0db;
 
 typedef enum {
-    AUDIO_CODEC_1p8V = AUDIO_POWER_1p8V,
-    AUDIO_CODEC_2p8V = AUDIO_POWER_2p8V
+	AUDIO_CODEC_1p8V = AUDIO_POWER_1p8V,
+	AUDIO_CODEC_2p8V = AUDIO_POWER_2p8V
 } audio_power_sel;
 
 typedef void (*audio_irq_handler)(u32 arg, u8 *pbuf);
@@ -122,16 +122,16 @@ typedef struct audio_s audio_t;
   * @param  output_mode: Select the output mode.
   *            @arg OUTPUT_DISABLE: Disable audio output.
   *            @arg OUTPUT_SINGLE_EDNED: Single-Ended mode.
-  *            @arg OUTPUT_DIFFERENTIAL: Differential mode.  
-  *            @arg OUTPUT_CAPLESS: Capless mode.   
+  *            @arg OUTPUT_DIFFERENTIAL: Differential mode.
+  *            @arg OUTPUT_CAPLESS: Capless mode.
   * @param  input_mode: Select the input mode.
   *            @arg INPUT_DISABLE: Disable audio input.
   *            @arg LINE_IN_MODE: Line in mode.
-  *            @arg MIC_DIFFERENTIAL: MIC differential mode.  
-  *            @arg MIC_SINGLE_EDNED: MIC Single-Ended mode.      
+  *            @arg MIC_DIFFERENTIAL: MIC differential mode.
+  *            @arg MIC_SINGLE_EDNED: MIC Single-Ended mode.
   * @param  power_sel: Select audio codec LDO power.
   *            @arg AUDIO_CODEC_1p8V: Audio codec power 1.8V.
-  *            @arg AUDIO_CODEC_2p8V: Audio codec power 2.8V.  
+  *            @arg AUDIO_CODEC_2p8V: Audio codec power 2.8V.
   * @retval none
   */
 void audio_init(audio_t *obj, audio_output_mode output_mode, audio_input_mode input_mode, audio_power_sel power_sel);
@@ -225,70 +225,70 @@ void audio_set_rx_page(audio_t *obj);
   * @param  obj: Audio object define in application software.
   * @retval none
   */
-void audio_tx_start (audio_t *obj);
+void audio_tx_start(audio_t *obj);
 
 /**
   * @brief  Start the rx transmission.
   * @param  obj: Audio object define in application software.
   * @retval none
   */
-void audio_rx_start (audio_t *obj);
+void audio_rx_start(audio_t *obj);
 
 /**
   * @brief  Start the tx and rx transmission.
   * @param  obj: Audio object define in application software.
   * @retval none
   */
-void audio_trx_start (audio_t *obj);
+void audio_trx_start(audio_t *obj);
 
 /**
   * @brief  Stop the tx transmission.
   * @param  obj: Audio object define in application software.
   * @retval none
   */
-void audio_tx_stop (audio_t *obj);
+void audio_tx_stop(audio_t *obj);
 
 /**
   * @brief  Stop the rx transmission.
   * @param  obj: Audio object define in application software.
   * @retval none
   */
-void audio_rx_stop (audio_t *obj);
+void audio_rx_stop(audio_t *obj);
 
 /**
   * @brief  Stop the tx and rx transmission.
   * @param  obj: Audio object define in application software.
   * @retval none
   */
-void audio_trx_stop (audio_t *obj);
+void audio_trx_stop(audio_t *obj);
 
 /**
   * @brief  Get the error count of tx transmission when happen the interrupt.
   * @param  obj: Audio object define in application software.
   * @retval Tx error count
   */
-u8 audio_get_tx_error_cnt (audio_t *obj);
+u8 audio_get_tx_error_cnt(audio_t *obj);
 
 /**
   * @brief  Get the error count of rx transmission when happen the interrupt.
   * @param  obj: Audio object define in application software.
   * @retval Rx error count
   */
-u8 audio_get_rx_error_cnt (audio_t *obj);
+u8 audio_get_rx_error_cnt(audio_t *obj);
 
 /**
   * @brief  clean the error count.
   * @param  obj: Audio object define in application software.
   * @retval none
   */
-void audio_clean_error_cnt (audio_t *obj);
+void audio_clean_error_cnt(audio_t *obj);
 
 /**
   * @brief  Make the data from tx to rx and bypass the audio codec.
   * @param  obj: Audio object define in application software.
   * @retval none
   */
-void audio_sport_loopback (audio_t *obj, BOOL en);
+void audio_sport_loopback(audio_t *obj, BOOL en);
 
 /**
   * @brief  Control the mute of the microphone.
@@ -296,7 +296,7 @@ void audio_sport_loopback (audio_t *obj, BOOL en);
   * @param  en: To enable or disable mute.
   * @retval none
   */
-void audio_mic_analog_mute (audio_t *obj, BOOL en);
+void audio_mic_analog_mute(audio_t *obj, BOOL en);
 
 /**
   * @brief  Control the boost gain of the microphone.
@@ -309,7 +309,7 @@ void audio_mic_analog_mute (audio_t *obj, BOOL en);
   *            @arg MIC_40DB: 40dB.
   * @retval none
   */
-void audio_mic_analog_gain (audio_t *obj, BOOL en, audio_mic_gain mic_gain);
+void audio_mic_analog_gain(audio_t *obj, BOOL en, audio_mic_gain mic_gain);
 
 /**
   * @brief  Control the mute of the line-in.
@@ -317,7 +317,7 @@ void audio_mic_analog_gain (audio_t *obj, BOOL en, audio_mic_gain mic_gain);
   * @param  en: To enable or disable mute.
   * @retval none
   */
-void audio_line_in_analog_mute (audio_t *obj, BOOL en);
+void audio_line_in_analog_mute(audio_t *obj, BOOL en);
 
 /**
   * @brief  Control the digital gain of ADC.
@@ -330,7 +330,7 @@ void audio_line_in_analog_mute (audio_t *obj, BOOL en);
   *            @arg 0x00: -17.625dB.
   * @retval none
   */
-void audio_adc_digital_vol (audio_t *obj, u8 step);
+void audio_adc_digital_vol(audio_t *obj, u8 step);
 
 /**
   * @brief  Control the digital mute of ADC.
@@ -338,7 +338,7 @@ void audio_adc_digital_vol (audio_t *obj, u8 step);
   * @param  mute_en: To enable or disable mute.
   * @retval none
   */
-void audio_adc_digital_mute (audio_t *obj, BOOL mute_en);
+void audio_adc_digital_mute(audio_t *obj, BOOL mute_en);
 
 /**
   * @brief  Control the mute of the headphone.
@@ -346,7 +346,7 @@ void audio_adc_digital_mute (audio_t *obj, BOOL mute_en);
   * @param  en: To enable or disable mute.
   * @retval none
   */
-void audio_headphone_analog_mute (audio_t *obj, BOOL en);
+void audio_headphone_analog_mute(audio_t *obj, BOOL en);
 
 /**
   * @brief  Control the digital gain of DAC.
@@ -358,7 +358,7 @@ void audio_headphone_analog_mute (audio_t *obj, BOOL en);
   *            @arg 0x00: -65.625dB.
   * @retval none
   */
-void audio_dac_digital_vol (audio_t *obj, u8 step);
+void audio_dac_digital_vol(audio_t *obj, u8 step);
 
 /**
   * @brief  Control the digital mute of DAC.
@@ -366,7 +366,7 @@ void audio_dac_digital_vol (audio_t *obj, u8 step);
   * @param  mute_en: To enable or disable mute.
   * @retval none
   */
-void audio_dac_digital_mute (audio_t *obj, BOOL mute_en);
+void audio_dac_digital_mute(audio_t *obj, BOOL mute_en);
 
 /**
   * @brief  Control the VREF voltage.
@@ -378,21 +378,21 @@ void audio_dac_digital_mute (audio_t *obj, BOOL mute_en);
   *            @arg VREF_0p49VDD: 0.49*VDD.
   * @retval none
   */
-void audio_vref_voltage_ctrl (audio_t *obj, audio_vref_voltage voltage);
+void audio_vref_voltage_ctrl(audio_t *obj, audio_vref_voltage voltage);
 
 /**
   * @brief  Initializes the sidetone function. Allows to hear mic voice in the headset.
   * @param  obj: Audio object define in application software.
   * @retval none
   */
-void audio_sidetone_init (audio_t *obj);
+void audio_sidetone_init(audio_t *obj);
 
 /**
   * @brief  Deinitializes the sidetone function.
   * @param  obj: Audio object define in application software.
   * @retval none
   */
-void audio_sidetone_deinit (audio_t *obj);
+void audio_sidetone_deinit(audio_t *obj);
 
 /**
   * @brief  Control the digital gain and boost of sidetone.
@@ -407,7 +407,7 @@ void audio_sidetone_deinit (audio_t *obj);
   *            @arg 0x00: -46.5dB.
   * @retval none
   */
-void audio_sidetone_vol (audio_t *obj, audio_sidetone_boost_t sidetone_boost, u8 step);
+void audio_sidetone_vol(audio_t *obj, audio_sidetone_boost_t sidetone_boost, u8 step);
 
 /**
   * @brief  Control the high pass filter of sidetone.
@@ -424,7 +424,7 @@ void audio_sidetone_vol (audio_t *obj, audio_sidetone_boost_t sidetone_boost, u8
   *            @arg SIDETONE_955HZ: 955Hz.
   * @retval none
   */
-void audio_sidetone_hpf_ctrl (audio_t *obj, BOOL en, audio_sidetone_hpf sidetone_hpf);
+void audio_sidetone_hpf_ctrl(audio_t *obj, BOOL en, audio_sidetone_hpf sidetone_hpf);
 
 /**
  * @brief  The wind filter is implemented by a high pass filter.Remove wind noise at application mode.
@@ -448,7 +448,7 @@ void audio_sidetone_hpf_ctrl (audio_t *obj, BOOL en, audio_sidetone_hpf sidetone
  *            n (coef_num) is the coefficient.
  * @retval none
  */
-void audio_wind_filter (audio_t *obj, BOOL en, audio_sr sample_rate, u8 coef_num);
+void audio_wind_filter(audio_t *obj, BOOL en, audio_sr sample_rate, u8 coef_num);
 
 /**
   * @brief  Control the mic bias.
@@ -461,15 +461,15 @@ void audio_wind_filter (audio_t *obj, BOOL en, audio_sr sample_rate, u8 coef_num
   *            @arg 11: reserved.
   * @retval none
   */
-void audio_mic_bias_ctrl (audio_t *obj, BOOL en, audio_bias_voltage voltage);
+void audio_mic_bias_ctrl(audio_t *obj, BOOL en, audio_bias_voltage voltage);
 
 /**
-  * @brief  Control the amplifier of the headphone. The default value is enabled. 
+  * @brief  Control the amplifier of the headphone. The default value is enabled.
   * @param  obj: Audio object define in application software.
   * @param  en: 0 is disable, 1 is enable.
   * @retval none
   */
-void audio_hpo_amplifier (audio_t *obj, BOOL en);
+void audio_hpo_amplifier(audio_t *obj, BOOL en);
 
 /*\@}*/
 

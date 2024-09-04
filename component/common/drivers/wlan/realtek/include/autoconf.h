@@ -236,6 +236,7 @@
 #endif
 /* For WPA3 */
 #define CONFIG_IEEE80211W
+#define CONFIG_OWE_SUPPORT
 #define CONFIG_SAE_SUPPORT
 
 #ifdef CONFIG_SAE_SUPPORT
@@ -251,10 +252,6 @@
 #endif
 #define PROMISC_DENY_PAIRWISE	0
 
-/* For Simple Link */
-#ifndef CONFIG_INCLUDE_SIMPLE_CONFIG
-//#define CONFIG_INCLUDE_SIMPLE_CONFIG 1
-#endif
 
 // for probe request with custom vendor specific IE
 #define CONFIG_CUSTOM_IE
@@ -277,18 +274,19 @@
 #define CONFIG_RX_PACKET_APPEND_FCS
 #endif
 #define CONFIG_SOFTAP_KEEP_SILENT_TABLE
+#undef CONFIG_PROMISC
 #endif
 #endif
 #if defined(CONFIG_PLATFORM_8195A) || defined(CONFIG_PLATFORM_8195BHP) || defined(CONFIG_PLATFORM_8710C)
 #define CONFIG_RUNTIME_PORT_SWITCH
 #endif
 #if (defined(CONFIG_BRIDGE) && CONFIG_BRIDGE)
-#define NET_IF_NUM ((CONFIG_ETHERNET) + (CONFIG_BRIDGE) + (CONFIG_WLAN) + 1)
+#define NET_IF_NUM ((CONFIG_BRIDGE) + (CONFIG_WLAN) + 1)
 #else
-#define NET_IF_NUM ((CONFIG_ETHERNET) + (CONFIG_WLAN) + 1)
+#define NET_IF_NUM ((CONFIG_WLAN) + 1)
 #endif
 #else
-#define NET_IF_NUM ((CONFIG_ETHERNET) + (CONFIG_WLAN))
+#define NET_IF_NUM CONFIG_WLAN
 #endif
 
 
@@ -330,16 +328,12 @@
 #endif
 /****************** End of EAP configurations *******************/
 
-/* For WPS and P2P */
+/* For WPS */
 #ifndef PLATFORM_OHOS
 #define CONFIG_WPS
 #endif
 #if 0
 #define CONFIG_WPS_AP
-#define CONFIG_P2P_NEW
-#if (!defined(SUPPORT_SCAN_BUF)||!defined(CONFIG_WPS_AP)) && defined(CONFIG_P2P_NEW)
-#error "If CONFIG_P2P_NEW, need to SUPPORT_SCAN_BUF"
-#endif
 #endif
 
 /*For DPP */
@@ -616,7 +610,9 @@ extern unsigned int g_ap_sta_num;
 #ifndef CONFIG_RTL8710C
 #define CONFIG_RTL8710C
 #endif
+#ifndef PRE_CONFIG_EAP
 #undef CONFIG_EAP
+#endif
 #undef CONFIG_ADAPTOR_INFO_CACHING_FLASH
 #undef CHECK_FLASH_VALID_MASK
 #undef NOT_SUPPORT_40M
@@ -806,6 +802,7 @@ extern unsigned int g_ap_sta_num;
 #undef EXCHANGE_LXBUS_RX_SKB
 #endif
 #define EXCHANGE_LXBUS_RX_SKB	1
+#undef CONFIG_WOWLAN
 #endif
 
 #if (defined(CONFIG_FPGA) && !defined(CONFIG_PLATFORM_8710C))\
@@ -907,5 +904,6 @@ extern unsigned int g_ap_sta_num;
 #endif
 
 #define CONFIG_RX_FRAME_INFO_INDICATE 0
+#define CONFIG_DYNAMIC_IGI            0
 
 #endif //WLANCONFIG_H

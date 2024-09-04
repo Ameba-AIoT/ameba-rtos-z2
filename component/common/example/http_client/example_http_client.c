@@ -1,4 +1,6 @@
-#include <platform_opts.h>
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_HTTP_CLIENT) && CONFIG_EXAMPLE_HTTP_CLIENT
 #include "FreeRTOS.h"
 #include "task.h"
 #include "lwip/netdb.h"
@@ -95,3 +97,5 @@ void example_http_client(void)
 	}
 	return;
 }
+
+#endif //#if defined(CONFIG_EXAMPLE_HTTP_CLIENT) && CONFIG_EXAMPLE_HTTP_CLIENT

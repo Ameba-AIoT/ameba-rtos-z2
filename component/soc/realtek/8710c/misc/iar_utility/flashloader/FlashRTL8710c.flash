@@ -4,7 +4,7 @@
   <exe>$PROJ_DIR$\..\..\..\component\soc\realtek\8710c\misc\iar_utility\flashloader\FlashRTL8710c.out</exe>
   <flash_base>0x98000000</flash_base>
   <page>1</page>
-  <block>512 0x1000</block>
+  <block>2048 0x1000</block>
   <macro>$PROJ_DIR$\..\..\..\component\soc\realtek\8710c\misc\iar_utility\flashloader\FlashRTL8710c.mac</macro>
   <aggregate>1</aggregate>
   <args>

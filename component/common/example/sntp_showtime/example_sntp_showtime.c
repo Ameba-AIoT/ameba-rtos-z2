@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_SNTP_SHOWTIME) && CONFIG_EXAMPLE_SNTP_SHOWTIME
 #include "FreeRTOS.h"
 #include "task.h"
 #include <platform/platform_stdlib.h>
@@ -14,7 +17,7 @@ static void show_time(void)
 
 	sntp_get_lasttime(&update_sec, &update_usec, &update_tick);
 
-	if(update_tick) {
+	if (update_tick) {
 		long long tick_diff_sec, tick_diff_ms, current_sec, current_usec;
 		unsigned int current_tick = xTaskGetTickCount();
 
@@ -30,8 +33,8 @@ static void show_time(void)
 	int timezone = 8;	// use UTC+8 timezone for example
 	struct tm tm_now = sntp_gen_system_time(timezone);
 	printf("%d-%d-%d %d:%d:%d UTC%s%d\n",
-		tm_now.tm_year, tm_now.tm_mon, tm_now.tm_mday, tm_now.tm_hour, tm_now.tm_min, tm_now.tm_sec,
-		(timezone > 0) ? "+" : "", timezone);
+		   tm_now.tm_year, tm_now.tm_mon, tm_now.tm_mday, tm_now.tm_hour, tm_now.tm_min, tm_now.tm_sec,
+		   (timezone > 0) ? "+" : "", timezone);
 #endif
 }
 #else
@@ -43,7 +46,7 @@ static void show_time(void)
 
 	sntp_get_lasttime(&update_sec, &update_usec, &update_tick);
 
-	if(update_tick) {
+	if (update_tick) {
 		long tick_diff_sec, tick_diff_ms, current_sec, current_usec;
 		unsigned int current_tick = xTaskGetTickCount();
 
@@ -59,8 +62,8 @@ static void show_time(void)
 	int timezone = 8;	// use UTC+8 timezone for example
 	struct tm tm_now = sntp_gen_system_time(timezone);
 	printf("%d-%d-%d %d:%d:%d UTC%s%d\n",
-		tm_now.tm_year, tm_now.tm_mon, tm_now.tm_mday, tm_now.tm_hour, tm_now.tm_min, tm_now.tm_sec,
-		(timezone > 0) ? "+" : "", timezone);
+		   tm_now.tm_year, tm_now.tm_mon, tm_now.tm_mday, tm_now.tm_hour, tm_now.tm_min, tm_now.tm_sec,
+		   (timezone > 0) ? "+" : "", timezone);
 #endif
 }
 #endif
@@ -68,8 +71,8 @@ static void show_time(void)
 static void example_sntp_showtime_thread(void *param)
 {
 	/* To avoid gcc warnings */
-	( void ) param;
-	
+	(void) param;
+
 	int should_stop = 0;
 	// Delay to wait for IP by DHCP
 	vTaskDelay(10000);
@@ -77,11 +80,12 @@ static void example_sntp_showtime_thread(void *param)
 
 	sntp_init();
 
-	while(1) {
+	while (1) {
 		show_time();
 		vTaskDelay(1000);
-		if(should_stop)
+		if (should_stop) {
 			break;
+		}
 	}
 
 	vTaskDelete(NULL);
@@ -89,6 +93,9 @@ static void example_sntp_showtime_thread(void *param)
 
 void example_sntp_showtime(void)
 {
-	if(xTaskCreate(example_sntp_showtime_thread, ((const char*)"example_sntp_showtime_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+	if (xTaskCreate(example_sntp_showtime_thread, ((const char *)"example_sntp_showtime_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate failed\n", __FUNCTION__);
+	}
 }
+
+#endif //#if defined(CONFIG_EXAMPLE_SNTP_SHOWTIME) && CONFIG_EXAMPLE_SNTP_SHOWTIME

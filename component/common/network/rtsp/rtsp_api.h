@@ -24,7 +24,7 @@
 #endif
 
 /* clock usage */
-#define RTSP_DEPEND_CLK_HZ      configTICK_RATE_HZ      
+#define RTSP_DEPEND_CLK_HZ      configTICK_RATE_HZ
 
 #define RTSP_SERVICE_PRIORITY    3
 #define RTSP_MAX_STREAM_NUM	2
@@ -33,7 +33,7 @@
 #define DEF_RTSP_PORT 554
 #define DEF_HTTP_PORT 5008
 
-#define RTSP_SELECT_SOCK 8 
+#define RTSP_SELECT_SOCK 8
 
 /*rtsp request type list*/
 #define REQUEST_OPTIONS 1
@@ -63,8 +63,7 @@ enum _rtsp_state {
 };
 typedef enum _rtsp_state rtsp_state;
 
-struct rtsp_session
-{
+struct rtsp_session {
 	uint32_t id;
 	uint8_t version;
 	uint32_t start_time;
@@ -73,8 +72,7 @@ struct rtsp_session
 	uint8_t *name;
 };
 
-struct rtsp_transport
-{
+struct rtsp_transport {
 	uint8_t isRtp; //transport protocol
 	uint8_t isTcp; //lower transport protocol
 	uint8_t castMode; //unicast UDP(1) or unicast TCP(2) or multicast(3)
@@ -90,13 +88,12 @@ struct rtsp_transport
 	int interleaved_high;	// for RTSP over TCP
 };
 
-struct __internal_payload{
+struct __internal_payload {
 	int codec_id;
 	struct rtp_object payload;
 };
 
-struct stream_context
-{
+struct stream_context {
 	struct rtsp_context *parent;
 	int stream_id; //sync with stream_flow id
 	struct list_head input_queue;
@@ -119,8 +116,7 @@ struct stream_context
 	struct __internal_payload rtpobj;
 };
 
-struct rtsp_context
-{
+struct rtsp_context {
 	int id;
 	uint8_t allow_stream;
 	rtsp_state state;
@@ -139,14 +135,14 @@ struct rtsp_context
 	_sema start_rtsp_sema;
 	uint8_t is_rtp_start;
 	_sema start_rtp_sema;
-	void (* rtp_service_handle) (struct rtsp_context* rtsp_ctx);
+	void (* rtp_service_handle)(struct rtsp_context *rtsp_ctx);
 	_sema start_proxy_connect_sema;
 	_sema rtp_input_sema;
 	_sema rtp_output_sema;
 #ifdef SUPPORT_RTCP
 	uint8_t is_rtcp_start;
 	_sema start_rtcp_sema;
-	void (* rtcp_service_handle) (struct rtsp_context* rtsp_ctx);
+	void (* rtcp_service_handle)(struct rtsp_context *rtsp_ctx);
 #endif
 #ifdef SUPPORT_HTTP
 	//to be added
@@ -158,12 +154,12 @@ struct rtsp_context
 	uint32_t pre_filter_packet;
 	int client_socket;
 	_mutex socket_lock;
-	
+
 	// callback
-	int (*cb_start)(void*);		// play
-	int (*cb_stop)(void*);		// teardown
-	int (*cb_pause)(void*);		// pause
-	int (*cb_custom)(void*);	// setparam
+	int (*cb_start)(void *);		// play
+	int (*cb_stop)(void *);		// teardown
+	int (*cb_pause)(void *);		// pause
+	int (*cb_custom)(void *);	// setparam
 };
 
 uint32_t rtsp_get_timestamp(struct stream_context *stream_ctx, uint32_t current_clock_tick);
@@ -180,12 +176,12 @@ void rtsp_stop(struct rtsp_context *rtsp_ctx);
 void rtp_object_in_stream_queue(struct rtp_object *payload, struct stream_context *stream_ctx);
 struct rtp_object *rtp_object_out_stream_queue(struct stream_context *stream_ctx);
 
-void set_profile_lv_string(char * plid);
-void set_sps_string(char * sps);
-void set_pps_string(char * pps);
+void set_profile_lv_string(char *plid);
+void set_sps_string(char *sps);
+void set_pps_string(char *pps);
 int rtsp_parse_stream_media_type(struct codec_info *codec);
 void rtsp_stream_context_init(struct rtsp_context *rtsp_ctx, struct stream_context *stream_ctx);
-void set_prefilter_packet(struct rtsp_context *rtsp_ctx,uint32_t num);
+void set_prefilter_packet(struct rtsp_context *rtsp_ctx, uint32_t num);
 void time_sync_disable(void);
 void time_sync_enable(void);
 #endif

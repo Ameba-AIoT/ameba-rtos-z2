@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_MQTT) && CONFIG_EXAMPLE_MQTT
 /* Standard includes. */
 #include <stdint.h>
 #include <stdio.h>
@@ -309,6 +312,7 @@ void MQTTPublishMessage(MQTTClient *c, char *topic)
 	message.qos = QOS1;
 	message.retained = 0;
 	message.payload = payload;
+	message.id = 0;
 
 	if (c->mqttstatus == MQTT_RUNNING) {
 		count++;
@@ -463,3 +467,5 @@ void example_mqtt(void)
 	vStartMQTTTasks(4096, tskIDLE_PRIORITY + 4);
 }
 /*-----------------------------------------------------------*/
+
+#endif //#if defined(CONFIG_EXAMPLE_MQTT) && CONFIG_EXAMPLE_MQTT

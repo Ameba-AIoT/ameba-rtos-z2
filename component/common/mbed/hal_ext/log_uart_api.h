@@ -4,8 +4,8 @@
   * @file    log_uart_api.h
   * @author
   * @version
-  * @brief   This file provides user interface for log uart 
-  *  base on the functionalities provided by Realtek periphera.
+  * @brief   This file provides user interface for log uart
+  *  base on the functionalities provided by Realtek peripheral.
   ******************************************************************************
   * @attention
   *
@@ -13,7 +13,7 @@
   * possession or use of this module requires written permission of RealTek.
   *
   * Copyright(c) 2016, Realtek Semiconductor Corporation. All rights reserved.
-  ****************************************************************************** 
+  ******************************************************************************
   */
 #ifndef LOG_UART_API_H
 #define LOG_UART_API_H
@@ -56,7 +56,7 @@ typedef struct log_uart_s log_uart_t;
  * 		   Initialize the required parts of the log uart.
  *   			i.e. baudrate, data bits, parity, etc.
  * @param[in]  obj: The address of log uart object.
- * @param[in]  baudrate: Baud rate of the log uart object. 
+ * @param[in]  baudrate: Baud rate of the log uart object.
  * @param[in]  data_bits: Data bits of the log uart object.
  * @param[in]  parity: Parity type of the log uart object
                         - ParityNone,           - Do not use parity
@@ -71,7 +71,7 @@ int32_t log_uart_init(log_uart_t *obj, int baudrate, int data_bits, SerialParity
 
 /**
  * @brief  Release the resources related to Realtek log uart.
- 
+
  * @param[in]  obj: The address of log uart object.
  * @return None
  */
@@ -79,7 +79,7 @@ void log_uart_free(log_uart_t *obj);
 
 /**
  * @brief  Set the baud rate of log uart.
- 
+
  * @param[in]  obj: The address of log uart object.
  * @param[in]  baudrate: Baud rate of the log uart object.
  * @return None
@@ -89,7 +89,7 @@ void log_uart_baud(log_uart_t *obj, int baudrate);
 /**
  * @brief  Set parameters for log uart.
  *   			including data bits, parity type and stop bits
- 
+
  * @param[in]  obj: The address of log uart object.
  * @param[in]  data_bits: Data bits of log uart object.
  * @param[in]  parity: Parity type of the log uart object
@@ -123,7 +123,7 @@ void log_uart_irq_set(log_uart_t *obj, LOG_UART_INT_ID irq, uint32_t enable);
 
 /**
  * @brief  Read one character from log uart.
-           This function will block untill the log uart gets something to read 
+           This function will block untill the log uart gets something to read
  * @param[in]  obj: The address of log uart object.
  * @return the character read from log uart
  */
@@ -192,7 +192,7 @@ void log_uart_break_clear(log_uart_t *obj);
  * @brief  Set the handler for complete TX
  * @param[in]  obj: The address of log uart object.
  * @param[in]  handler: The function which is called when log uart has finished transmitting data.
- * @param[in]  id: The parameter for handler.  
+ * @param[in]  id: The parameter for handler.
  * @return None
  */
 void log_uart_tx_comp_handler(log_uart_t *obj, void *handler, uint32_t id);
@@ -201,7 +201,7 @@ void log_uart_tx_comp_handler(log_uart_t *obj, void *handler, uint32_t id);
  * @brief  Set the handler for complete RX
  * @param[in]  obj: The address of log uart object.
  * @param[in]  handler: The function which is called when log uart has finished receving data
- * @param[in]  id: The parameter for handler.  
+ * @param[in]  id: The parameter for handler.
  * @return None
  */
 void log_uart_rx_comp_handler(log_uart_t *obj, void *handler, uint32_t id);
@@ -209,8 +209,8 @@ void log_uart_rx_comp_handler(log_uart_t *obj, void *handler, uint32_t id);
 /**
  * @brief  Set the handler for line status
  * @param[in]  obj: The address of log uart object.
- * @param[in]  handler: The function which is called when log uart gets an line status indication ID. 
- * @param[in]  id: The parameter for handler.  
+ * @param[in]  handler: The function which is called when log uart gets an line status indication ID.
+ * @param[in]  id: The parameter for handler.
  * @return None
  */
 void log_uart_line_status_handler(log_uart_t *obj, void *handler, uint32_t id);
@@ -259,21 +259,21 @@ int32_t log_uart_send_stream(log_uart_t *obj, char *ptxbuf, uint32_t len);
  * @param[out]  prxbuf: The buffer to store received data.
  * @param[in]  len: The maximum length of data to be read
  * @param[in]  timeout_ms: The timeout for reading data in ms
- * @param[in]  force_cs: User callback function 
+ * @param[in]  force_cs: User callback function
  * @return the length in Byte of received data before timeout, or error (< 0)
  */
 int32_t log_uart_recv_stream_timeout(log_uart_t *obj, char *prxbuf, uint32_t len,
-                                        uint32_t timeout_ms, void *force_cs);
+									 uint32_t timeout_ms, void *force_cs);
 
 /**
- * @brief  Abort interrupt mode of sending data 
+ * @brief  Abort interrupt mode of sending data
  * @param[in]  obj: The address of log uart object.
  * @return the length of data sent to log uart.
  */
 int32_t log_uart_send_stream_abort(log_uart_t *obj);
 
 /**
- * @brief  Abort interrupt mode of receiving data 
+ * @brief  Abort interrupt mode of receiving data
  * @param[in]  obj: The address of log uart object.
  * @return the length of data received from log uart.
  */
@@ -303,7 +303,7 @@ void log_uart_enable(log_uart_t *obj);
  *         - Bit 4: Break Interrupt (received data input is held in 0 state for a longer than a full word tx time)
  *         - Bit 5: TX FIFO empty (THR empty)
  *         - Bit 6: TX FIFO empty (THR & TSR both empty)
- *         - Bit 7: Receiver FIFO Error (parity error, framing error or break indication) 
+ *         - Bit 7: Receiver FIFO Error (parity error, framing error or break indication)
  */
 uint8_t log_uart_raed_lsr(log_uart_t *obj);
 
@@ -314,10 +314,10 @@ uint8_t log_uart_raed_lsr(log_uart_t *obj);
  *         - Bit 1: DDSR, The DSR line has changed its state
  *         - Bit 2: TERI, RI line has changed its state from low to high state
  *         - Bit 3: DDCD, DCD line has changed its state
- *         - Bit 4: Complement of the CTS input 
- *         - Bit 5: Complement of the DSR input 
- *         - Bit 6: Complement of the RI input 
- *         - Bit 7: Complement of the DCD input  
+ *         - Bit 4: Complement of the CTS input
+ *         - Bit 5: Complement of the DSR input
+ *         - Bit 6: Complement of the RI input
+ *         - Bit 7: Complement of the DCD input
  */
 uint8_t log_uart_raed_msr(log_uart_t *obj);
 

@@ -24,11 +24,14 @@ Prerequisites
 
 Getting Start
 -----------------------------------------------------------------------------------------------------------------------------------	
-1. Include Azure example codes for building
+1. Include Azure example codes for building. 
+Azure embedded sdk support list with it's correspond project file for GCC and IAR:
+	v1.1.0-beta.2: application.is.azure.mk / application_is_azure.ewp
+	v1.3.2       : application.is.azure132.mk / application_is_azure132.ewp
 [GCC]
-	i. Rename application.is.azure.mk to application.is.mk under GCC-RELEASE folder so that we will default build Azure project when we run the makefile. This makefile includes MQTT stack, Azure Embedded C SDK and all Azure IoT Examples.
+	i. Rename application.is.azure(132).mk to application.is.mk under GCC-RELEASE folder so that we will default build Azure project when we run the makefile. This makefile includes MQTT stack, Azure Embedded C SDK and all Azure IoT Examples.
 [IAR]
-	i. Rename application_is_azure.ewp to application_is.ewp under EWARM-RELEASE folder so that project_is.eww will default read Azure project. This .ewp file includes mqtt stack, azure embedded c sdk and all azure iot examples.
+	i. Rename application_is_azure(132).ewp to application_is.ewp under EWARM-RELEASE folder so that project_is.eww will default read Azure project. This .ewp file includes mqtt stack, azure embedded c sdk and all azure iot examples.
 
 2. Enable CONFIG_EXAMPLE_AZURE in [inc_hp\platform_opts.h] to start the example.
 3. Select example in [example_azure_iot_entry.h] and configure your own setting in the example. Please refer to the "Azure Example Description" and "Realtek Pnp Example Description"section.

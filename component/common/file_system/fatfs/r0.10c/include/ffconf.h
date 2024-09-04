@@ -37,7 +37,11 @@
 /* To enable string functions, set _USE_STRFUNC to 1 or 2. */
 
 
+#ifndef PLATFORM_OHOS
 #define	_USE_MKFS		0	/* 0:Disable or 1:Enable */
+#else
+#define	_USE_MKFS		1	/* 0:Disable or 1:Enable */
+#endif
 /* To enable f_mkfs() function, set _USE_MKFS to 1 and set _FS_READONLY to 0 */
 
 
@@ -153,7 +157,12 @@
 
 
 #define	_MIN_SS		512
+#ifndef PLATFORM_OHOS
 #define	_MAX_SS		512
+#else
+#define	_MAX_SS		4096
+#endif
+
 /* These options configure the range of sector size to be supported. (512, 1024, 2048 or
 /  4096) Always set both 512 for most systems, all memory card and harddisk. But a larger
 /  value may be required for on-board flash memory and some type of optical media.

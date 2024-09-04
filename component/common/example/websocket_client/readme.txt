@@ -6,16 +6,14 @@ The server will reply the message it received.
 Once the client received "world", it will disconnect with server.
 In this example only IPv4 is used to test the websocket connection
 
-
 To build your own echo server, you can refer to https://github.com/jmalloc/echo-server
 
 Configuration:
+	1. Enable websocket client example
+	[platform_opts.h]
+		#define CONFIG_EXAMPLE_WEBSOCKET_CLIENT 	1
 
-[platform_opts.h]
-	#define CONFIG_EXAMPLE_WEBSOCKET_CLIENT 	1
-
-	If using the Websocket server with TLS connection:
-
+	2. If using the Websocket server with TLS connection:
 	[wsclient_api.h]
 		#define USING_SSL
 
@@ -34,25 +32,24 @@ Configuration:
 			#define MBEDTLS_SSL_MAX_CONTENT_LEN 16384
 
 	[example_wsclient.c]
-		wsclient_context *wsclient = create_wsclient("wss://websocket-echo.com", 0, NULL, NULL, 1500);
+		wsclient_context *wsclient = create_wsclient("wss://websocket-echo.com", 0, NULL, NULL, 1500, 3);
 
 		Note: Please take note the link above may expired anytime. Alternatively, please test with websocket_server example.
-		wsclient_context *wsclient = create_wsclient("wss://server ip address", 0, NULL, NULL, 1500);
+		wsclient_context *wsclient = create_wsclient("wss://server ip address", 0, NULL, NULL, 1500, 3));
 
-	If using the Websocket server without TLS connection:
-
+	3. If using the Websocket server without TLS connection:
 	[example_wsclient.c]
-		wsclient_context *wsclient = create_wsclient("ws://websocket-echo.com", 0, NULL, NULL, 1500);
+		wsclient_context *wsclient = create_wsclient("ws://websocket-echo.com", 0, NULL, NULL, 1500, 3));
 
 		Note: Please take note the link above may expired anytime. Alternatively, please test with websocket_server example.
-		wsclient_context *wsclient = create_wsclient("ws://server ip address", 0, NULL, NULL, 1500);
+		wsclient_context *wsclient = create_wsclient("ws://server ip address", 0, NULL, NULL, 1500, 3));
 
 Execution:
 Can make automatical Wi-Fi connection when booting by using wlan fast connect example.
 A websocket client example thread will be started automatically when booting.
 If using other websocekt server, modify the create_wsclient() API and the handle_message() function depending on the condition of the server.
 
-Note :
+Note:
 AmebaPro and AmebaZ2 don't support polarssl, only support mbedtls.
 
 [Supported List]

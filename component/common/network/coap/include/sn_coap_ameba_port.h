@@ -23,7 +23,7 @@
 #define randLIB_seed_random()	NULL	/*!< Not used */
 
 #define COAP_DBG_EN				0 		/*!< Flag to enable / disable CoAP debug message in function **tr_debug()** */
-#define COAP_DBG_DETAIL			0		/*!< Flage to enable / disable detialed log in CoAP debug message in function **tr_debug()** */ 
+#define COAP_DBG_DETAIL			0		/*!< Flage to enable / disable detialed log in CoAP debug message in function **tr_debug()** */
 
 /**
 * \brief	print CoAP debug message
@@ -51,13 +51,13 @@ uint16_t randLIB_get_16bit(void);
 * \return	 NULL = if memory allocation failed
 * \return	 void* pointer to allocated memory = if allocation success
 */
-void* coap_malloc(uint16_t size);
+void *coap_malloc(uint16_t size);
 
 /**
 * \brief	Ameba **free()** function wrapper
 * \param	*addr: memory address to be freed
 */
-void coap_free(void* addr);
+void coap_free(void *addr);
 
 /**
 * \brief	Ameba **calloc()** function wrapper, the effective result is the allocation of a zero-initialized memory block of *size* bytes
@@ -65,7 +65,7 @@ void coap_free(void* addr);
 * \return	NULL = if memory allocation failed
 * \return	void* pointer to the allocated memory = if memory allocation success
 */
-void* coap_calloc(uint32_t size);
+void *coap_calloc(uint32_t size);
 
 /**
 * \brief	Ameba **socket()** function wrapper, creates a **Datagrams type** i.e. *SOCK_DGRAM* socket
@@ -88,9 +88,10 @@ int coap_sock_close(int socket_fd);
 * \param	*coap_rx_callback : function callback pointer to rx function, used to return CoAP header struct with status COAP_STATUS_BUILDER_MESSAGE_SENDING_FAILED
 * 			 when re-sendings exceeded. If set to NULL, no error message is returned.
 * \return 	pointer to CoAP handle = if success
-* \return 	NULL = if failed 
+* \return 	NULL = if failed
 */
-struct coap_s * coap_protocol_init(uint8_t (*coap_tx_callback)(uint8_t *, uint16_t, sn_nsdl_addr_s *, void *), int8_t (*coap_rx_callback)(sn_coap_hdr_s *, sn_nsdl_addr_s *, void *));
+struct coap_s *coap_protocol_init(uint8_t (*coap_tx_callback)(uint8_t *, uint16_t, sn_nsdl_addr_s *, void *), int8_t (*coap_rx_callback)(sn_coap_hdr_s *,
+								  sn_nsdl_addr_s *, void *));
 
 /**
 * \brief	Send the constructed CoAP message to designated host address on the specific port number
@@ -119,7 +120,7 @@ int coap_recv(int socket, struct sockaddr_in *from_address, void *buf, uint32_t 
 * \brief	Print CoAP message header (for debug use)
 * \param 	*parsed_hdr : pointer to constructed CoAP message header
 */
-void coap_print_hdr(sn_coap_hdr_s* parsed_hdr);
+void coap_print_hdr(sn_coap_hdr_s *parsed_hdr);
 
 /*\@}*/
 

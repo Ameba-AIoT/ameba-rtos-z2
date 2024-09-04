@@ -337,6 +337,17 @@ struct rtw_rx_frame_info {
 	signed char snr;
 };
 #endif
+
+/**
+  * @brief This structure is used to describe the connection status and status code for management frames only
+  */
+struct rtw_connection_info {
+	unsigned char auth_alg;             // authentication algorithm
+	unsigned char auth_code;            // authentication status code
+	unsigned char assoc_code;           // association status code
+	unsigned char disassoc_code;        // deauthentication/disassociation status code
+};
+
 /**
   * @}
   */

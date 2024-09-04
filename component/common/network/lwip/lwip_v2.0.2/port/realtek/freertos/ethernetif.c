@@ -53,7 +53,6 @@
 #include "netif/etharp.h"
 #include "err.h"
 #include "ethernetif.h"
-#include "queue.h"
 #include "lwip_netconf.h"
 
 #include "lwip/ethip6.h" //Add for ipv6

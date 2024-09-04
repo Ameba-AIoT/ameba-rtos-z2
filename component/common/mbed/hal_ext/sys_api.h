@@ -1,7 +1,7 @@
 /** mbed Microcontroller Library
   ******************************************************************************
   * @file    sys_api.h
-  * @author 
+  * @author
   * @version V1.0.0
   * @brief   This file provides following mbed system API:
   *				-JTAG OFF
@@ -16,7 +16,7 @@
   *
   * This module is a confidential and proprietary property of RealTek and
   * possession or use of this module requires written permission of RealTek.
-  ****************************************************************************** 
+  ******************************************************************************
   */
 #ifndef MBED_SYS_API_H
 #define MBED_SYS_API_H
@@ -38,9 +38,15 @@ extern "C" {
 
 /**
   * @brief  Turn off the JTAG function
-  * @retval none  
+  * @retval none
   */
 void sys_jtag_off(void);
+
+/**
+  * @brief  Turn off the SWD function
+  * @retval none
+  */
+void sys_swd_off(void);
 
 /**
   * @brief  switch OTA image if the othe OTA image is valid
@@ -69,7 +75,7 @@ void sys_log_uart_on(void);
 void sys_log_uart_off(void);
 
 /**
-  * @brief  store or load adc calibration parameter 
+  * @brief  store or load adc calibration parameter
   * @param  write:  this parameter can be one of the following values:
   *		@arg 0: load adc calibration parameter offset & gain from flash system data region
   *		@arg 1: store adc calibration parameter offset & gain to flash system data region
@@ -88,7 +94,7 @@ void sys_reset(void);
 ///@}
 
 #if defined(CONFIG_PLATFORM_8195A) && (CONFIG_PLATFORM_8195A == 1)
-///@name Ameba1 Only 
+///@name Ameba1 Only
 ///@{
 /**
   * @brief check whether is sdram power on
@@ -106,10 +112,10 @@ void sys_sdram_off(void);
 #endif //CONFIG_PLATFORM_8195A
 
 #if (defined(CONFIG_PLATFORM_8711B) && (CONFIG_PLATFORM_8711B == 1)) || defined(CONFIG_PLATFORM_8710C) && (CONFIG_PLATFORM_8710C == 1)
-///@name AmebaZ/AmebaZ2 
+///@name AmebaZ/AmebaZ2
 ///@{
 /**
-  * @brief vector reset 
+  * @brief vector reset
   * @retval none
   */
 void sys_cpu_reset(void);
@@ -117,6 +123,10 @@ void sys_cpu_reset(void);
 #endif //CONFIG_PLATFORM_8711B | CONFIG_PLATFORM_8710C
 
 /*\@}*/
+
+#if (defined(CONFIG_PLATFORM_8710C) && (CONFIG_PLATFORM_8710C == 1))
+uint32_t sys_update_ota_prepare_addr(void);
+#endif
 
 #ifdef __cplusplus
 }

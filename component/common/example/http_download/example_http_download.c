@@ -1,6 +1,6 @@
-#include <platform_opts.h>
+#include "platform_opts.h"
 
-#if defined(CONFIG_EXAMPLE_HTTP_DOWNLOAD) && (CONFIG_EXAMPLE_HTTP_DOWNLOAD == 1)
+#if defined(CONFIG_EXAMPLE_HTTP_DOWNLOAD) && CONFIG_EXAMPLE_HTTP_DOWNLOAD
 #include <FreeRTOS.h>
 #include <task.h>
 #include <platform/platform_stdlib.h>
@@ -118,4 +118,4 @@ void example_http_download(void)
 		printf("\n\r%s xTaskCreate failed", __FUNCTION__);
 	}
 }
-#endif //CONFIG_EXAMPLE_HTTP_DOWNLOAD
+#endif //#if defined(CONFIG_EXAMPLE_HTTP_DOWNLOAD) && CONFIG_EXAMPLE_HTTP_DOWNLOAD

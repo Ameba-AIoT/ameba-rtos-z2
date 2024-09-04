@@ -1,5 +1,12 @@
-/* mbed Microcontroller Library
- *******************************************************************************
+/** mbed Microcontroller Library
+ ******************************************************************************
+ * @file    gpio_ex_api.h
+ * @author
+ * @version V1.0.0
+ * @brief   This file provides following mbed GPIO EX API
+ ******************************************************************************
+ * @attention
+ *
  * Copyright (c) 2015, Realtek Semiconductor Corp.
  * All rights reserved.
  *
@@ -7,7 +14,7 @@
  * possession or use of this module requires written permission of RealTek.
  *******************************************************************************
  */
- 
+
 #ifndef MBED_GPIO_API_H
 #define MBED_GPIO_API_H
 
@@ -29,8 +36,8 @@ extern "C" {
   * @param  value: specifies the value to be written to the selected pin
   * 	This parameter can be one of the following values:
   *		@arg 0: Pin state set to low
-  *		@arg 1: Pin state set to high 
-  * @retval none  
+  *		@arg 1: Pin state set to high
+  * @retval none
   */
 void gpio_direct_write(gpio_t *obj, BOOL value) ;
 
@@ -39,17 +46,17 @@ void gpio_direct_write(gpio_t *obj, BOOL value) ;
   * @param  obj: gpio object define in application software.
   * @param  pull_type: this parameter can be one of the following values:
   *		@arg PullNone: HighZ, user can input high or low use this pin
-  *		@arg OpenDrain(is OpenDrain output): no pull + OUT + GPIO[gpio_bit] = 0  
+  *		@arg OpenDrain(is OpenDrain output): no pull + OUT + GPIO[gpio_bit] = 0
   *		@arg PullDown: pull down
-  *		@arg PullUp: pull up 
-  * @retval none  
+  *		@arg PullUp: pull up
+  * @retval none
   */
 void gpio_pull_ctrl(gpio_t *obj, PinMode pull_type);
 
 /**
   * @brief  Deinitializes the GPIO device, include mode/direction/pull control registers.
   * @param  obj: gpio object define in application software.
-  * @retval none  
+  * @retval none
   */
 void gpio_deinit(gpio_t *obj);
 
@@ -58,13 +65,13 @@ void gpio_deinit(gpio_t *obj);
   * @param  obj: gpio object define in application software.
   * @param  direction: this parameter can be one of the following values:
   *		@arg PIN_INPUT: this pin is input
-  *		@arg PIN_OUTPUT: this pin is output  
-  * @retval none  
+  *		@arg PIN_OUTPUT: this pin is output
+  * @retval none
   */
 void gpio_change_dir(gpio_t *obj, PinDirection direction);
 
 #if (defined(CONFIG_PLATFORM_8195BHP) && (CONFIG_PLATFORM_8195BHP == 1))  ||  (defined(CONFIG_PLATFORM_8195BLP) && (CONFIG_PLATFORM_8195BLP == 1))
-///@name AmebaPro Only 
+///@name AmebaPro Only
 ///@{
 /**
   * @brief  Sets schmitt trigger on/off control on the given GPIO pin .

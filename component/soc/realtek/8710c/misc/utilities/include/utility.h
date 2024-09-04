@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-/** 
+/**
  * @addtogroup 8710c_util Utilities
  * @{
  * @brief Utility API.
@@ -41,7 +41,7 @@ extern "C" {
 
 #include "cmsis_compiler.h"
 
-/** 
+/**
  * @addtogroup util_memory Memory
  * @{
  */
@@ -52,22 +52,22 @@ extern "C" {
   \brief  The data structure of the stubs functions of the utility API in ROM.
 */
 typedef struct utility_func_stubs_s {
-    uint32_t* config_debug_err;
-    uint32_t* config_debug_warn;    
-    uint32_t* config_debug_info;
-    
-    int (*memcmp)(const void *av, const void *bv, size_t len);
-    void *(*memcpy)( void *s1, const void *s2, size_t n );
-    void *(*memmove) (void *destaddr, const void *sourceaddr, unsigned length);
-    void *(*memset)(void *dst0, int val,  size_t length);
+	uint32_t *config_debug_err;
+	uint32_t *config_debug_warn;
+	uint32_t *config_debug_info;
 
-    void (*dump_bytes)(u8 *pdata, u32 len);
-    void (*dump_words)(u8 *src, u32 len);
+	int (*memcmp)(const void *av, const void *bv, size_t len);
+	void *(*memcpy)(void *s1, const void *s2, size_t n);
+	void *(*memmove)(void *destaddr, const void *sourceaddr, unsigned length);
+	void *(*memset)(void *dst0, int val,  size_t length);
 
-    // B-Cut
-    int (*memcmp_s)(const void *av, const void *bv, size_t len);
-    
-    uint32_t reserved[7];  // reserved space for next ROM code version function table extending.
+	void (*dump_bytes)(u8 *pdata, u32 len);
+	void (*dump_words)(u8 *src, u32 len);
+
+	// B-Cut
+	int (*memcmp_s)(const void *av, const void *bv, size_t len);
+
+	uint32_t reserved[7];  // reserved space for next ROM code version function table extending.
 } utility_func_stubs_t;
 
 /// @endcond /* end of condition DOXYGEN_EXCLUDED */
@@ -88,7 +88,7 @@ extern utility_func_stubs_t __rom_stubs_utility_ns;
 */
 __STATIC_INLINE void dump_bytes(u8 *src, u32 len)
 {
-    utility_stubs.dump_bytes(src, len);
+	utility_stubs.dump_bytes(src, len);
 }
 
 /**
@@ -101,7 +101,7 @@ __STATIC_INLINE void dump_bytes(u8 *src, u32 len)
 
 __STATIC_INLINE void dump_words(u8 *src, u32 len)
 {
-    utility_stubs.dump_words(src, len);
+	utility_stubs.dump_words(src, len);
 }
 
 #endif  // end of "#if !defined(ROM_REGION)"

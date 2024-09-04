@@ -101,7 +101,7 @@ set {int}&g_image_size = $FirmwareSize
 printf "image size = %x debug = %x\n", {int}&g_image_size, {int}&g_debug_enable
 
 set $ReadPtr = 0
-Set $ReadEndPtr = $ReadPtr + $FLASHDATBUFSIZE
+set $ReadEndPtr = $ReadPtr + $FLASHDATBUFSIZE
 set $LoopCnt = 0
 set $Offset = 0
 
@@ -131,8 +131,8 @@ while  ($LoopCnt < $LoopNum)
 		set $EraseCnt = 0
 		
 		while ( $EraseCnt < $EraseNum )
-			set {int}(&FlashBufferStart+$EraseCnt*2+0) = {int}(&theFlashParams.base_ptr) + 0x1000*$EraseCnt
-			set {int}(&FlashBufferStart+$EraseCnt*2+1) = 0x1000
+			set {int}((int*)&FlashBufferStart+$EraseCnt*2+0) = {int}(&theFlashParams.base_ptr) + 0x1000*$EraseCnt
+			set {int}((int*)&FlashBufferStart+$EraseCnt*2+1) = 0x1000
 			set $EraseCnt = $EraseCnt + 1
 		end
 		

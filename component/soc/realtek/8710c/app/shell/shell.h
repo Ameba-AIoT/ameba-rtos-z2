@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file     shell.h
  * @brief    The macro and data structure type definition for command shell.
- * 
+ *
  * @version  V1.00
  * @date     2016-07-15
  *
@@ -44,7 +44,7 @@ extern "C" {
 #define SECTION_SHELL_RODATA       SECTION(".shell.rodata")
 #define SECTION_SHELL_BSS          SECTION(".shell.bss")
 
-/** 
+/**
  * @addtogroup util_shell Shell Command Interface
  * @ingroup 8710c_util
  * @{
@@ -52,21 +52,21 @@ extern "C" {
  */
 
 /**
-  \brief  The flag to control the enable of the command history log. 
+  \brief  The flag to control the enable of the command history log.
           The history log function will use 1K code size.
 */
 #define CONFIG_SHELL_HISTORY_EN             1
 
 /**
-  \brief  The flag to control the enable of the command auto-complete (by tab key). 
+  \brief  The flag to control the enable of the command auto-complete (by tab key).
           The auto-complete function will use 0.8K code size.
 */
 #define CONFIG_SHELL_AUTO_COMP_EN           1
 
-/// The maximum number of commands that can be registered. 
+/// The maximum number of commands that can be registered.
 #define CONFIG_SHELL_MAX_COMMANDS           10
 
-/// The maximum characters that the command input buffer can accept. 
+/// The maximum characters that the command input buffer can accept.
 #define CONFIG_SHELL_MAX_INPUT              70
 
 /// Configures the maximum number of arguments per command tha can be accepted.
@@ -85,16 +85,16 @@ extern "C" {
   \brief  Defines the ASCII code for the shell command input control keys.
 */
 enum shell_ctrl_key_ascii_e {
-    SHELL_ASCII_NUL             = 0x00,     ///< Null character.    
-    SHELL_ASCII_BEL             = 0x07,     ///< Bell.
-    SHELL_ASCII_BS              = 0x08,     ///< Backspace.
-    SHELL_ASCII_HT              = 0x09,     ///< Horizontal Tab.
-    SHELL_ASCII_LF              = 0x0A,     ///< Line Feed.
-    SHELL_ASCII_CR              = 0x0D,     ///< Carriage Return.
-    SHELL_ASCII_ESC             = 0x1B,     ///< Escape.
-    SHELL_ASCII_US              = 0x1F,     ///< Unit Separator.
-    SHELL_ASCII_SP              = 0x20,     ///< Space.    
-    SHELL_ASCII_DEL             = 0x7F      ///< Delete.
+	SHELL_ASCII_NUL             = 0x00,     ///< Null character.
+	SHELL_ASCII_BEL             = 0x07,     ///< Bell.
+	SHELL_ASCII_BS              = 0x08,     ///< Backspace.
+	SHELL_ASCII_HT              = 0x09,     ///< Horizontal Tab.
+	SHELL_ASCII_LF              = 0x0A,     ///< Line Feed.
+	SHELL_ASCII_CR              = 0x0D,     ///< Carriage Return.
+	SHELL_ASCII_ESC             = 0x1B,     ///< Escape.
+	SHELL_ASCII_US              = 0x1F,     ///< Unit Separator.
+	SHELL_ASCII_SP              = 0x20,     ///< Space.
+	SHELL_ASCII_DEL             = 0x7F      ///< Delete.
 };
 
 #define SHELL_RET_SUCCESS                   0
@@ -105,7 +105,7 @@ extern int _strcmp(const char *cs, const char *ct);
 extern int _strncmp(const char *cs, const char *ct, unsigned int count);
 extern size_t _strlen(const char *s);
 extern void *_memcpy(void *s1, const void *s2, size_t n);
-extern void *_memmove (void *destaddr, const void *sourceaddr, unsigned length);
+extern void *_memmove(void *destaddr, const void *sourceaddr, unsigned length);
 
 #define shell_strcmp(cs, ct)                _strcmp(cs, ct)
 #define shell_strncmp(cs, ct, count)        _strncmp(cs, ct, count)
@@ -128,26 +128,26 @@ extern void *_memmove (void *destaddr, const void *sourceaddr, unsigned length);
 /**
   \brief  The function for the shell command to read a character from the terminal.
 */
-typedef int (*shell_reader_t) (char *);
+typedef int (*shell_reader_t)(char *);
 
 /**
-  \brief  The function for the shell command to send a character to the terminal. 
+  \brief  The function for the shell command to send a character to the terminal.
 */
-typedef int (*shell_writer_t) (char);
+typedef int (*shell_writer_t)(char);
 
 /**
-  \brief  The function for the shell command to print a string of message text. 
+  \brief  The function for the shell command to print a string of message text.
 */
-typedef void (*shell_printer_t) (const char *fmt,...);
+typedef void (*shell_printer_t)(const char *fmt, ...);
 
 /**
-  \brief  The callback function type of a shell command. 
+  \brief  The callback function type of a shell command.
 */
-typedef s32 (*shell_program_t) (u32, char **);
+typedef s32(*shell_program_t)(u32, char **);
 
 #if 0
 /**
-  \brief  The enumeration of errors of shell command. 
+  \brief  The enumeration of errors of shell command.
  */
 enum shell_errors {
 	E_SHELL_ERR_ARGCOUNT = 0,	///< There are missing arguments for the command
@@ -161,7 +161,7 @@ enum shell_errors {
 #endif
 
 /**
-  \brief  The data type of a shell command entry. 
+  \brief  The data type of a shell command entry.
  */
 typedef struct shell_command_entry_s {
 	const char *shell_command_string;   /*!< the command string */
@@ -169,46 +169,46 @@ typedef struct shell_command_entry_s {
 	const char *help_string;            /*!< the hel message for the command */
 } shell_command_entry_t;
 
-/** 
+/**
   \brief  The data structure for the shell command handling.
  */
-typedef struct shell_command {    
-    const shell_command_entry_t *cmd_table; /*!< the pre-defined(compile time defined) table of command entrys */
+typedef struct shell_command {
+	const shell_command_entry_t *cmd_table; /*!< the pre-defined(compile time defined) table of command entrys */
 
-    shell_command_entry_t *cmd_list; /*!< the registerable table of command entrys. 
+	shell_command_entry_t *cmd_list; /*!< the registerable table of command entrys.
                                           A new command entry is able to be added to this table at run time */
 
-    char *shellbuf; /*!< the buffer to store the received command characters */
+	char *shellbuf; /*!< the buffer to store the received command characters */
 
-    shell_reader_t shell_reader;    /*!< The function for the shell command to read a character from the terminal */
-    shell_writer_t shell_writer;    /*!< The function for the shell command to write a character to the terminal */
-    void *adapter;  /*!< The adapter (UART adapter) for terminal to read/write characters */
-    
-    const char *prompt;   /*!< point to a string as the command prompt */
+	shell_reader_t shell_reader;    /*!< The function for the shell command to read a character from the terminal */
+	shell_writer_t shell_writer;    /*!< The function for the shell command to write a character to the terminal */
+	void *adapter;  /*!< The adapter (UART adapter) for terminal to read/write characters */
+
+	const char *prompt;   /*!< point to a string as the command prompt */
 
 	char *hist_buf; /*!< the buffer to store the command history, this is a ring buffer */
 
-    char *argv_list[CONFIG_SHELL_MAX_COMMAND_ARGS];    /*!< the array to holds the parameters(string pointers) of a command */
+	char *argv_list[CONFIG_SHELL_MAX_COMMAND_ARGS];    /*!< the array to holds the parameters(string pointers) of a command */
 
-    unsigned int cmd_list_size;    /*!< the size (number of command entrys) of the registerable command table */
-    unsigned int shellbuf_sz;      /*!< the size (in bytes) of the command characters receive buffer */
-    unsigned int buf_count;        /*!< the counter of the characters are received in the receive buffer */    
-    unsigned int buf_pos;          /*!< the position of the receive buffer, to indicate the cursor location 
+	unsigned int cmd_list_size;    /*!< the size (number of command entrys) of the registerable command table */
+	unsigned int shellbuf_sz;      /*!< the size (in bytes) of the command characters receive buffer */
+	unsigned int buf_count;        /*!< the counter of the characters are received in the receive buffer */
+	unsigned int buf_pos;          /*!< the position of the receive buffer, to indicate the cursor location
                                         in the receive buffer */
 	int hist_step;  /*!< the position of the history buffer, it indicates the start of the selected history command string */
 	int hist_begin; /*!< the begin position of the history buffer */
 	int hist_end;   /*!< the end position of the history buffer */
-    unsigned int hist_buf_sz;   /*!< the size (in byte) of the history buffer */
+	unsigned int hist_buf_sz;   /*!< the size (in byte) of the history buffer */
 
 	int escape_len;     /*!< number of received characters of a escape sequence */
 	char escape[CONFIG_SHELL_MAX_ESCAPE_LEN];     /*!< the buffer to store all characters of a escape sequence */
-    BOOL initialized;   /*!< indicates if the shell command adapter is totally initialed or not */
-    uint8_t reserved1[3];
-    char *case_conv_buf;   /*!< the buffer for command case conversion, if this pointer is NULL means the command is case sense */
+	BOOL initialized;   /*!< indicates if the shell command adapter is totally initialed or not */
+	uint8_t reserved1[3];
+	char *case_conv_buf;   /*!< the buffer for command case conversion, if this pointer is NULL means the command is case sense */
 } shell_command_t;
 
 /// @cond DOXYGEN_SHELL_ROM_CODE
-/** 
+/**
  * @addtogroup util_shell_rom_func
  * @ingroup util_shell
  * @{
@@ -221,7 +221,7 @@ void _shell_set_prompt(shell_command_t *pshell_cmd, const char *prompt);
 void _shell_set_cmd_table(shell_command_t *pshell_cmd, const shell_command_entry_t *cmd_table);
 void _shell_set_cmd_list(shell_command_t *pshell_cmd, shell_command_entry_t *cmd_list, unsigned int list_size);
 BOOL _shell_register(shell_command_t *pshell_cmd, shell_program_t program,
-                    const char *cmd_string, const char *help_string);
+					 const char *cmd_string, const char *help_string);
 void _shell_unregister_all(shell_command_t *pshell_cmd);
 s32 _shell_task(shell_command_t *pshell_cmd);
 s32 _shell_parse_one_cmd(shell_command_t *pshell_cmd);
@@ -234,22 +234,22 @@ s32 _shell_parse_one_cmd(shell_command_t *pshell_cmd);
   \brief  The data structure of the stubs function for the shell functions in ROM
 */
 typedef struct cmd_shell_func_stubs_s {
-    shell_command_t *shell_cmd_hdl;
-    BOOL (*shell_init)(shell_command_t *pshell_cmd, shell_reader_t reader, shell_writer_t writer, void *adapter);
-    BOOL (*shell_init_with_stdio_port)(shell_command_t *pshell_cmd);
-    BOOL (*shell_set_cmd_buf)(shell_command_t *pshell_cmd, char *buf, unsigned int buf_size);
-    BOOL (*shell_set_hist_buf)(shell_command_t *pshell_cmd, char *buf, unsigned int buf_size);
-    void (*shell_set_prompt)(shell_command_t *pshell_cmd, const char *prompt);
-    void (*shell_set_cmd_table)(shell_command_t *pshell_cmd, const shell_command_entry_t *cmd_table);
-    void (*shell_set_cmd_list)(shell_command_t *pshell_cmd, shell_command_entry_t *cmd_list, unsigned int list_size);
-    BOOL (*shell_register)(shell_command_t *pshell_cmd, shell_program_t program, 
-                            const char *cmd_string, const char *help_string);
-    void (*shell_unregister_all)(shell_command_t *pshell_cmd);
-    s32  (*shell_task)(shell_command_t *pshell_cmd);
-    s32  (*shell_parse_one_cmd)(shell_command_t *pshell_cmd);
-    
-    const shell_command_entry_t *rom_cmd_table;
-    uint32_t reserved[8];  // reserved space for next ROM code version function table extending.
+	shell_command_t *shell_cmd_hdl;
+	BOOL (*shell_init)(shell_command_t *pshell_cmd, shell_reader_t reader, shell_writer_t writer, void *adapter);
+	BOOL (*shell_init_with_stdio_port)(shell_command_t *pshell_cmd);
+	BOOL (*shell_set_cmd_buf)(shell_command_t *pshell_cmd, char *buf, unsigned int buf_size);
+	BOOL (*shell_set_hist_buf)(shell_command_t *pshell_cmd, char *buf, unsigned int buf_size);
+	void (*shell_set_prompt)(shell_command_t *pshell_cmd, const char *prompt);
+	void (*shell_set_cmd_table)(shell_command_t *pshell_cmd, const shell_command_entry_t *cmd_table);
+	void (*shell_set_cmd_list)(shell_command_t *pshell_cmd, shell_command_entry_t *cmd_list, unsigned int list_size);
+	BOOL (*shell_register)(shell_command_t *pshell_cmd, shell_program_t program,
+						   const char *cmd_string, const char *help_string);
+	void (*shell_unregister_all)(shell_command_t *pshell_cmd);
+	s32(*shell_task)(shell_command_t *pshell_cmd);
+	s32(*shell_parse_one_cmd)(shell_command_t *pshell_cmd);
+
+	const shell_command_entry_t *rom_cmd_table;
+	uint32_t reserved[8];  // reserved space for next ROM code version function table extending.
 } cmd_shell_func_stubs_t;
 
 BOOL shell_init(shell_reader_t reader, shell_writer_t writer, void *adapter);

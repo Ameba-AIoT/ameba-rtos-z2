@@ -2,23 +2,15 @@
 #define _WS_SERVER_MSG_H_
 #include <websocket/wsserver_api.h>
 
-struct ws_data_header_type{
+struct ws_data_header_type {
 	size_t header_size;
 	int fin;
 	int mask;
- 	enum opcode_type opcode;
+	enum opcode_type opcode;
 	int N0;
 	uint64_t N;
 	uint8_t masking_key[4];
 };
-
-#define WS_SERVER_TLS_POLARSSL       0    /*!< Use PolarSSL for TLS when WSCLIENT */
-#define WS_SERVER_TLS_MBEDTLS        1    /*!< Use mbedTLS for TLS when WSCLIENT */
-#if CONFIG_USE_POLARSSL
-#define WS_SERVER_USE_TLS            WS_SERVER_TLS_POLARSSL
-#elif CONFIG_USE_MBEDTLS
-#define WS_SERVER_USE_TLS            WS_SERVER_TLS_MBEDTLS
-#endif
 
 #define WS_SERVER_SEND_BY_POLL			0    /*!< WS server send data when polling */
 #define WS_SERVER_SEND_DIRECTLY			1    /*!< WS server send data directly */
@@ -39,7 +31,7 @@ int ws_server_handshake_read_header(ws_conn *conn);
 
 int ws_server_handshake_response(ws_conn *conn);
 
-void ws_server_sendData(uint8_t type, size_t message_size, uint8_t* message, int useMask, uint8_t send_mode, ws_conn *conn);
+void ws_server_sendData(uint8_t type, size_t message_size, uint8_t *message, int useMask, uint8_t send_mode, ws_conn *conn);
 
 void ws_server_dispatchBinary(ws_conn *conn);
 

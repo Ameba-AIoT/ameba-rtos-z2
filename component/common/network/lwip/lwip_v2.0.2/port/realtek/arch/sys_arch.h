@@ -32,11 +32,18 @@
 #ifndef __SYS_RTXC_H__
 #define __SYS_RTXC_H__
 
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "semphr.h"
+#include "osdep_service.h"
 
+#ifdef PLATFORM_OHOS	
+#define SYS_MBOX_NULL 0
+#define SYS_SEM_NULL  0
+#define SYS_DEFAULT_THREAD_STACK_DEPTH	configMINIMAL_STACK_SIZE
+
+typedef UINT32 sys_sem_t;
+typedef UINT32 sys_mutex_t;
+typedef UINT32 sys_mbox_t;
+typedef UINT32 sys_thread_t;
+#else
 #define SYS_MBOX_NULL (xQueueHandle)0
 #define SYS_SEM_NULL  (xSemaphoreHandle)0
 #define SYS_DEFAULT_THREAD_STACK_DEPTH	configMINIMAL_STACK_SIZE
@@ -45,6 +52,7 @@ typedef xSemaphoreHandle sys_sem_t;
 typedef xSemaphoreHandle sys_mutex_t;
 typedef xQueueHandle sys_mbox_t;
 typedef xTaskHandle sys_thread_t;
+#endif
 
 typedef struct _sys_arch_state_t
 {

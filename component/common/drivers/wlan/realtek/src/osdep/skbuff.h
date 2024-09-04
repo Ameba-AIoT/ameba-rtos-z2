@@ -29,19 +29,19 @@ struct sk_buff {
 	/* These two members must be first. */
 	struct sk_buff		*next;		/* Next buffer in list */
 	struct sk_buff		*prev;		/* Previous buffer in list */
-	
-	struct sk_buff_head	*list;		/* List we are on */	
+
+	struct sk_buff_head	*list;		/* List we are on */
 	unsigned char		*head;		/* Head of buffer */
 	unsigned char		*data;		/* Data head pointer */
 	unsigned char		*tail;		/* Tail pointer	*/
-	unsigned char		*end;		/* End pointer */ 
-	void	*dev;		/* Device we arrived on/are leaving by */	
-	unsigned int 		len;		/* Length of actual data */	
+	unsigned char		*end;		/* End pointer */
+	void	*dev;		/* Device we arrived on/are leaving by */
+	unsigned int 		len;		/* Length of actual data */
 #ifdef CONFIG_TRACE_SKB
 	unsigned int		liston[TRACE_SKB_DEPTH];	/* Trace the Lists we went through */
 	const char		*funcname[TRACE_SKB_DEPTH];
 	unsigned int		list_idx;	/* Trace the List we are on */
-#endif	
+#endif
 //#ifdef CONFIG_DONT_CARE_TP
 	int 			dyalloc_flag;
 //#endif

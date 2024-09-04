@@ -761,6 +761,11 @@ netif_set_link_down(struct netif *netif )
 {
   if (netif->flags & NETIF_FLAG_LINK_UP) {
     netif->flags &= ~NETIF_FLAG_LINK_UP;
+#if LWIP_ARP
+    if (netif->flags & NETIF_FLAG_ETHARP) {
+      etharp_cleanup_netif(netif);
+    }
+#endif /* LWIP_ARP */
     NETIF_LINK_CALLBACK(netif);
   }
 }

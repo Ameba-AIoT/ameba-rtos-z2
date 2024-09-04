@@ -3,7 +3,11 @@
 #include <platform_stdlib.h>
 #include <lwip_netconf.h>
 
+#if !defined(MBEDTLS_CONFIG_FILE)
 #include "mbedtls/config.h"
+#else
+#include MBEDTLS_CONFIG_FILE
+#endif
 #include "mbedtls/platform.h"
 #include "mbedtls/net_sockets.h"
 #include "mbedtls/ssl.h"
@@ -21,7 +25,7 @@ static int my_random(void *p_rng, unsigned char *output, size_t output_len)
 	return 0;
 }
 
-static void* my_calloc(size_t nelements, size_t elementSize)
+static void *my_calloc(size_t nelements, size_t elementSize)
 {
 	size_t size;
 	void *ptr = NULL;
@@ -29,8 +33,9 @@ static void* my_calloc(size_t nelements, size_t elementSize)
 	size = nelements * elementSize;
 	ptr = pvPortMalloc(size);
 
-	if(ptr)
+	if (ptr) {
 		memset(ptr, 0, size);
+	}
 
 	return ptr;
 }
@@ -45,11 +50,11 @@ static void example_ssl_server_thread(void *param)
 	!defined(MBEDTLS_TIMING_ALT)
 
 	printf("MBEDTLS_BIGNUM_C and/or MBEDTLS_CERTS_C and/or "
-		"MBEDTLS_SSL_TLS_C and/or MBEDTLS_SSL_SRV_C and/or "
-		"MBEDTLS_RSA_C and/or MBEDTLS_NET_C and/or "
-		"MBEDTLS_PEM_PARSE_C and/or MBEDTLS_X509_CRT_PARSE_C and/or "
-		"MBEDTLS_SSL_PROTO_DTLS and/or MBEDTLS_TIMING_C and/or "
-		"MBEDTLS_TIMING_ALT not defined.\n");
+		   "MBEDTLS_SSL_TLS_C and/or MBEDTLS_SSL_SRV_C and/or "
+		   "MBEDTLS_RSA_C and/or MBEDTLS_NET_C and/or "
+		   "MBEDTLS_PEM_PARSE_C and/or MBEDTLS_X509_CRT_PARSE_C and/or "
+		   "MBEDTLS_SSL_PROTO_DTLS and/or MBEDTLS_TIMING_C and/or "
+		   "MBEDTLS_TIMING_ALT not defined.\n");
 
 #else
 	int ret;
@@ -78,17 +83,17 @@ static void example_ssl_server_thread(void *param)
 	mbedtls_x509_crt_init(&server_x509);
 	mbedtls_pk_init(&server_pk);
 
-	if((ret = mbedtls_x509_crt_parse(&server_x509, (const unsigned char *) mbedtls_test_srv_crt, mbedtls_test_srv_crt_len)) != 0) {
+	if ((ret = mbedtls_x509_crt_parse(&server_x509, (const unsigned char *) mbedtls_test_srv_crt, mbedtls_test_srv_crt_len)) != 0) {
 		printf(" failed\n  ! mbedtls_x509_crt_parse returned %d\n\n", ret);
 		goto exit;
 	}
 
-	if((ret = mbedtls_x509_crt_parse(&server_x509, (const unsigned char *) mbedtls_test_cas_pem, mbedtls_test_cas_pem_len)) != 0) {
+	if ((ret = mbedtls_x509_crt_parse(&server_x509, (const unsigned char *) mbedtls_test_cas_pem, mbedtls_test_cas_pem_len)) != 0) {
 		printf(" failed\n  ! mbedtls_x509_crt_parse returned %d\n\n", ret);
 		goto exit;
 	}
 
-	if((ret = mbedtls_pk_parse_key(&server_pk, (const unsigned char *) mbedtls_test_srv_key, mbedtls_test_srv_key_len, NULL, 0)) != 0) {
+	if ((ret = mbedtls_pk_parse_key(&server_pk, (const unsigned char *) mbedtls_test_srv_key, mbedtls_test_srv_key_len, NULL, 0)) != 0) {
 		printf(" failed\n  ! mbedtls_pk_parse_key returned %d\n\n", ret);
 		goto exit;
 	}
@@ -102,7 +107,7 @@ static void example_ssl_server_thread(void *param)
 	printf("\n\r  . Starting udp server /%d.%d.%d.%d/%s...", ip[0], ip[1], ip[2], ip[3], SERVER_PORT);
 	mbedtls_net_init(&server_fd);
 
-	if((ret = mbedtls_net_bind(&server_fd, NULL, SERVER_PORT, MBEDTLS_NET_PROTO_UDP)) != 0) {
+	if ((ret = mbedtls_net_bind(&server_fd, NULL, SERVER_PORT, MBEDTLS_NET_PROTO_UDP)) != 0) {
 		printf(" failed\n  ! mbedtls_net_bind returned %d\n\n", ret);
 		goto exit;
 	}
@@ -115,7 +120,7 @@ static void example_ssl_server_thread(void *param)
 	printf("\n\r  . Waiting for client to connect...\n\r");
 	mbedtls_net_init(&client_fd);
 
-	while((ret = mbedtls_net_accept(&server_fd, &client_fd, NULL, 0, NULL)) == 0) {
+	while ((ret = mbedtls_net_accept(&server_fd, &client_fd, NULL, 0, NULL)) == 0) {
 		printf("\n\r  . A client is connecting\n\r");
 		/*
 		 * 4. Setup stuff
@@ -124,10 +129,10 @@ static void example_ssl_server_thread(void *param)
 		mbedtls_ssl_init(&ssl);
 		mbedtls_ssl_config_init(&conf);
 
-		if((ret = mbedtls_ssl_config_defaults(&conf,
-				MBEDTLS_SSL_IS_SERVER,
-				MBEDTLS_SSL_TRANSPORT_DATAGRAM,
-				MBEDTLS_SSL_PRESET_DEFAULT)) != 0) {
+		if ((ret = mbedtls_ssl_config_defaults(&conf,
+											   MBEDTLS_SSL_IS_SERVER,
+											   MBEDTLS_SSL_TRANSPORT_DATAGRAM,
+											   MBEDTLS_SSL_PRESET_DEFAULT)) != 0) {
 
 			printf(" failed\n  ! mbedtls_ssl_config_defaults returned %d\n\n", ret);
 			goto close_client;
@@ -137,12 +142,12 @@ static void example_ssl_server_thread(void *param)
 		mbedtls_ssl_conf_authmode(&conf, MBEDTLS_SSL_VERIFY_NONE);
 		mbedtls_ssl_conf_rng(&conf, my_random, NULL);
 
-		if((ret = mbedtls_ssl_conf_own_cert(&conf, &server_x509, &server_pk)) != 0) {
+		if ((ret = mbedtls_ssl_conf_own_cert(&conf, &server_x509, &server_pk)) != 0) {
 			printf(" failed\n  ! mbedtls_ssl_conf_own_cert returned %d\n\n", ret);
 			goto close_client;
 		}
 
-		if((ret = mbedtls_ssl_setup(&ssl, &conf)) != 0) {
+		if ((ret = mbedtls_ssl_setup(&ssl, &conf)) != 0) {
 			printf(" failed\n  ! mbedtls_ssl_setup returned %d\n\n", ret);
 			goto close_client;
 		}
@@ -157,8 +162,8 @@ static void example_ssl_server_thread(void *param)
 		 */
 		printf("\n\r  . Performing the SSL/TLS handshake...");
 
-		while((ret = mbedtls_ssl_handshake(&ssl)) != 0) {
-			if((ret != MBEDTLS_ERR_SSL_WANT_READ) && (ret != MBEDTLS_ERR_SSL_WANT_WRITE)) {
+		while ((ret = mbedtls_ssl_handshake(&ssl)) != 0) {
+			if ((ret != MBEDTLS_ERR_SSL_WANT_READ) && (ret != MBEDTLS_ERR_SSL_WANT_WRITE)) {
 				printf(" failed\n  ! mbedtls_ssl_handshake returned %d\n\n", ret);
 				goto close_client;
 			}
@@ -172,8 +177,8 @@ static void example_ssl_server_thread(void *param)
 		printf("\n\r  > Read request from client:");
 
 		memset(buf, 0, sizeof(buf));
-		if((ret = mbedtls_ssl_read(&ssl, buf, sizeof(buf))) <= 0) {
-			if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE) {
+		if ((ret = mbedtls_ssl_read(&ssl, buf, sizeof(buf))) <= 0) {
+			if (ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE) {
 				printf(" failed\n\r  ! mbedtls_ssl_read returned %d\n", ret);
 				goto close_client;
 			}
@@ -186,8 +191,8 @@ static void example_ssl_server_thread(void *param)
 		printf("\n\r  > Response to client:");
 
 		sprintf(buf, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %d\r\n\r\n%s", strlen(response), response);
-		if((ret = mbedtls_ssl_write(&ssl, buf, strlen(buf))) <= 0) {
-			if(ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE) {
+		if ((ret = mbedtls_ssl_write(&ssl, buf, strlen(buf))) <= 0) {
+			if (ret != MBEDTLS_ERR_SSL_WANT_READ && ret != MBEDTLS_ERR_SSL_WANT_WRITE) {
 				printf(" failed\n\r  ! mbedtls_ssl_write returned %d\n", ret);
 				goto close_client;
 			}
@@ -197,8 +202,7 @@ static void example_ssl_server_thread(void *param)
 close_client:
 		do {
 			mbedtls_ssl_close_notify(&ssl);
-		}
-		while(ret == MBEDTLS_ERR_SSL_WANT_WRITE);
+		} while (ret == MBEDTLS_ERR_SSL_WANT_WRITE);
 
 		mbedtls_net_free(&client_fd);
 		mbedtls_ssl_free(&ssl);
@@ -216,7 +220,8 @@ exit:
 
 void example_ssl_server(void)
 {
-	if(xTaskCreate(example_ssl_server_thread, "example_ssl_server_thread", STACKSIZE, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+	if (xTaskCreate(example_ssl_server_thread, "example_ssl_server_thread", STACKSIZE, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate example_ssl_server_thread failed", __FUNCTION__);
+	}
 }
 

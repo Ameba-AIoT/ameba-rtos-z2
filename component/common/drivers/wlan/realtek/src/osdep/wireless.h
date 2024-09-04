@@ -164,6 +164,7 @@ typedef	long long __i64;
 #define IW_ENCODE_ALG_CCMP	3
 #define IW_ENCODE_ALG_PMK   4
 #define IW_ENCODE_ALG_AES_CMAC  5 //IGTK
+#define IW_ENCODE_ALG_OWE   6
 
 /* struct iw_encode_ext ->ext_flags */
 #define IW_ENCODE_EXT_TX_SEQ_VALID	0x00000001

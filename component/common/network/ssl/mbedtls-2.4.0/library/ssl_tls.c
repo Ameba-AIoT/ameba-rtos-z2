@@ -200,6 +200,10 @@ static int ssl_session_copy( mbedtls_ssl_session *dst, const mbedtls_ssl_session
     mbedtls_ssl_session_free( dst );
     memcpy( dst, src, sizeof( mbedtls_ssl_session ) );
 
+#if defined(MBEDTLS_SSL_SESSION_TICKETS) && defined(MBEDTLS_SSL_CLI_C)
+    dst->ticket = NULL;
+#endif
+
 #if defined(MBEDTLS_X509_CRT_PARSE_C)
     if( src->peer_cert != NULL )
     {
@@ -313,16 +317,22 @@ static int tls1_prf( const unsigned char *secret, size_t slen,
     size_t nb, hs;
     size_t i, j, k;
     const unsigned char *S1, *S2;
-    unsigned char tmp[128];
-    unsigned char h_i[20];
+    unsigned char *tmp;
+    size_t tmp_len = 0;
+    unsigned char h_i[20] = {0};
     const mbedtls_md_info_t *md_info;
     mbedtls_md_context_t md_ctx;
     int ret;
 
     mbedtls_md_init( &md_ctx );
 
-    if( sizeof( tmp ) < 20 + strlen( label ) + rlen )
-        return( MBEDTLS_ERR_SSL_BAD_INPUT_DATA );
+    tmp_len = 20 + strlen( label ) + rlen;
+    tmp = mbedtls_calloc( 1, tmp_len );
+    if( tmp == NULL )
+    {
+        ret = MBEDTLS_ERR_SSL_ALLOC_FAILED;
+        goto exit;
+    }
 
     hs = ( slen + 1 ) / 2;
     S1 = secret;
@@ -337,10 +347,15 @@ static int tls1_prf( const unsigned char *secret, size_t slen,
      * First compute P_md5(secret,label+random)[0..dlen]
      */
     if( ( md_info = mbedtls_md_info_from_type( MBEDTLS_MD_MD5 ) ) == NULL )
-        return( MBEDTLS_ERR_SSL_INTERNAL_ERROR );
+    {
+        ret = MBEDTLS_ERR_SSL_INTERNAL_ERROR;
+        goto exit;
+    }
 
     if( ( ret = mbedtls_md_setup( &md_ctx, md_info, 1 ) ) != 0 )
-        return( ret );
+    {
+        goto exit;
+    }
 
     mbedtls_md_hmac_starts( &md_ctx, S1, hs );
     mbedtls_md_hmac_update( &md_ctx, tmp + 20, nb );
@@ -368,10 +383,15 @@ static int tls1_prf( const unsigned char *secret, size_t slen,
      * XOR out with P_sha1(secret,label+random)[0..dlen]
      */
     if( ( md_info = mbedtls_md_info_from_type( MBEDTLS_MD_SHA1 ) ) == NULL )
-        return( MBEDTLS_ERR_SSL_INTERNAL_ERROR );
+    {
+        ret = MBEDTLS_ERR_SSL_INTERNAL_ERROR;
+        goto exit;
+    }
 
     if( ( ret = mbedtls_md_setup( &md_ctx, md_info, 1 ) ) != 0 )
-        return( ret );
+    {
+        goto exit;
+    }
 
     mbedtls_md_hmac_starts( &md_ctx, S2, hs );
     mbedtls_md_hmac_update( &md_ctx, tmp + 20, nb );
@@ -393,12 +413,14 @@ static int tls1_prf( const unsigned char *secret, size_t slen,
             dstbuf[i + j] = (unsigned char)( dstbuf[i + j] ^ h_i[j] );
     }
 
+exit:
     mbedtls_md_free( &md_ctx );
 
-    mbedtls_zeroize( tmp, sizeof( tmp ) );
+    mbedtls_zeroize( tmp, tmp_len );
     mbedtls_zeroize( h_i, sizeof( h_i ) );
 
-    return( 0 );
+    mbedtls_free( tmp );
+    return( ret );
 }
 #endif /* MBEDTLS_SSL_PROTO_TLS1) || MBEDTLS_SSL_PROTO_TLS1_1 */
 
@@ -411,8 +433,9 @@ static int tls_prf_generic( mbedtls_md_type_t md_type,
 {
     size_t nb;
     size_t i, j, k, md_len;
-    unsigned char tmp[128];
-    unsigned char h_i[MBEDTLS_MD_MAX_SIZE];
+    unsigned char *tmp;
+    size_t tmp_len = 0;
+    unsigned char h_i[MBEDTLS_MD_MAX_SIZE] = {0};;
     const mbedtls_md_info_t *md_info;
     mbedtls_md_context_t md_ctx;
     int ret;
@@ -424,8 +447,13 @@ static int tls_prf_generic( mbedtls_md_type_t md_type,
 
     md_len = mbedtls_md_get_size( md_info );
 
-    if( sizeof( tmp ) < md_len + strlen( label ) + rlen )
-        return( MBEDTLS_ERR_SSL_BAD_INPUT_DATA );
+    tmp_len = md_len + strlen( label ) + rlen;
+    tmp = mbedtls_calloc( 1, tmp_len );
+    if( tmp == NULL )
+    {
+        ret = MBEDTLS_ERR_SSL_ALLOC_FAILED;
+        goto exit;
+    }
 
     nb = strlen( label );
     memcpy( tmp + md_len, label, nb );
@@ -436,7 +464,7 @@ static int tls_prf_generic( mbedtls_md_type_t md_type,
      * Compute P_<hash>(secret, label + random)[0..dlen]
      */
     if ( ( ret = mbedtls_md_setup( &md_ctx, md_info, 1 ) ) != 0 )
-        return( ret );
+        goto exit;
 
     mbedtls_md_hmac_starts( &md_ctx, secret, slen );
     mbedtls_md_hmac_update( &md_ctx, tmp + md_len, nb );
@@ -458,12 +486,14 @@ static int tls_prf_generic( mbedtls_md_type_t md_type,
             dstbuf[i + j]  = h_i[j];
     }
 
+exit:
     mbedtls_md_free( &md_ctx );
 
-    mbedtls_zeroize( tmp, sizeof( tmp ) );
+    mbedtls_zeroize( tmp, tmp_len );
     mbedtls_zeroize( h_i, sizeof( h_i ) );
 
-    return( 0 );
+    mbedtls_free( tmp );
+    return( ret );
 }
 
 #if defined(MBEDTLS_SHA256_C)
@@ -1797,12 +1827,28 @@ static int ssl_decrypt_buf( mbedtls_ssl_context *ssl )
             pseudo_hdr[12] = (unsigned char)( ( ssl->in_msglen      ) & 0xFF );
 
             MBEDTLS_SSL_DEBUG_BUF( 4, "MAC'd meta-data", pseudo_hdr, 13 );
+			
+#if defined(SUPPORT_HW_SSL_HMAC_SHA256)
+			int is_sha256 = 0;
+			if(ssl->transform_in->md_ctx_dec.md_info == mbedtls_md_info_from_type(MBEDTLS_MD_SHA256)) {
+				is_sha256 = 1;
+				device_mutex_lock(RT_DEV_LOCK_CRYPTO);
+			}
+#endif
 
             mbedtls_md_hmac_update( &ssl->transform_in->md_ctx_dec, pseudo_hdr, 13 );
             mbedtls_md_hmac_update( &ssl->transform_in->md_ctx_dec,
                              ssl->in_iv, ssl->in_msglen );
             mbedtls_md_hmac_finish( &ssl->transform_in->md_ctx_dec, computed_mac );
-            mbedtls_md_hmac_reset( &ssl->transform_in->md_ctx_dec );
+#if defined(SUPPORT_HW_SSL_HMAC_SHA256)
+			if(is_sha256)
+				((mbedtls_sha256_context *) ssl->transform_in->md_ctx_dec.md_ctx)->ssl_hmac = 1;
+#endif
+			mbedtls_md_hmac_reset( &ssl->transform_in->md_ctx_dec );
+#if defined(SUPPORT_HW_SSL_HMAC_SHA256)
+			if(is_sha256)
+				device_mutex_unlock(RT_DEV_LOCK_CRYPTO);
+#endif
 
             MBEDTLS_SSL_DEBUG_BUF( 4, "message  mac", ssl->in_iv + ssl->in_msglen,
                                               ssl->transform_in->maclen );
@@ -6968,6 +7014,10 @@ int mbedtls_ssl_read( mbedtls_ssl_context *ssl, unsigned char *buf, size_t len )
 
     memcpy( buf, ssl->in_offt, n );
     ssl->in_msglen -= n;
+
+    /* Zeroising the plaintext buffer to erase unused application data
+       from the memory. */
+    mbedtls_zeroize( ssl->in_offt, n );
 
     if( ssl->in_msglen == 0 )
         /* all bytes consumed  */

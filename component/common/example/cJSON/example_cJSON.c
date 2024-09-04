@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_CJSON) && CONFIG_EXAMPLE_CJSON
 /* FreeRTOS includes. */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -7,9 +10,9 @@
 
 /*  The data structure for this example
 
-{	
+{
 	"Motion_Sensor" : "i",
-	"Light" : {	
+	"Light" : {
 			"Red" : "0",
 			"Green" : "0",
 			"Blue" : "0",
@@ -18,7 +21,7 @@
 }
 
 */
-char * generate_json_data(int i, int r, int g, int b)
+char *generate_json_data(int i, int r, int g, int b)
 {
 
 
@@ -28,11 +31,11 @@ char * generate_json_data(int i, int r, int g, int b)
 	memoryHook.free_fn = free;
 	cJSON_InitHooks(&memoryHook);
 
-	
+
 	cJSON *IOTJSObject = NULL, *colorJSObject = NULL;
 	char *iot_json = NULL;
-	
-	if((IOTJSObject = cJSON_CreateObject()) != NULL) {
+
+	if ((IOTJSObject = cJSON_CreateObject()) != NULL) {
 
 		cJSON_AddItemToObject(IOTJSObject, "Motion_Sensor", cJSON_CreateNumber(i));
 		cJSON_AddItemToObject(IOTJSObject, "Light", colorJSObject = cJSON_CreateObject());
@@ -60,26 +63,29 @@ static void handle_json_data(char *iot_json)
 	cJSON *IOTJSObject, *sensorJSObject, *lightJSObject, *redJSObject, *greenJSObject, *blueJSObject;
 	int sensor_data, red, green, blue;
 
-	if((IOTJSObject = cJSON_Parse(iot_json)) != NULL) {
+	if ((IOTJSObject = cJSON_Parse(iot_json)) != NULL) {
 		sensorJSObject = cJSON_GetObjectItem(IOTJSObject, "Motion_Sensor");
-		if(sensorJSObject){ 
+		if (sensorJSObject) {
 			sensor_data = sensorJSObject->valueint;
 			printf("\r\nThe sensor data is %d\r\n", sensor_data);
 		}
-			
+
 		lightJSObject = cJSON_GetObjectItem(IOTJSObject, "Light");
 
-		if(lightJSObject){
+		if (lightJSObject) {
 			redJSObject = cJSON_GetObjectItem(lightJSObject, "Red");
 			greenJSObject = cJSON_GetObjectItem(lightJSObject, "Green");
 			blueJSObject = cJSON_GetObjectItem(lightJSObject, "Blue");
 
-			if(redJSObject)
+			if (redJSObject) {
 				red = redJSObject->valueint;
-			if(greenJSObject)
+			}
+			if (greenJSObject) {
 				green = greenJSObject->valueint;
-			if(blueJSObject)
+			}
+			if (blueJSObject) {
 				blue = blueJSObject->valueint;
+			}
 			printf("\r\nThe RGB value is %d/%d/%d\r\n", red, green, blue);
 		}
 
@@ -87,21 +93,24 @@ static void handle_json_data(char *iot_json)
 	}
 }
 
-static void example_cJSON_thread(void *param){
+static void example_cJSON_thread(void *param)
+{
 	char *iot_json;
 	iot_json = generate_json_data(5, 253, 123, 43);
-	if(iot_json){
+	if (iot_json) {
 		printf("\r\nThe IoT json is: \r\n%s", iot_json);
 		handle_json_data(iot_json);
 		free(iot_json);
-	}
-	else
+	} else {
 		printf("\r\nGen JSON failed!\r\n");
+	}
 	vTaskDelete(NULL);
 }
 
 void example_cJSON(void)
 {
-	if(xTaskCreate(example_cJSON_thread, "example_cJSON_thread", 512, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+	if (xTaskCreate(example_cJSON_thread, "example_cJSON_thread", 512, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate example_cJSON_thread failed", __FUNCTION__);
+	}
 }
+#endif //#if defined(CONFIG_EXAMPLE_CJSON) && CONFIG_EXAMPLE_CJSON

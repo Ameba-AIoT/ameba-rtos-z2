@@ -8,6 +8,7 @@
 
   "SecureDep": [
   	"NonSecure",
+  	"Secure",
   	"Ignore"
   ],
   
@@ -34,10 +35,23 @@
   ],
 
   "excludeSource": [
+    "sys_api.c"
   ],
 
   "BuildNonSecureDep": {
     "excludeSource": [
+    ]
+  },
+
+  "BuildSecureDep" : {
+    "excludeSource": [
+      "flash_api.c",
+	  "i2c_api.c",
+	  "pwmout_api.c",
+	  "spdio_api.c",
+	  "spi_api.c",
+	  "gpio_api.c",
+	  "gpio_irq_api.c"
     ]
   },
 

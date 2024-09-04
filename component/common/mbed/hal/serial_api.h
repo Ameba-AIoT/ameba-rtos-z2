@@ -205,7 +205,7 @@ void serial_break_clear(serial_t *obj);
 void serial_pinout_tx(PinName tx);
 
 /**
-  * @brief  uart autoflow contol setting.
+  * @brief  uart autoflow control setting.
   * @param  obj: uart object define in application software.
   * @param  type: autoflow control type.
   * @param  rxflow: RTS pin.

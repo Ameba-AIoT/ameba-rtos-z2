@@ -16,16 +16,16 @@
  * #pnp_process_device_twin_message() API.
  */
 typedef void (*pnp_property_callback)(
-    az_span component_name,
-    az_json_token const* property_name,
-    az_json_reader property_value_as_json,
-    int32_t version,
-    void* user_context_callback);
+	az_span component_name,
+	az_json_token const *property_name,
+	az_json_reader property_value_as_json,
+	int32_t version,
+	void *user_context_callback);
 
 /**
  * @brief Callback which is invoked to append user properties to a payload.
  */
-typedef az_result (*pnp_append_property_callback)(az_json_writer* jw, void* context);
+typedef az_result(*pnp_append_property_callback)(az_json_writer *jw, void *context);
 
 /**
  * @brief Gets the MQTT topic that must be used for device to cloud telemetry messages.
@@ -44,12 +44,12 @@ typedef az_result (*pnp_append_property_callback)(az_json_writer* jw, void* cont
  * mqtt_topic . Can be `NULL`.
  */
 void pnp_telemetry_get_publish_topic(
-    az_iot_hub_client const* client,
-    az_iot_message_properties* properties,
-    az_span component_name,
-    char* mqtt_topic,
-    size_t mqtt_topic_size,
-    size_t* out_mqtt_topic_length);
+	az_iot_hub_client const *client,
+	az_iot_message_properties *properties,
+	az_span component_name,
+	char *mqtt_topic,
+	size_t mqtt_topic_size,
+	size_t *out_mqtt_topic_length);
 
 /**
  * @brief Parse a JSON payload for a PnP component command.
@@ -59,9 +59,9 @@ void pnp_telemetry_get_publish_topic(
  * @param[out] out_command_name The parsed command name.
  */
 void pnp_parse_command_name(
-    az_span component_command,
-    az_span* out_component_name,
-    az_span* out_command_name);
+	az_span component_command,
+	az_span *out_component_name,
+	az_span *out_command_name);
 
 /**
  * @brief Build a reported property.
@@ -74,12 +74,12 @@ void pnp_parse_command_name(
  * @param[out] out_span A pointer to the #az_span containing the output json payload.
  */
 void pnp_build_reported_property(
-    az_span json_buffer,
-    az_span component_name,
-    az_span property_name,
-    pnp_append_property_callback append_callback,
-    void* context,
-    az_span* out_span);
+	az_span json_buffer,
+	az_span component_name,
+	az_span property_name,
+	pnp_append_property_callback append_callback,
+	void *context,
+	az_span *out_span);
 
 /**
  * @brief Build a reported property with the ack status.
@@ -95,15 +95,15 @@ void pnp_build_reported_property(
  * @param[out] out_span A pointer to the #az_span containing the output json payload.
  */
 void pnp_build_reported_property_with_status(
-    az_span json_buffer,
-    az_span component_name,
-    az_span property_name,
-    pnp_append_property_callback append_callback,
-    void* context,
-    int32_t ack_code,
-    int32_t ack_version,
-    az_span ack_description,
-    az_span* out_span);
+	az_span json_buffer,
+	az_span component_name,
+	az_span property_name,
+	pnp_append_property_callback append_callback,
+	void *context,
+	int32_t ack_code,
+	int32_t ack_version,
+	az_span ack_description,
+	az_span *out_span);
 
 /**
  * @brief Build a simple telemetry message using one property name and one value.
@@ -115,11 +115,11 @@ void pnp_build_reported_property_with_status(
  * @param[out] out_span A pointer to the #az_span containing the output json payload.
  */
 void pnp_build_telemetry_message(
-    az_span json_buffer,
-    az_span property_name,
-    pnp_append_property_callback append_callback,
-    void* property_value,
-    az_span* out_span);
+	az_span json_buffer,
+	az_span property_name,
+	pnp_append_property_callback append_callback,
+	void *property_value,
+	az_span *out_span);
 
 /**
  * @brief Process the twin properties and invoke user callback for each property.
@@ -133,11 +133,11 @@ void pnp_build_telemetry_message(
  * @param[in] context_ptr Pointer to user context.
  */
 void pnp_process_device_twin_message(
-    az_span twin_message_span,
-    bool is_partial,
-    az_span const** components_ptr,
-    int32_t components_num,
-    pnp_property_callback property_callback,
-    void* context_ptr);
+	az_span twin_message_span,
+	bool is_partial,
+	az_span const **components_ptr,
+	int32_t components_num,
+	pnp_property_callback property_callback,
+	void *context_ptr);
 
 #endif // PNP_PROTOCOL_H

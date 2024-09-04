@@ -7,10 +7,9 @@
 #include <azure/az_core.h>
 #include <azure/az_iot.h>
 
-typedef struct
-{
-  az_span component_name;
-  bool audio_support;
+typedef struct {
+	az_span component_name;
+	bool audio_support;
 } pnp_audio_component;
 
 /**
@@ -26,8 +25,8 @@ typedef struct
  * @retval #AZ_ERROR_ARG The pointer to the #pnp_thermostat_component instance is NULL.
  */
 az_result pnp_audio_init(
-    pnp_audio_component* out_audio_component,
-    az_span component_name);
+	pnp_audio_component *out_audio_component,
+	az_span component_name);
 
 /**
  * @brief Build the thermostat's temperature telemetry message.
@@ -37,9 +36,9 @@ az_result pnp_audio_init(
  * @param[out] out_payload A pointer to the #az_span containing the output json payload.
  */
 void pnp_audio_build_telemetry_message(
-    pnp_audio_component* audio_component,
-    az_span payload,
-    az_span* out_payload);
+	pnp_audio_component *audio_component,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Build the thermostat's maximum temperature reported property message.
@@ -49,16 +48,16 @@ void pnp_audio_build_telemetry_message(
  * @param[out] out_payload A pointer to the #az_span containing the output json payload.
  * @param[out] out_property_name The name of the reported property to be sent.
  */
-	
+
 void pnp_audio_append_all_reported_property(
-	pnp_audio_component* audio_component,
-	az_json_writer* jw);
+	pnp_audio_component *audio_component,
+	az_json_writer *jw);
 
 void pnp_audio_build_reported_property(
-    pnp_audio_component* audio_component,
-    az_span payload,
-    az_span* out_payload,
-    az_span property_name);
+	pnp_audio_component *audio_component,
+	az_span payload,
+	az_span *out_payload,
+	az_span property_name);
 
 
 /**
@@ -73,13 +72,13 @@ void pnp_audio_build_reported_property(
  * @param[out] out_payload A pointer to the #az_span containing the output json payload.
  */
 void pnp_audio_build_error_reported_property_with_status(
-    az_span component_name,
-    az_span property_name,
-    az_json_reader* property_value,
-    az_iot_status status,
-    int32_t version,
-    az_span payload,
-    az_span* out_payload);
+	az_span component_name,
+	az_span property_name,
+	az_json_reader *property_value,
+	az_iot_status status,
+	int32_t version,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Update the thermostat's member variables and prepare reported property message.
@@ -98,12 +97,12 @@ void pnp_audio_build_error_reported_property_with_status(
  * @retval True if property updated. False if property does not belong to thermostat component.
  */
 bool pnp_audio_process_property_update(
-    pnp_audio_component* ref_audio_component,
-    az_json_token const* property_name,
-    az_json_reader const* property_value,
-    int32_t version,
-    az_span payload,
-    az_span* out_payload);
+	pnp_audio_component *ref_audio_component,
+	az_json_token const *property_name,
+	az_json_reader const *property_value,
+	int32_t version,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Update the thermostat's member variables and prepare reported property message.
@@ -123,12 +122,12 @@ bool pnp_audio_process_property_update(
  * @retval True if command successfully invoked. False if command failed to be invoked.
  */
 bool pnp_audio_process_command_request(
-    pnp_audio_component const* audio_component,
-    az_span command_name,
-    az_span command_received_payload,
-    az_span payload,
-    az_span* out_payload,
-    az_iot_status* out_status);
+	pnp_audio_component const *audio_component,
+	az_span command_name,
+	az_span command_received_payload,
+	az_span payload,
+	az_span *out_payload,
+	az_iot_status *out_status);
 
 #endif // PNP_AUDIO_COMPONENT_H
 

@@ -13,9 +13,31 @@ Configuration:
 [lwipopts.h]
 	#define MEMP_NUM_NETCONN		20
 	#define MEMP_NUM_UDP_PCB		MEMP_NUM_NETCONN
-[FreeRTOSConfig.h]
-	// Configure this if the heap size is not enough
-	#define configTOTAL_HEAP_SIZE		( ( size_t ) ( 80 * 1024 ) )
+[platform_stdlib_rtl8710c.h]
+	#define BUFFERED_PRINTF         1
+[example_high_load_memory_use.c]
+	1. Set configuration of the AP to connect to.
+		char *ssid = "Test_ap"; //change to your internet ssid
+		char *password = "12345678"; //change to your internet password
+	2. Set UDP server host.
+		char* ip = "192.168.1.101";  //change to your UDP server ip addr
+		int port = 6001;  //change to your UDP server port
+	3. Set SSL server host.
+	If use local apache server:
+		ssl_client_thread("192.168.1.101"); //change to your local SSL server ip addr
+		ssl_client_thread("192.168.1.101"); //change to your local SSL server ip addr
+		ssl_client_thread("192.168.1.101"); //change to your local SSL server ip addr
+	If not use local apache server:
+		ssl_client_thread("192.168.1.101"); //change to "www.google.com"
+		ssl_client_thread("192.168.1.101"); //change to "www.google.com"
+		ssl_client_thread("192.168.1.101"); //change to "www.google.com"
+		[lwip/opt.h]
+		#define DNS_TABLE_SIZE                  3
+		[config_rsa.h]
+		#define MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED
+		#define MBEDTLS_ECDH_C
+		#define MBEDTLS_ECP_C
+		#define MBEDTLS_SSL_MAX_CONTENT_LEN                8192
 
 Execution:
 The example thread will be started automatically when booting.
@@ -36,9 +58,9 @@ Example work flow:
 
 If you want to use ECDHE as TLS cipher suite, you can modify:
 [config_rsa.h]
-	#define POLARSSL_KEY_EXCHANGE_ECDHE_RSA_ENABLED
-	#define POLARSSL_ECDH_C
-	#define POLARSSL_ECP_C
+	#define MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED
+	#define MBEDTLS_ECDH_C
+	#define MBEDTLS_ECP_C
 
 [Supported List]
 	Supported :

@@ -13,10 +13,9 @@
 #define PNP_MQTT_TIMEOUT_RECEIVE_MS (60*1000)
 #define PNP_MQTT_TIMEOUT_DISCONNECT_MS (10 * 1000)
 
-typedef struct
-{
-	char* topic;
-	size_t* out_topic_length;
+typedef struct {
+	char *topic;
+	size_t *out_topic_length;
 	size_t topic_length;
 	az_span out_payload;
 	az_span payload;
@@ -31,7 +30,7 @@ typedef struct
  * @retval #AZ_OK #pnp_mqtt_message is initialied successfully.
  * @retval #AZ_ERROR_ARG The pointer to the #pnp_mqtt_message instance is NULL.
  */
-az_result pnp_mqtt_message_init(pnp_mqtt_message* out_mqtt_message);
+az_result pnp_mqtt_message_init(pnp_mqtt_message *out_mqtt_message);
 
 /**
  * @brief Creates a request id #az_span for use in sending twin messages. Value increments on each

@@ -67,8 +67,8 @@
 //
 // Note: Only handles a single variadic parameter of type char const*, or two variadic parameters of
 // type char const* and az_span.
-void build_error_message(char* out_full_message, char const* const error_message, ...);
-bool get_az_span(az_span* out_span, char const* const error_message, ...);
+void build_error_message(char *out_full_message, char const *const error_message, ...);
+bool get_az_span(az_span *out_span, char const *const error_message, ...);
 #define IOT_SAMPLE_EXIT_IF_AZ_FAILED(azfn, ...)                                                     \
     do                                                                                              \
         {                                                                                           \
@@ -92,8 +92,7 @@ bool get_az_span(az_span* out_span, char const* const error_message, ...);
         }                                                                                           \
     } while (0)
 
-typedef struct
-{
+typedef struct {
 	az_span hub_device_id;
 	az_span hub_hostname;
 	az_span hub_sas_key;
@@ -105,14 +104,12 @@ typedef struct
 	uint32_t sas_key_duration_minutes;
 } iot_sample_variables;
 
-typedef enum
-{
+typedef enum {
 	AZIOT_HUB,
 	AZIOT_PROVISIONING
 } iot_sample_type;
 
-typedef enum
-{
+typedef enum {
 	IOT_SAMPLE_HUB_HOSTNAME,
 	IOT_SAMPLE_PROVISIONING_ID_SCOPE,
 	IOT_SAMPLE_HUB_DEVICE_ID,
@@ -125,8 +122,7 @@ typedef enum
 } iot_sample_variable_name;
 
 
-typedef enum
-{
+typedef enum {
 	AZIOT_HUB_C2D_SAMPLE,
 	AZIOT_HUB_METHODS_SAMPLE,
 	AZIOT_HUB_PNP_COMPONENT_SAMPLE,
@@ -141,7 +137,7 @@ typedef enum
 } iot_sample_name;
 
 extern bool is_device_operational;
-extern int cycle(MQTTClient* c, Timer* timer);
+extern int cycle(MQTTClient *c, Timer *timer);
 
 /*
  * @brief Import user configuration for the sample.
@@ -152,8 +148,8 @@ extern int cycle(MQTTClient* c, Timer* timer);
  * @param[out] out_env_vars A pointer to the struct containing all read-in environment variables.
  */
 bool import_user_configuration(
-	iot_sample_variables* az_vars, 
-	iot_sample_variable_name name, 
+	iot_sample_variables *az_vars,
+	iot_sample_variable_name name,
 	const char *value);
 
 
@@ -167,7 +163,7 @@ bool import_user_configuration(
 void iot_sample_check_variables(
 	iot_sample_type type,
 	iot_sample_name name,
-	iot_sample_variables* az_vars);
+	iot_sample_variables *az_vars);
 
 /*
  * @brief Sleep for given seconds.
@@ -197,9 +193,9 @@ int64_t iot_sample_get_epoch_expiration_time_from_minutes(uint32_t minutes);
  * encoded signed signature.
  */
 void iot_sample_generate_sas_base64_encoded_signed_signature(
-    az_span sas_base64_encoded_key,
-    az_span sas_signature,
-    az_span sas_base64_encoded_signed_signature,
-    az_span* out_sas_base64_encoded_signed_signature);
+	az_span sas_base64_encoded_key,
+	az_span sas_signature,
+	az_span sas_base64_encoded_signed_signature,
+	az_span *out_sas_base64_encoded_signed_signature);
 
 #endif // IOT_SAMPLE_COMMON_H

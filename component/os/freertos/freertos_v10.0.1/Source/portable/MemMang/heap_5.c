@@ -172,6 +172,10 @@ extern uint8_t RAM_BSS$$Limit[];
 extern uint32_t RAM_STACK$$Base[];
 extern uint8_t EramEnd[];
 extern uint8_t ERAM_BSS$$Limit[];
+#ifdef CONFIG_PLATFORM_Z2PLUS
+extern uint8_t SramExtendStart[];
+extern uint8_t SramExtendEnd[];
+#endif
 
 #undef configTOTAL_HEAP_SIZE 
 #undef configTOTAL_HEAP_ext_SIZE
@@ -182,6 +186,11 @@ extern uint8_t ERAM_BSS$$Limit[];
 #define configTOTAL_HEAP1_SIZE ((uint32_t)EramEnd - ((uint32_t)ERAM_BSS$$Limit))
 #define HEAP1_START (uint8_t *)ERAM_BSS$$Limit
 
+#ifdef CONFIG_PLATFORM_Z2PLUS
+#define configTOTAL_HEAP2_SIZE ((uint32_t)SramExtendEnd - ((uint32_t)SramExtendStart))
+#define HEAP2_START (uint8_t *)SramExtendStart
+#endif
+
 #elif defined(__GNUC__)
 
 #undef configTOTAL_HEAP_SIZE 
@@ -191,12 +200,22 @@ extern uint8_t __sram_end__[];
 extern uint8_t __eram_end__[];
 extern uint8_t __bss_end__[];
 extern uint8_t __eram_bss_end__[];
+#ifdef CONFIG_PLATFORM_Z2PLUS
+extern uint8_t __sram_extend_start__[];
+extern uint8_t __sram_extend_end__[];
+#endif
 
 #define configTOTAL_HEAP0_SIZE ((uint32_t)__sram_end__ - ((uint32_t)__bss_end__))
 #define HEAP0_START (uint8_t*)__bss_end__
 
 #define configTOTAL_HEAP1_SIZE ((uint32_t)__eram_end__ - ((uint32_t)__eram_bss_end__))
 #define HEAP1_START (uint8_t*)__eram_bss_end__
+
+#ifdef CONFIG_PLATFORM_Z2PLUS
+#define configTOTAL_HEAP2_SIZE ((uint32_t)__sram_extend_end__ - ((uint32_t)__sram_extend_start__))
+#define HEAP2_START (uint8_t*)__sram_extend_start__
+#endif
+
 #endif
 
 /**/
@@ -204,6 +223,9 @@ HeapRegion_t xHeapRegions[] =
 {
 	{ 0, 0 }, // Defines a block from SRAM heap, but size will be determined by linker to use the rest of free SRAM as heap
 	{ 0, 0 }, 	// Defines a block from PSRAM heap
+#ifdef CONFIG_PLATFORM_Z2PLUS
+	{ 0, 0 }, 	// Defines a block from SRAM heap
+#endif
 	{ NULL, 0 }                     // Terminates the array.
 };
 #else
@@ -257,10 +279,26 @@ void *pvReturn = NULL;
 #elif defined(CONFIG_PLATFORM_8710C)
 		xHeapRegions[ 0 ].xSizeInBytes = configTOTAL_HEAP0_SIZE;
 		xHeapRegions[ 0 ].pucStartAddress = (uint8_t*)HEAP0_START;
+#ifdef CONFIG_PLATFORM_Z2PLUS
+		if(hal_get_chip_ver () >= CHIP_f_CUT)	//support extension sram
+		{
+			xHeapRegions[ 1 ].xSizeInBytes = configTOTAL_HEAP2_SIZE;
+			xHeapRegions[ 1 ].pucStartAddress = (uint8_t*)HEAP2_START;
+		}
+#endif
 		if(hal_get_flash_port_cfg() != FLASH_PORTB){ // not a flash MCM package, so PSRAM on B port is possible
 			if(hal_lpcram_is_valid() == HAL_OK){
-				xHeapRegions[ 1 ].xSizeInBytes = configTOTAL_HEAP1_SIZE;
-				xHeapRegions[ 1 ].pucStartAddress = (uint8_t*)HEAP1_START;
+#ifdef CONFIG_PLATFORM_Z2PLUS
+				if(xHeapRegions[ 1 ].xSizeInBytes > 0) 
+				{
+					xHeapRegions[ 2 ].xSizeInBytes = configTOTAL_HEAP1_SIZE;
+					xHeapRegions[ 2 ].pucStartAddress = (uint8_t*)HEAP1_START;
+				}else
+#endif
+				{
+					xHeapRegions[ 1 ].xSizeInBytes = configTOTAL_HEAP1_SIZE;
+					xHeapRegions[ 1 ].pucStartAddress = (uint8_t*)HEAP1_START;
+				}
 			}
 		}
 #endif
@@ -493,6 +531,32 @@ size_t xPortGetMinimumEverFreeHeapSize( void )
 	return xMinimumEverFreeBytesRemaining;
 }
 /*-----------------------------------------------------------*/
+
+#if defined(CONFIG_MATTER) && CONFIG_MATTER
+size_t xPortGetTotalHeapSize( void )
+{
+	if(hal_get_flash_port_cfg() != FLASH_PORTB){ // not a flash MCM package, so PSRAM on B port is possible
+		if(hal_lpcram_is_valid() == HAL_OK){
+			return configTOTAL_HEAP0_SIZE + configTOTAL_HEAP1_SIZE;
+		}
+	}
+	else
+	{
+		return configTOTAL_HEAP0_SIZE;
+	}
+}
+/*-----------------------------------------------------------*/
+
+void xPortResetHeapMinimumEverFreeHeapSize(void)
+{
+	taskENTER_CRITICAL();
+	{
+		xMinimumEverFreeBytesRemaining = xFreeBytesRemaining;
+	}
+	taskEXIT_CRITICAL();
+}
+/*-----------------------------------------------------------*/
+#endif
 
 static void prvInsertBlockIntoFreeList( BlockLink_t *pxBlockToInsert )
 {

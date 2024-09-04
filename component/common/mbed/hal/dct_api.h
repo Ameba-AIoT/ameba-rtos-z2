@@ -1,9 +1,9 @@
 /** mbed Microcontroller Library
   ******************************************************************************
-  * @file    timer_api.h
-  * @author 
+  * @file    dct_api.h
+  * @author
   * @version V1.0.0
-  * @brief   This file provides following mbed I2C API
+  * @brief   This file provides following mbed DCT API
   ******************************************************************************
   * @attention
   *
@@ -20,7 +20,7 @@
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
-  ****************************************************************************** 
+  ******************************************************************************
   */
 
 
@@ -39,27 +39,27 @@ extern "C" {
  *  @{
  */
 
-///@name Ameba Common 
+///@name Ameba Common
 ///@{
 
- enum{
-  DCT_SUCCESS = 0,     
-  DCT_ERR = -1,       
-  DCT_ERR_CRC = -2,     
-  DCT_ERR_NO_SPACE = -3,   
-  DCT_ERR_NO_MEMORY = -4,   
-  DCT_ERR_FLASH_RW = -5,    
-  DCT_ERR_NOT_FIND = -6,    
-  DCT_ERR_INVALID = -7,   
-  DCT_ERR_SIZE_OVER = -8,   
-  DCT_ERR_MODULE_BUSY = -9,
+enum {
+	DCT_SUCCESS = 0,
+	DCT_ERR = -1,
+	DCT_ERR_CRC = -2,
+	DCT_ERR_NO_SPACE = -3,
+	DCT_ERR_NO_MEMORY = -4,
+	DCT_ERR_FLASH_RW = -5,
+	DCT_ERR_NOT_FIND = -6,
+	DCT_ERR_INVALID = -7,
+	DCT_ERR_SIZE_OVER = -8,
+	DCT_ERR_MODULE_BUSY = -9,
 };
 
-enum{
-  DCT_MODULE_STATE_INIT     = 0xFFFFFFFF,
-  DCT_MODULE_STATE_VALID      = 0xFFFFFFFE,
-  DCT_MODULE_STATE_DELETING   = 0xFFFFFFFC, 
-  DCT_MODULE_STATE_DELETED    = 0xFFFFFFF8,
+enum {
+	DCT_MODULE_STATE_INIT     = 0xFFFFFFFF,
+	DCT_MODULE_STATE_VALID      = 0xFFFFFFFE,
+	DCT_MODULE_STATE_DELETING   = 0xFFFFFFFC,
+	DCT_MODULE_STATE_DELETED    = 0xFFFFFFF8,
 };
 
 
@@ -68,7 +68,7 @@ enum{
 /**
   * @brief  Initialize device configuration table.
   * @param  none
-  * @retval 32 bit 
+  * @retval 32 bit
   */
 int32_t dct_init(void);
 
@@ -97,7 +97,7 @@ int32_t dct_unregister_module(char *module_name);
 /**
  * @brief  Open module in DCT.
  * @param  dct_handle : setup module informations in dct handler
- * @param  module_name : module name 
+ * @param  module_name : module name
  * @retval     0  : SUCCESS
  * @retval     <0 : ERROR
  */

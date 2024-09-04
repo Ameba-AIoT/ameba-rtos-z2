@@ -37,6 +37,10 @@
 #ifndef RTL8710C_H
 #define RTL8710C_H
 
+#ifdef PLATFORM_OHOS
+#include <stdint.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

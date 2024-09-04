@@ -13,7 +13,7 @@ ssl_func_stubs_t __ram_stubs_ssl;
 
 extern const ssl_func_stubs_t __rom_stubs_ssl;
 
-#if defined(CONFIG_PLATFORM_8710C) && (MBEDTLS_VERSION_NUMBER==0x02100300)
+#if defined(CONFIG_PLATFORM_8710C) && ((MBEDTLS_VERSION_NUMBER==0x02100300) || (MBEDTLS_VERSION_NUMBER==0x021C0000) || (MBEDTLS_VERSION_NUMBER==0x021C0100))
 #if defined(MBEDTLS_PLATFORM_SETUP_TEARDOWN_ALT)
 int platform_set_malloc_free(
 	void *(*ssl_calloc)(unsigned int, unsigned int),
@@ -21,7 +21,7 @@ int platform_set_malloc_free(
 );
 int init_hw_crypto(void)
 {
-	platform_set_malloc_free(calloc,free);
+	platform_set_malloc_free(calloc, free);
 	return 0;
 }
 #endif
@@ -322,16 +322,16 @@ int mbedtls_mpi_gen_prime(mbedtls_mpi *X, size_t nbits, int dh_flag, int (*f_rng
 	return __ram_stubs_ssl.mbedtls_mpi_gen_prime(X, nbits, dh_flag, f_rng, p_rng);
 }
 
-int mbedtls_mpi_is_prime_ext( const mbedtls_mpi *X, int rounds,
-                              int (*f_rng)(void *, unsigned char *, size_t),
-                              void *p_rng )
+int mbedtls_mpi_is_prime_ext(const mbedtls_mpi *X, int rounds,
+							 int (*f_rng)(void *, unsigned char *, size_t),
+							 void *p_rng)
 {
 	return __ram_stubs_ssl.mbedtls_mpi_is_prime(X, f_rng, p_rng);
 }
-#else
-int mbedtls_mpi_is_prime_ext( const mbedtls_mpi *X, int rounds,
-                              int (*f_rng)(void *, unsigned char *, size_t),
-                              void *p_rng )
+#elif defined(MBEDTLS_USE_ROM_API) && !defined(CONFIG_MATTER)
+int mbedtls_mpi_is_prime_ext(const mbedtls_mpi *X, int rounds,
+							 int (*f_rng)(void *, unsigned char *, size_t),
+							 void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_mpi_is_prime(X, f_rng, p_rng);
 }
@@ -350,36 +350,36 @@ void init_rom_ssl_ram_map(
 }
 
 void init_rom_ssl_hw_crypto_aes_ecb(
-	int (*hw_crypto_aes_ecb_init)(const u8*, const u32),
-	int (*hw_crypto_aes_ecb_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-	int (*hw_crypto_aes_ecb_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+	int (*hw_crypto_aes_ecb_init)(const u8 *, const u32),
+	int (*hw_crypto_aes_ecb_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+	int (*hw_crypto_aes_ecb_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 )
 {
 	__rom_stubs_ssl.init_rom_ssl_hw_crypto_aes_ecb(hw_crypto_aes_ecb_init, hw_crypto_aes_ecb_decrypt, hw_crypto_aes_ecb_encrypt);
 }
 
 void init_rom_ssl_hw_crypto_aes_cbc(
-	int (*hw_crypto_aes_cbc_init)(const u8*, const u32),
-	int (*hw_crypto_aes_cbc_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-	int (*hw_crypto_aes_cbc_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+	int (*hw_crypto_aes_cbc_init)(const u8 *, const u32),
+	int (*hw_crypto_aes_cbc_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+	int (*hw_crypto_aes_cbc_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 )
 {
 	__rom_stubs_ssl.init_rom_ssl_hw_crypto_aes_cbc(hw_crypto_aes_cbc_init, hw_crypto_aes_cbc_decrypt, hw_crypto_aes_cbc_encrypt);
 }
 
 void init_rom_ssl_hw_crypto_des_cbc(
-	int (*hw_crypto_des_cbc_init)(const u8*, const u32),
-	int (*hw_crypto_des_cbc_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-	int (*hw_crypto_des_cbc_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+	int (*hw_crypto_des_cbc_init)(const u8 *, const u32),
+	int (*hw_crypto_des_cbc_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+	int (*hw_crypto_des_cbc_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 )
 {
 	__rom_stubs_ssl.init_rom_ssl_hw_crypto_des_cbc(hw_crypto_des_cbc_init, hw_crypto_des_cbc_decrypt, hw_crypto_des_cbc_encrypt);
 }
 
 void init_rom_ssl_hw_crypto_3des_cbc(
-	int (*hw_crypto_3des_cbc_init)(const u8*, const u32),
-	int (*hw_crypto_3des_cbc_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-	int (*hw_crypto_3des_cbc_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+	int (*hw_crypto_3des_cbc_init)(const u8 *, const u32),
+	int (*hw_crypto_3des_cbc_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+	int (*hw_crypto_3des_cbc_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 )
 {
 	__rom_stubs_ssl.init_rom_ssl_hw_crypto_3des_cbc(hw_crypto_3des_cbc_init, hw_crypto_3des_cbc_decrypt, hw_crypto_3des_cbc_encrypt);
@@ -394,9 +394,13 @@ int platform_set_malloc_free(
 )
 {
 	/* Variables */
+#if defined(PLATFORM_OHOS) || defined(CONFIG_MATTER)
+	rom_ssl_ram_map.use_hw_crypto_func = 0;
+#else
 	rom_ssl_ram_map.use_hw_crypto_func = 1;
-	
-#if defined(CONFIG_PLATFORM_8710C) && (defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER==0x02100300)
+#endif
+
+#if defined(CONFIG_PLATFORM_8710C) && ((defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER==0x02100300 || MBEDTLS_VERSION_NUMBER==0x021C0000 || MBEDTLS_VERSION_NUMBER==0x021C0100)))
 	//AES HW CRYPTO
 	rtl_cryptoEngine_init();
 	rom_ssl_ram_map.hw_crypto_aes_ecb_init = rtl_crypto_aes_ecb_init;
@@ -406,27 +410,32 @@ int platform_set_malloc_free(
 	rom_ssl_ram_map.hw_crypto_aes_cbc_decrypt = rtl_crypto_aes_cbc_decrypt;
 	rom_ssl_ram_map.hw_crypto_aes_cbc_encrypt = rtl_crypto_aes_cbc_encrypt;
 #endif
-#if (defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER == 0x02040000) || ((defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER==0x02100300) && (defined(MBEDTLS_USE_ROM_API) || defined(MBEDTLS_BIGNUM_USE_S_ROM_API)))
+#if (defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER == 0x02040000) || ((defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER==0x02100300 || MBEDTLS_VERSION_NUMBER==0x021C0000 || MBEDTLS_VERSION_NUMBER==0x021C0100)) && (defined(MBEDTLS_USE_ROM_API) || defined(MBEDTLS_BIGNUM_USE_S_ROM_API)))
 #if defined(MBEDTLS_BIGNUM_USE_S_ROM_API)
-	if((*((volatile u32*)(0x400001F0)) & (BIT4|BIT5|BIT6|BIT7))>>4 >= 0x3)
-	{
+	if ((*((volatile u32 *)(0x400001F0)) & (BIT4 | BIT5 | BIT6 | BIT7)) >> 4 >= 0x3) {
 		init_rom_ssl_ram_map(ssl_calloc, ssl_free, NULL, rom_ssl_ram_map.use_hw_crypto_func);
 		init_rom_ssl_hw_crypto_aes_ecb(rtl_crypto_aes_ecb_init, rtl_crypto_aes_ecb_decrypt, rtl_crypto_aes_ecb_encrypt);
 		init_rom_ssl_hw_crypto_aes_cbc(rtl_crypto_aes_cbc_init, rtl_crypto_aes_cbc_decrypt, rtl_crypto_aes_cbc_encrypt);
+		rom_ssl_ram_map.hw_crypto_aes_gcm_init = rtl_crypto_aes_gcm_init;
+		rom_ssl_ram_map.hw_crypto_aes_gcm_encrypt = rtl_crypto_aes_gcm_encrypt;
+		rom_ssl_ram_map.hw_crypto_aes_gcm_decrypt = rtl_crypto_aes_gcm_decrypt;
 		__bignum_stubs_init_rom();
-	}
-	else
+	} else {
 		__bignum_stubs_init_ram();
+	}
 #else
 	init_rom_ssl_ram_map(ssl_calloc, ssl_free, NULL, rom_ssl_ram_map.use_hw_crypto_func);
 	init_rom_ssl_hw_crypto_aes_ecb(rtl_crypto_aes_ecb_init, rtl_crypto_aes_ecb_decrypt, rtl_crypto_aes_ecb_encrypt);
 	init_rom_ssl_hw_crypto_aes_cbc(rtl_crypto_aes_cbc_init, rtl_crypto_aes_cbc_decrypt, rtl_crypto_aes_cbc_encrypt);
+	rom_ssl_ram_map.hw_crypto_aes_gcm_init = rtl_crypto_aes_gcm_init;
+	rom_ssl_ram_map.hw_crypto_aes_gcm_encrypt = rtl_crypto_aes_gcm_encrypt;
+	rom_ssl_ram_map.hw_crypto_aes_gcm_decrypt = rtl_crypto_aes_gcm_decrypt;
 #endif
 #endif
 #if defined(CONFIG_PLATFORM_8710C)
 	/// DES funtions are on longer supported on AmebaZ2's HW crypto
 	/// Must set them to NULL, so it will use SW instead of HW even use_hw_crypto_func is enabled
-#if (defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER==0x02100300)
+#if (defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER==0x02100300 || MBEDTLS_VERSION_NUMBER==0x021C0000 || MBEDTLS_VERSION_NUMBER==0x021C0100) && defined(MBEDTLS_USE_ROM_API))
 	//DES HW CRYPTO
 	rom_ssl_ram_map.hw_crypto_des_cbc_init = NULL;
 	rom_ssl_ram_map.hw_crypto_des_cbc_decrypt = NULL;
@@ -435,7 +444,7 @@ int platform_set_malloc_free(
 	rom_ssl_ram_map.hw_crypto_3des_cbc_decrypt = NULL;
 	rom_ssl_ram_map.hw_crypto_3des_cbc_encrypt = NULL;
 #endif
-#if (defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER == 0x02040000) || ((defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER==0x02100300) && defined(MBEDTLS_USE_ROM_API))
+#if (defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER == 0x02040000) || ((defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER==0x02100300 || MBEDTLS_VERSION_NUMBER==0x021C0000 || MBEDTLS_VERSION_NUMBER==0x021C0100)) && defined(MBEDTLS_USE_ROM_API))
 	init_rom_ssl_hw_crypto_des_cbc(NULL, NULL, NULL);
 	init_rom_ssl_hw_crypto_3des_cbc(NULL, NULL, NULL);
 #endif
@@ -774,17 +783,20 @@ int mbedtls_ecp_check_privkey(const mbedtls_ecp_group *grp, const mbedtls_mpi *d
 	return __rom_stubs_ssl.mbedtls_ecp_check_privkey(grp, d);
 }
 
-int mbedtls_ecp_mul(mbedtls_ecp_group *grp, mbedtls_ecp_point *R, const mbedtls_mpi *m, const mbedtls_ecp_point *P, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecp_mul(mbedtls_ecp_group *grp, mbedtls_ecp_point *R, const mbedtls_mpi *m, const mbedtls_ecp_point *P, int (*f_rng)(void *, unsigned char *,
+					size_t), void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecp_mul(grp, R, m, P, f_rng, p_rng);
 }
 
-int mbedtls_ecp_muladd(mbedtls_ecp_group *grp, mbedtls_ecp_point *R, const mbedtls_mpi *m, const mbedtls_ecp_point *P, const mbedtls_mpi *n, const mbedtls_ecp_point *Q)
+int mbedtls_ecp_muladd(mbedtls_ecp_group *grp, mbedtls_ecp_point *R, const mbedtls_mpi *m, const mbedtls_ecp_point *P, const mbedtls_mpi *n,
+					   const mbedtls_ecp_point *Q)
 {
 	return __rom_stubs_ssl.mbedtls_ecp_muladd(grp, R, m, P, n, Q);
 }
 
-int mbedtls_ecp_gen_keypair_base(mbedtls_ecp_group *grp, const mbedtls_ecp_point *G, mbedtls_mpi *d, mbedtls_ecp_point *Q, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecp_gen_keypair_base(mbedtls_ecp_group *grp, const mbedtls_ecp_point *G, mbedtls_mpi *d, mbedtls_ecp_point *Q, int (*f_rng)(void *, unsigned char *,
+								 size_t), void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecp_gen_keypair_base(grp, G, d, Q, f_rng, p_rng);
 }
@@ -809,27 +821,25 @@ int mbedtls_ecp_check_pub_priv(const mbedtls_ecp_keypair *pub, const mbedtls_ecp
  */
 #define ECP_NB_CURVES 12
 static mbedtls_ecp_group_id ecp_supported_grp_id[ECP_NB_CURVES];
-const mbedtls_ecp_group_id *mbedtls_ecp_grp_id_list( void )
+const mbedtls_ecp_group_id *mbedtls_ecp_grp_id_list(void)
 {
-    static int init_done = 0;
+	static int init_done = 0;
 
-    if( ! init_done )
-    {
-        size_t i = 0;
-        const mbedtls_ecp_curve_info *curve_info;
+	if (! init_done) {
+		size_t i = 0;
+		const mbedtls_ecp_curve_info *curve_info;
 
-        for( curve_info = mbedtls_ecp_curve_list();
-             curve_info->grp_id != MBEDTLS_ECP_DP_NONE;
-             curve_info++ )
-        {
-            ecp_supported_grp_id[i++] = curve_info->grp_id;
-        }
-        ecp_supported_grp_id[i] = MBEDTLS_ECP_DP_NONE;
+		for (curve_info = mbedtls_ecp_curve_list();
+			 curve_info->grp_id != MBEDTLS_ECP_DP_NONE;
+			 curve_info++) {
+			ecp_supported_grp_id[i++] = curve_info->grp_id;
+		}
+		ecp_supported_grp_id[i] = MBEDTLS_ECP_DP_NONE;
 
-        init_done = 1;
-    }
+		init_done = 1;
+	}
 
-    return( ecp_supported_grp_id );
+	return (ecp_supported_grp_id);
 }
 
 /* ecp_curves */
@@ -1032,6 +1042,16 @@ int mbedtls_oid_get_pkcs12_pbe_alg(const mbedtls_asn1_buf *oid, mbedtls_md_type_
 	return __rom_stubs_ssl.mbedtls_oid_get_pkcs12_pbe_alg(oid, md_alg, cipher_alg);
 }
 
+// int mbedtls_oid_get_numeric_string(char *buf, size_t size, const mbedtls_asn1_buf *oid)
+// {
+// return __rom_stubs_ssl.mbedtls_oid_get_numeric_string(buf, size, oid);
+// }
+
+// int mbedtls_oid_get_certificate_policies(const mbedtls_asn1_buf *oid, const char **desc)
+// {
+// return __rom_stubs_ssl.mbedtls_oid_get_certificate_policies(oid, desc);
+// }
+
 /* md5 */
 void mbedtls_md5_init(mbedtls_md5_context *ctx)
 {
@@ -1114,7 +1134,8 @@ int mbedtls_aes_crypt_cbc(mbedtls_aes_context *ctx, int mode, size_t length, uns
 	return __rom_stubs_ssl.mbedtls_aes_crypt_cbc(ctx, mode, length, iv, input, output);
 }
 
-int mbedtls_aes_crypt_cfb128(mbedtls_aes_context *ctx, int mode, size_t length, size_t *iv_off, unsigned char iv[16], const unsigned char *input, unsigned char *output)
+int mbedtls_aes_crypt_cfb128(mbedtls_aes_context *ctx, int mode, size_t length, size_t *iv_off, unsigned char iv[16], const unsigned char *input,
+							 unsigned char *output)
 {
 	return __rom_stubs_ssl.mbedtls_aes_crypt_cfb128(ctx, mode, length, iv_off, iv, input, output);
 }
@@ -1124,7 +1145,8 @@ int mbedtls_aes_crypt_cfb8(mbedtls_aes_context *ctx, int mode, size_t length, un
 	return __rom_stubs_ssl.mbedtls_aes_crypt_cfb8(ctx, mode, length, iv, input, output);
 }
 
-int mbedtls_aes_crypt_ctr(mbedtls_aes_context *ctx, size_t length, size_t *nc_off, unsigned char nonce_counter[16], unsigned char stream_block[16], const unsigned char *input, unsigned char *output)
+int mbedtls_aes_crypt_ctr(mbedtls_aes_context *ctx, size_t length, size_t *nc_off, unsigned char nonce_counter[16], unsigned char stream_block[16],
+						  const unsigned char *input, unsigned char *output)
 {
 	return __rom_stubs_ssl.mbedtls_aes_crypt_ctr(ctx, length, nc_off, nonce_counter, stream_block, input, output);
 }
@@ -1362,7 +1384,7 @@ int mbedtls_asn1_get_bitstring_null(unsigned char **p, const unsigned char *end,
 	return __rom_stubs_ssl.mbedtls_asn1_get_bitstring_null(p, end, len);
 }
 
-int mbedtls_asn1_get_sequence_of( unsigned char **p, const unsigned char *end, mbedtls_asn1_sequence *cur, int tag)
+int mbedtls_asn1_get_sequence_of(unsigned char **p, const unsigned char *end, mbedtls_asn1_sequence *cur, int tag)
 {
 	return __rom_stubs_ssl.mbedtls_asn1_get_sequence_of(p, end, cur, tag);
 }
@@ -1458,7 +1480,8 @@ int mbedtls_asn1_write_octet_string(unsigned char **p, unsigned char *start, con
 	return __rom_stubs_ssl.mbedtls_asn1_write_octet_string(p, start, buf, size);
 }
 
-mbedtls_asn1_named_data *mbedtls_asn1_store_named_data(mbedtls_asn1_named_data **head, const char *oid, size_t oid_len, const unsigned char *val, size_t val_len)
+mbedtls_asn1_named_data *mbedtls_asn1_store_named_data(mbedtls_asn1_named_data **head, const char *oid, size_t oid_len, const unsigned char *val,
+		size_t val_len)
 {
 	return __rom_stubs_ssl.mbedtls_asn1_store_named_data(head, oid, oid_len, val, val_len);
 }
@@ -1510,67 +1533,80 @@ int mbedtls_rsa_private(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned 
 	return __rom_stubs_ssl.mbedtls_rsa_private(ctx, f_rng, p_rng, input, output);
 }
 
-int mbedtls_rsa_rsaes_oaep_encrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, const unsigned char *label, size_t label_len, size_t ilen, const unsigned char *input, unsigned char *output)
+int mbedtls_rsa_rsaes_oaep_encrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, const unsigned char *label,
+								   size_t label_len, size_t ilen, const unsigned char *input, unsigned char *output)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_rsaes_oaep_encrypt(ctx, f_rng, p_rng, mode, label, label_len, ilen, input, output);
 }
 
-int mbedtls_rsa_rsaes_pkcs1_v15_encrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t ilen, const unsigned char *input, unsigned char *output)
+int mbedtls_rsa_rsaes_pkcs1_v15_encrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t ilen,
+										const unsigned char *input, unsigned char *output)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_rsaes_pkcs1_v15_encrypt(ctx, f_rng, p_rng, mode, ilen, input, output);
 }
 
-int mbedtls_rsa_pkcs1_encrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t ilen, const unsigned char *input, unsigned char *output)
+int mbedtls_rsa_pkcs1_encrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t ilen,
+							  const unsigned char *input, unsigned char *output)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_pkcs1_encrypt(ctx, f_rng, p_rng, mode, ilen, input, output);
 }
 
-int mbedtls_rsa_rsaes_oaep_decrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, const unsigned char *label, size_t label_len, size_t *olen, const unsigned char *input, unsigned char *output, size_t output_max_len)
+int mbedtls_rsa_rsaes_oaep_decrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, const unsigned char *label,
+								   size_t label_len, size_t *olen, const unsigned char *input, unsigned char *output, size_t output_max_len)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_rsaes_oaep_decrypt(ctx, f_rng, p_rng, mode, label, label_len, olen, input, output, output_max_len);
 }
 
-int mbedtls_rsa_rsaes_pkcs1_v15_decrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t *olen, const unsigned char *input, unsigned char *output, size_t output_max_len)
+int mbedtls_rsa_rsaes_pkcs1_v15_decrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t *olen,
+										const unsigned char *input, unsigned char *output, size_t output_max_len)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_rsaes_pkcs1_v15_decrypt(ctx, f_rng, p_rng, mode, olen, input, output, output_max_len);
 }
 
-int mbedtls_rsa_pkcs1_decrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t *olen, const unsigned char *input, unsigned char *output, size_t output_max_len)
+int mbedtls_rsa_pkcs1_decrypt(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t *olen,
+							  const unsigned char *input, unsigned char *output, size_t output_max_len)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_pkcs1_decrypt(ctx, f_rng, p_rng, mode, olen, input, output, output_max_len);
 }
 
-int mbedtls_rsa_rsassa_pss_sign(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, unsigned char *sig)
+int mbedtls_rsa_rsassa_pss_sign(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg,
+								unsigned int hashlen, const unsigned char *hash, unsigned char *sig)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_rsassa_pss_sign(ctx, f_rng, p_rng, mode, md_alg, hashlen, hash, sig);
 }
 
-int mbedtls_rsa_rsassa_pkcs1_v15_sign(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, unsigned char *sig)
+int mbedtls_rsa_rsassa_pkcs1_v15_sign(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg,
+									  unsigned int hashlen, const unsigned char *hash, unsigned char *sig)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_rsassa_pkcs1_v15_sign(ctx, f_rng, p_rng, mode, md_alg, hashlen, hash, sig);
 }
 
-int mbedtls_rsa_pkcs1_sign(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, unsigned char *sig)
+int mbedtls_rsa_pkcs1_sign(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg,
+						   unsigned int hashlen, const unsigned char *hash, unsigned char *sig)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_pkcs1_sign(ctx, f_rng, p_rng, mode, md_alg, hashlen, hash, sig);
 }
 
-int mbedtls_rsa_rsassa_pss_verify_ext(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, mbedtls_md_type_t mgf1_hash_id, int expected_salt_len, const unsigned char *sig)
+int mbedtls_rsa_rsassa_pss_verify_ext(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg,
+									  unsigned int hashlen, const unsigned char *hash, mbedtls_md_type_t mgf1_hash_id, int expected_salt_len, const unsigned char *sig)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_rsassa_pss_verify_ext(ctx, f_rng, p_rng, mode, md_alg, hashlen, hash, mgf1_hash_id, expected_salt_len, sig);
 }
 
-int mbedtls_rsa_rsassa_pss_verify(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, const unsigned char *sig)
+int mbedtls_rsa_rsassa_pss_verify(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg,
+								  unsigned int hashlen, const unsigned char *hash, const unsigned char *sig)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_rsassa_pss_verify(ctx, f_rng, p_rng, mode, md_alg, hashlen, hash, sig);
 }
 
-int mbedtls_rsa_rsassa_pkcs1_v15_verify(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, const unsigned char *sig)
+int mbedtls_rsa_rsassa_pkcs1_v15_verify(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode,
+										mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, const unsigned char *sig)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_rsassa_pkcs1_v15_verify(ctx, f_rng, p_rng, mode, md_alg, hashlen, hash, sig);
 }
 
-int mbedtls_rsa_pkcs1_verify(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, const unsigned char *sig)
+int mbedtls_rsa_pkcs1_verify(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg,
+							 unsigned int hashlen, const unsigned char *hash, const unsigned char *sig)
 {
 	return __rom_stubs_ssl.mbedtls_rsa_pkcs1_verify(ctx, f_rng, p_rng, mode, md_alg, hashlen, hash, sig);
 }
@@ -1626,12 +1662,14 @@ int mbedtls_ctr_drbg_reseed(mbedtls_ctr_drbg_context *ctx, const unsigned char *
 	return __rom_stubs_ssl.mbedtls_ctr_drbg_reseed(ctx, additional, len);
 }
 
-int mbedtls_ctr_drbg_seed_entropy_len(mbedtls_ctr_drbg_context *ctx, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy, const unsigned char *custom, size_t len, size_t entropy_len)
+int mbedtls_ctr_drbg_seed_entropy_len(mbedtls_ctr_drbg_context *ctx, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy,
+									  const unsigned char *custom, size_t len, size_t entropy_len)
 {
 	return __rom_stubs_ssl.mbedtls_ctr_drbg_seed_entropy_len(ctx, f_entropy, p_entropy, custom, len, entropy_len);
 }
 
-int mbedtls_ctr_drbg_seed(mbedtls_ctr_drbg_context *ctx, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy, const unsigned char *custom, size_t len)
+int mbedtls_ctr_drbg_seed(mbedtls_ctr_drbg_context *ctx, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy, const unsigned char *custom,
+						  size_t len)
 {
 	return __rom_stubs_ssl.mbedtls_ctr_drbg_seed(ctx, f_entropy, p_entropy, custom, len);
 }
@@ -1656,7 +1694,7 @@ void mbedtls_hmac_drbg_update(mbedtls_hmac_drbg_context *ctx, const unsigned cha
 	__rom_stubs_ssl.mbedtls_hmac_drbg_update(ctx, additional, add_len);
 }
 
-int mbedtls_hmac_drbg_seed_buf(mbedtls_hmac_drbg_context *ctx, const mbedtls_md_info_t * md_info, const unsigned char *data, size_t data_len)
+int mbedtls_hmac_drbg_seed_buf(mbedtls_hmac_drbg_context *ctx, const mbedtls_md_info_t *md_info, const unsigned char *data, size_t data_len)
 {
 	return __rom_stubs_ssl.mbedtls_hmac_drbg_seed_buf(ctx, md_info, data, data_len);
 }
@@ -1666,7 +1704,8 @@ int mbedtls_hmac_drbg_reseed(mbedtls_hmac_drbg_context *ctx, const unsigned char
 	return __rom_stubs_ssl.mbedtls_hmac_drbg_reseed(ctx, additional, len);
 }
 
-int mbedtls_hmac_drbg_seed(mbedtls_hmac_drbg_context *ctx, const mbedtls_md_info_t * md_info, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy, const unsigned char *custom, size_t len)
+int mbedtls_hmac_drbg_seed(mbedtls_hmac_drbg_context *ctx, const mbedtls_md_info_t *md_info, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy,
+						   const unsigned char *custom, size_t len)
 {
 	return __rom_stubs_ssl.mbedtls_hmac_drbg_seed(ctx, md_info, f_entropy, p_entropy, custom, len);
 }
@@ -1707,7 +1746,8 @@ void mbedtls_pem_init(mbedtls_pem_context *ctx)
 	__rom_stubs_ssl.mbedtls_pem_init(ctx);
 }
 
-int mbedtls_pem_read_buffer(mbedtls_pem_context *ctx, const char *header, const char *footer, const unsigned char *data, const unsigned char *pwd, size_t pwdlen, size_t *use_len)
+int mbedtls_pem_read_buffer(mbedtls_pem_context *ctx, const char *header, const char *footer, const unsigned char *data, const unsigned char *pwd,
+							size_t pwdlen, size_t *use_len)
 {
 	return __rom_stubs_ssl.mbedtls_pem_read_buffer(ctx, header, footer, data, pwd, pwdlen, use_len);
 }
@@ -1717,7 +1757,8 @@ void mbedtls_pem_free(mbedtls_pem_context *ctx)
 	__rom_stubs_ssl.mbedtls_pem_free(ctx);
 }
 
-int mbedtls_pem_write_buffer(const char *header, const char *footer, const unsigned char *der_data, size_t der_len, unsigned char *buf, size_t buf_len, size_t *olen)
+int mbedtls_pem_write_buffer(const char *header, const char *footer, const unsigned char *der_data, size_t der_len, unsigned char *buf, size_t buf_len,
+							 size_t *olen)
 {
 	return __rom_stubs_ssl.mbedtls_pem_write_buffer(header, footer, der_data, der_len, buf, buf_len, olen);
 }
@@ -1733,7 +1774,8 @@ int mbedtls_dhm_read_params(mbedtls_dhm_context *ctx, unsigned char **p, const u
 	return __rom_stubs_ssl.mbedtls_dhm_read_params(ctx, p, end);
 }
 
-int mbedtls_dhm_make_params(mbedtls_dhm_context *ctx, int x_size, unsigned char *output, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_dhm_make_params(mbedtls_dhm_context *ctx, int x_size, unsigned char *output, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t),
+							void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_dhm_make_params(ctx, x_size, output, olen, f_rng, p_rng);
 }
@@ -1743,12 +1785,14 @@ int mbedtls_dhm_read_public(mbedtls_dhm_context *ctx, const unsigned char *input
 	return __rom_stubs_ssl.mbedtls_dhm_read_public(ctx, input, ilen);
 }
 
-int mbedtls_dhm_make_public(mbedtls_dhm_context *ctx, int x_size, unsigned char *output, size_t olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_dhm_make_public(mbedtls_dhm_context *ctx, int x_size, unsigned char *output, size_t olen, int (*f_rng)(void *, unsigned char *, size_t),
+							void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_dhm_make_public(ctx, x_size, output, olen, f_rng, p_rng);
 }
 
-int mbedtls_dhm_calc_secret(mbedtls_dhm_context *ctx, unsigned char *output, size_t output_size, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_dhm_calc_secret(mbedtls_dhm_context *ctx, unsigned char *output, size_t output_size, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t),
+							void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_dhm_calc_secret(ctx, output, output_size, olen, f_rng, p_rng);
 }
@@ -1774,7 +1818,8 @@ void mbedtls_ecjpake_free(mbedtls_ecjpake_context *ctx)
 	__rom_stubs_ssl.mbedtls_ecjpake_free(ctx);
 }
 
-int mbedtls_ecjpake_setup(mbedtls_ecjpake_context *ctx, mbedtls_ecjpake_role role, mbedtls_md_type_t hash, mbedtls_ecp_group_id curve, const unsigned char *secret, size_t len)
+int mbedtls_ecjpake_setup(mbedtls_ecjpake_context *ctx, mbedtls_ecjpake_role role, mbedtls_md_type_t hash, mbedtls_ecp_group_id curve,
+						  const unsigned char *secret, size_t len)
 {
 	return __rom_stubs_ssl.mbedtls_ecjpake_setup(ctx, role, hash, curve, secret, len);
 }
@@ -1789,7 +1834,8 @@ int mbedtls_ecjpake_read_round_one(mbedtls_ecjpake_context *ctx, const unsigned 
 	return __rom_stubs_ssl.mbedtls_ecjpake_read_round_one(ctx, buf, len);
 }
 
-int mbedtls_ecjpake_write_round_one(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecjpake_write_round_one(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t),
+									void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecjpake_write_round_one(ctx, buf, len, olen, f_rng, p_rng);
 }
@@ -1799,12 +1845,14 @@ int mbedtls_ecjpake_read_round_two(mbedtls_ecjpake_context *ctx, const unsigned 
 	return __rom_stubs_ssl.mbedtls_ecjpake_read_round_two(ctx, buf, len);
 }
 
-int mbedtls_ecjpake_write_round_two(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecjpake_write_round_two(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t),
+									void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecjpake_write_round_two(ctx, buf, len, olen, f_rng, p_rng);
 }
 
-int mbedtls_ecjpake_derive_secret(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecjpake_derive_secret(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t),
+								  void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecjpake_derive_secret(ctx, buf, len, olen, f_rng, p_rng);
 }
@@ -1836,7 +1884,8 @@ int mbedtls_ecdh_gen_public(mbedtls_ecp_group *grp, mbedtls_mpi *d, mbedtls_ecp_
 	return __rom_stubs_ssl.mbedtls_ecdh_gen_public(grp, d, Q, f_rng, p_rng);
 }
 
-int mbedtls_ecdh_compute_shared(mbedtls_ecp_group *grp, mbedtls_mpi *z, const mbedtls_ecp_point *Q, const mbedtls_mpi *d, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecdh_compute_shared(mbedtls_ecp_group *grp, mbedtls_mpi *z, const mbedtls_ecp_point *Q, const mbedtls_mpi *d, int (*f_rng)(void *, unsigned char *,
+								size_t), void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecdh_compute_shared(grp, z, Q, d, f_rng, p_rng);
 }
@@ -1851,7 +1900,8 @@ void mbedtls_ecdh_free(mbedtls_ecdh_context *ctx)
 	__rom_stubs_ssl.mbedtls_ecdh_free(ctx);
 }
 
-int mbedtls_ecdh_make_params(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecdh_make_params(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t),
+							 void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecdh_make_params(ctx, olen, buf, blen, f_rng, p_rng);
 }
@@ -1866,7 +1916,8 @@ int mbedtls_ecdh_get_params(mbedtls_ecdh_context *ctx, const mbedtls_ecp_keypair
 	return __rom_stubs_ssl.mbedtls_ecdh_get_params(ctx, key, side);
 }
 
-int mbedtls_ecdh_make_public(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecdh_make_public(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t),
+							 void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecdh_make_public(ctx, olen, buf, blen, f_rng, p_rng);
 }
@@ -1876,18 +1927,21 @@ int mbedtls_ecdh_read_public(mbedtls_ecdh_context *ctx, const unsigned char *buf
 	return __rom_stubs_ssl.mbedtls_ecdh_read_public(ctx, buf, blen);
 }
 
-int mbedtls_ecdh_calc_secret(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecdh_calc_secret(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t),
+							 void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecdh_calc_secret(ctx, olen, buf, blen, f_rng, p_rng);
 }
 
 /* ecdsa */
-int mbedtls_ecdsa_sign(mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s, const mbedtls_mpi *d, const unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecdsa_sign(mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s, const mbedtls_mpi *d, const unsigned char *buf, size_t blen, int (*f_rng)(void *,
+					   unsigned char *, size_t), void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecdsa_sign(grp, r, s, d, buf, blen, f_rng, p_rng);
 }
 
-int mbedtls_ecdsa_sign_det(mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s, const mbedtls_mpi *d, const unsigned char *buf, size_t blen, mbedtls_md_type_t md_alg)
+int mbedtls_ecdsa_sign_det(mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s, const mbedtls_mpi *d, const unsigned char *buf, size_t blen,
+						   mbedtls_md_type_t md_alg)
 {
 	return __rom_stubs_ssl.mbedtls_ecdsa_sign_det(grp, r, s, d, buf, blen, md_alg);
 }
@@ -1897,12 +1951,14 @@ int mbedtls_ecdsa_verify(mbedtls_ecp_group *grp, const unsigned char *buf, size_
 	return __rom_stubs_ssl.mbedtls_ecdsa_verify(grp, buf, blen, Q, r, s);
 }
 
-int mbedtls_ecdsa_write_signature(mbedtls_ecdsa_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hlen, unsigned char *sig, size_t *slen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_ecdsa_write_signature(mbedtls_ecdsa_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hlen, unsigned char *sig,
+								  size_t *slen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_ecdsa_write_signature(ctx, md_alg, hash, hlen, sig, slen, f_rng, p_rng);
 }
 
-int mbedtls_ecdsa_write_signature_det(mbedtls_ecdsa_context *ctx, const unsigned char *hash, size_t hlen, unsigned char *sig, size_t *slen, mbedtls_md_type_t md_alg)
+int mbedtls_ecdsa_write_signature_det(mbedtls_ecdsa_context *ctx, const unsigned char *hash, size_t hlen, unsigned char *sig, size_t *slen,
+									  mbedtls_md_type_t md_alg)
 {
 	return __rom_stubs_ssl.mbedtls_ecdsa_write_signature_det(ctx, hash, hlen, sig, slen, md_alg);
 }
@@ -1953,7 +2009,8 @@ int mbedtls_pk_setup(mbedtls_pk_context *ctx, const mbedtls_pk_info_t *info)
 	return __rom_stubs_ssl.mbedtls_pk_setup(ctx, info);
 }
 
-int mbedtls_pk_setup_rsa_alt(mbedtls_pk_context *ctx, void *key, mbedtls_pk_rsa_alt_decrypt_func decrypt_func, mbedtls_pk_rsa_alt_sign_func sign_func, mbedtls_pk_rsa_alt_key_len_func key_len_func)
+int mbedtls_pk_setup_rsa_alt(mbedtls_pk_context *ctx, void *key, mbedtls_pk_rsa_alt_decrypt_func decrypt_func, mbedtls_pk_rsa_alt_sign_func sign_func,
+							 mbedtls_pk_rsa_alt_key_len_func key_len_func)
 {
 	return __rom_stubs_ssl.mbedtls_pk_setup_rsa_alt(ctx, key, decrypt_func, sign_func, key_len_func);
 }
@@ -1968,22 +2025,26 @@ int mbedtls_pk_verify(mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const u
 	return __rom_stubs_ssl.mbedtls_pk_verify(ctx, md_alg, hash, hash_len, sig, sig_len);
 }
 
-int mbedtls_pk_verify_ext(mbedtls_pk_type_t type, const void *options, mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hash_len, const unsigned char *sig, size_t sig_len)
+int mbedtls_pk_verify_ext(mbedtls_pk_type_t type, const void *options, mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash,
+						  size_t hash_len, const unsigned char *sig, size_t sig_len)
 {
 	return __rom_stubs_ssl.mbedtls_pk_verify_ext(type, options, ctx, md_alg, hash, hash_len, sig, sig_len);
 }
 
-int mbedtls_pk_sign(mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hash_len, unsigned char *sig, size_t *sig_len, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_pk_sign(mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hash_len, unsigned char *sig, size_t *sig_len,
+					int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_pk_sign(ctx, md_alg, hash, hash_len, sig, sig_len, f_rng, p_rng);
 }
 
-int mbedtls_pk_decrypt(mbedtls_pk_context *ctx, const unsigned char *input, size_t ilen, unsigned char *output, size_t *olen, size_t osize, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_pk_decrypt(mbedtls_pk_context *ctx, const unsigned char *input, size_t ilen, unsigned char *output, size_t *olen, size_t osize, int (*f_rng)(void *,
+					   unsigned char *, size_t), void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_pk_decrypt(ctx, input, ilen, output, olen, osize, f_rng, p_rng);
 }
 
-int mbedtls_pk_encrypt(mbedtls_pk_context *ctx, const unsigned char *input, size_t ilen, unsigned char *output, size_t *olen, size_t osize, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)
+int mbedtls_pk_encrypt(mbedtls_pk_context *ctx, const unsigned char *input, size_t ilen, unsigned char *output, size_t *olen, size_t osize, int (*f_rng)(void *,
+					   unsigned char *, size_t), void *p_rng)
 {
 	return __rom_stubs_ssl.mbedtls_pk_encrypt(ctx, input, ilen, output, olen, osize, f_rng, p_rng);
 }
@@ -2039,13 +2100,13 @@ int mbedtls_pk_write_key_pem(mbedtls_pk_context *key, unsigned char *buf, size_t
 	return __rom_stubs_ssl.mbedtls_pk_write_key_pem(key, buf, size);
 }
 
-#if defined(MBEDTLS_USE_ROM_API) && (defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER==0x02100300)
-int mbedtls_md5_starts_ret( mbedtls_md5_context *ctx )
+#if defined(MBEDTLS_USE_ROM_API) && (defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER==0x02100300 || MBEDTLS_VERSION_NUMBER==0x021C0000 || MBEDTLS_VERSION_NUMBER==0x021C0100))
+int mbedtls_md5_starts_ret(mbedtls_md5_context *ctx)
 {
 	__rom_stubs_ssl.mbedtls_md5_starts(ctx);
 	return 0;
 }
-int mbedtls_md5_update_ret( mbedtls_md5_context *ctx, const unsigned char *input, size_t ilen )
+int mbedtls_md5_update_ret(mbedtls_md5_context *ctx, const unsigned char *input, size_t ilen)
 {
 	__rom_stubs_ssl.mbedtls_md5_update(ctx, input, ilen);
 	return 0;
@@ -2055,12 +2116,12 @@ int mbedtls_md5_finish_ret(mbedtls_md5_context *ctx, unsigned char output[16])
 	__rom_stubs_ssl.mbedtls_md5_finish(ctx, output);
 	return 0;
 }
-int mbedtls_internal_md5_process(mbedtls_md5_context * ctx, const unsigned char data [ 64 ])
+int mbedtls_internal_md5_process(mbedtls_md5_context *ctx, const unsigned char data [ 64 ])
 {
 	__rom_stubs_ssl.mbedtls_md5_process(ctx, data);
 	return 0;
 }
-int mbedtls_md5_ret(const unsigned char * input, size_t ilen, unsigned char output [ 16 ])
+int mbedtls_md5_ret(const unsigned char *input, size_t ilen, unsigned char output [ 16 ])
 {
 	__rom_stubs_ssl.mbedtls_md5(input, ilen, output);
 	return 0;
@@ -2080,12 +2141,12 @@ int mbedtls_sha1_finish_ret(mbedtls_sha1_context *ctx, unsigned char output[20])
 	__rom_stubs_ssl.mbedtls_sha1_finish(ctx, output);
 	return 0;
 }
-int mbedtls_internal_sha1_process(mbedtls_sha1_context * ctx, const unsigned char data [ 64 ])
+int mbedtls_internal_sha1_process(mbedtls_sha1_context *ctx, const unsigned char data [ 64 ])
 {
 	__rom_stubs_ssl.mbedtls_sha1_process(ctx, data);
 	return 0;
 }
-int mbedtls_sha1_ret(const unsigned char * input, size_t ilen, unsigned char output [ 20 ])
+int mbedtls_sha1_ret(const unsigned char *input, size_t ilen, unsigned char output [ 20 ])
 {
 	__rom_stubs_ssl.mbedtls_sha1(input, ilen, output);
 	return 0;
@@ -2105,35 +2166,35 @@ int mbedtls_sha512_finish_ret(mbedtls_sha512_context *ctx, unsigned char output[
 	__rom_stubs_ssl.mbedtls_sha512_finish(ctx, output);
 	return 0;
 }
-int mbedtls_internal_sha512_process(mbedtls_sha512_context * ctx, const unsigned char data [ 128 ])
+int mbedtls_internal_sha512_process(mbedtls_sha512_context *ctx, const unsigned char data [ 128 ])
 {
 	__rom_stubs_ssl.mbedtls_sha512_process(ctx, data);
 	return 0;
 }
-int mbedtls_sha512_ret(const unsigned char * input, size_t ilen, unsigned char output [ 64 ], int is384)
+int mbedtls_sha512_ret(const unsigned char *input, size_t ilen, unsigned char output [ 64 ], int is384)
 {
 	__rom_stubs_ssl.mbedtls_sha512(input, ilen, output, is384);
 	return 0;
 }
-int mbedtls_pk_sign_restartable( mbedtls_pk_context *ctx,
-             mbedtls_md_type_t md_alg,
-             const unsigned char *hash, size_t hash_len,
-             unsigned char *sig, size_t *sig_len,
-             int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
-             mbedtls_pk_restart_ctx *rs_ctx )
+int mbedtls_pk_sign_restartable(mbedtls_pk_context *ctx,
+								mbedtls_md_type_t md_alg,
+								const unsigned char *hash, size_t hash_len,
+								unsigned char *sig, size_t *sig_len,
+								int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
+								mbedtls_pk_restart_ctx *rs_ctx)
 {
 	return __rom_stubs_ssl.mbedtls_pk_sign(ctx, md_alg, hash, hash_len, sig, sig_len, f_rng, p_rng);
 }
-int mbedtls_pk_verify_restartable( mbedtls_pk_context *ctx,
-               mbedtls_md_type_t md_alg,
-               const unsigned char *hash, size_t hash_len,
-               const unsigned char *sig, size_t sig_len,
-               mbedtls_pk_restart_ctx *rs_ctx )
+int mbedtls_pk_verify_restartable(mbedtls_pk_context *ctx,
+								  mbedtls_md_type_t md_alg,
+								  const unsigned char *hash, size_t hash_len,
+								  const unsigned char *sig, size_t sig_len,
+								  mbedtls_pk_restart_ctx *rs_ctx)
 {
 	return __rom_stubs_ssl.mbedtls_pk_verify(ctx, md_alg, hash, hash_len, sig, sig_len);
 }
 #endif /* MBEDTLS_USE_ROM_API */
-#if defined(ENABLE_AMAZON_COMMON) || (defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER==0x02100300)
+#if defined(ENABLE_AMAZON_COMMON) || (defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER==0x02100300 || MBEDTLS_VERSION_NUMBER==0x021C0000 || MBEDTLS_VERSION_NUMBER==0x021C0100))
 #if !defined(SUPPORT_HW_SSL_HMAC_SHA256)
 /* sha256 */
 int mbedtls_sha256_starts_ret(mbedtls_sha256_context *ctx, int is224)
@@ -2151,7 +2212,7 @@ int mbedtls_sha256_finish_ret(mbedtls_sha256_context *ctx, unsigned char output[
 	__rom_stubs_ssl.mbedtls_sha256_finish(ctx, output);
 	return 0;
 }
-int mbedtls_internal_sha256_process(mbedtls_sha256_context * ctx, const unsigned char data [ 64 ])
+int mbedtls_internal_sha256_process(mbedtls_sha256_context *ctx, const unsigned char data [ 64 ])
 {
 	__rom_stubs_ssl.mbedtls_sha256_process(ctx, data);
 	return 0;
@@ -2164,9 +2225,9 @@ int mbedtls_sha256_ret(const unsigned char *input, size_t ilen, unsigned char ou
 #endif /* !SUPPORT_HW_SSL_HMAC_SHA256 */
 #endif
 #if defined(ENABLE_AMAZON_COMMON) && (defined(MBEDTLS_VERSION_NUMBER) && MBEDTLS_VERSION_NUMBER == 0x02040000)
-void mbedtls_platform_zeroize( void *buf, size_t len )
+void mbedtls_platform_zeroize(void *buf, size_t len)
 {
-	memset( buf, 0, len );
+	memset(buf, 0, len);
 }
 #endif
 #endif

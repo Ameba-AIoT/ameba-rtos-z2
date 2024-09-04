@@ -45,30 +45,29 @@
 
 typedef struct {
 #if RTP_BIG_ENDIAN
-        uint16_t version:2;   /* protocol version */
-        uint16_t p:1;         /* padding flag */
-        uint16_t x:1;         /* header extension flag */
-        uint16_t cc:4;        /* CSRC count */
-        uint16_t m:1;         /* marker bit */
-        uint16_t pt:7;        /* payload type */
+	uint16_t version: 2;  /* protocol version */
+	uint16_t p: 1;        /* padding flag */
+	uint16_t x: 1;        /* header extension flag */
+	uint16_t cc: 4;       /* CSRC count */
+	uint16_t m: 1;        /* marker bit */
+	uint16_t pt: 7;       /* payload type */
 #else /*RTP_LITTLE_ENDIAN*/
-        uint16_t cc:4;        /* CSRC count */
-        uint16_t x:1;         /* header extension flag */
-        uint16_t p:1;         /* padding flag */
-        uint16_t version:2;   /* protocol version */
-        uint16_t pt:7;        /* payload type */
-        uint16_t m:1;         /* marker bit */
+	uint16_t cc: 4;       /* CSRC count */
+	uint16_t x: 1;        /* header extension flag */
+	uint16_t p: 1;        /* padding flag */
+	uint16_t version: 2;  /* protocol version */
+	uint16_t pt: 7;       /* payload type */
+	uint16_t m: 1;        /* marker bit */
 #endif
-        uint16_t seq;              /* sequence number */
-        uint32_t ts;               /* timestamp */
-        uint32_t ssrc;             /* synchronization source */
-        uint32_t *csrc;          /* optional CSRC list, skip if cc is set to 0 here*/
+	uint16_t seq;              /* sequence number */
+	uint32_t ts;               /* timestamp */
+	uint32_t ssrc;             /* synchronization source */
+	uint32_t *csrc;          /* optional CSRC list, skip if cc is set to 0 here*/
 } rtp_hdr_t;
 
 /*sturcture to hold connect info*/
-struct connect_context
-{
-	int socket_id;	
+struct connect_context {
+	int socket_id;
 	uint8_t *server_ip;
 	uint16_t server_port;
 	uint8_t *remote_ip;
@@ -81,10 +80,9 @@ struct connect_context
 #endif
 };
 
-struct rtp_statistics
-{
+struct rtp_statistics {
 	uint32_t rtp_tick;
-	uint32_t rtp_tick_inc; 
+	uint32_t rtp_tick_inc;
 	uint32_t base_timestamp;
 	/*for flow control*/
 	uint32_t delay_threshold; //in ms
@@ -96,8 +94,7 @@ struct rtp_statistics
 	uint32_t drop_packet;
 };
 
-struct rtp_periodic_report_s
-{
+struct rtp_periodic_report_s {
 	uint32_t period;
 	uint32_t timer1;
 	uint32_t timer2;
@@ -107,12 +104,11 @@ struct rtp_periodic_report_s
 	uint32_t last_timestamp;
 };
 
-enum rtp_object_state
-{
-    RTP_OBJECT_IDLE = 0,
-    RTP_OBJECT_READY,
-    RTP_OBJECT_INUSE,
-    RTP_OBJECT_USED,
+enum rtp_object_state {
+	RTP_OBJECT_IDLE = 0,
+	RTP_OBJECT_READY,
+	RTP_OBJECT_INUSE,
+	RTP_OBJECT_USED,
 };
 
 #ifdef ENABLE_SIP_MMFV2
@@ -121,21 +117,20 @@ struct ua_stream_context;
 struct stream_context;
 struct rtp_object;
 
-struct rtp_object
-{
+struct rtp_object {
 	struct list_head rtp_list;
 	_mutex list_lock;
 	rtp_hdr_t *rtphdr;
 	void *extra;     //pointer to type specific structure
-	int index;      //respective internal buffer index 
+	int index;      //respective internal buffer index
 	uint8_t *data; // respective internal buffer data addr
 	int len;        //one complete frame data length
 	uint32_t timestamp; //timestamp
-	uint32_t fs:1; //fragment start
-	uint32_t fe:1; //fragment end
-	uint32_t fk:1;    //fragment keep indicator so that cannot avoid sending by flow control        
-	uint32_t fd:29; //fragment data size (max size of 2^29-1)
-	enum rtp_object_state state;    
+	uint32_t fs: 1; //fragment start
+	uint32_t fe: 1; //fragment end
+	uint32_t fk: 1;   //fragment keep indicator so that cannot avoid sending by flow control
+	uint32_t fd: 29; //fragment data size (max size of 2^29-1)
+	enum rtp_object_state state;
 	struct connect_context connect_ctx;
 #ifdef ENABLE_SIP_MMFV2
 	int (*sip_rtp_object_handler)(struct ua_stream_context *stream_ctx, struct rtp_object *payload);

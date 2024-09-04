@@ -1,0 +1,104 @@
+/*********************************************************************
+*
+*       ResetTarget
+*/
+void ResetTarget(void) {
+  int v;
+  int Speed;
+  int Ctrl;
+  Report("******************************************************");
+  Report("J-Link script: ResetTarget()");
+  Report("******************************************************");
+  Speed = JTAG_Speed;
+  JTAG_Speed = 1000;
+  JTAG_WriteClocks(1);
+
+  //
+  // Select CTRL_AP(APB-AP, AP1) and set authentication interface
+  //
+  JLINK_CORESIGHT_WriteDP(2, (1 << 24) | (0 << 4));  // Select AP[1], bank 0
+  Ctrl = 0x23800052; // AP1.CSW
+  JLINK_CORESIGHT_WriteAP(0, Ctrl);
+
+  //
+  // Perform some other init steps which are required to get full control of the debug logic
+  //
+
+  // Now, in CTRL_AP(which is an APB-AP, AP1 for AmebaZ2)
+  // AP register index 1 is the TAR register which is used to assign target address
+  // AP register index 3 is the DRW register which is used to read(write) data from(to) the address in TAR
+  // Ex: write ADDR with WDATA
+  //     step 1. JLINK_CORESIGHT_WriteAP(1, ADDR)
+  //     step 2. JLINK_CORESIGHT_WriteAP(3, WDATA)
+  // Ex: read ADDR
+  //     step 1. JLINK_CORESIGHT_WriteAP(1, ADDR)
+  //     step 2. JLINK_CORESIGHT_ReadAP(3)
+  //     step 3. might additional read RDBUFF for JTAG connection
+  
+  /*!!!!!!!important notice: for efuse key, if 0x190 = 00, 0x191 == 0x87, 0x192 == 0x10, the MSB
+           should follow the following sequence as the example!!!!
+  */
+
+  // example secure key efuse 0x190~0x19F: 0x00 0x01 0x02 0x03 0x04 0x05 0x06 0x07 0x08 0x09 0x0a 0x0b 0x0c 0x0d 0x0e 0x0f
+  // Secure world SWD password 
+  JLINK_CORESIGHT_WriteAP(1, 0x10);
+  JLINK_CORESIGHT_WriteAP(3,0x00010203);
+  JLINK_CORESIGHT_WriteAP(1, 0xC);
+  JLINK_CORESIGHT_WriteAP(3,0x04050607);  
+  JLINK_CORESIGHT_WriteAP(1, 0x8);
+  JLINK_CORESIGHT_WriteAP(3,0x08090A0B);
+  JLINK_CORESIGHT_WriteAP(1, 0x4);
+  JLINK_CORESIGHT_WriteAP(3,0x0C0D0E0F);
+
+  // example Non-secure key: 0x1A0~0x1AF: 0x10 0x11 0x12 0x13 0x14 0x15 0x16 0x17 0x18 0x19 0x1A 0x1B 0x1C 0x1D 0x1E 0x1F
+  // Non-Secure world SWD password
+  JLINK_CORESIGHT_WriteAP(1, 0x30);
+  JLINK_CORESIGHT_WriteAP(3,0x10111213);
+  JLINK_CORESIGHT_WriteAP(1, 0x2C);
+  JLINK_CORESIGHT_WriteAP(3,0x14151617);  
+  JLINK_CORESIGHT_WriteAP(1, 0x28);
+  JLINK_CORESIGHT_WriteAP(3,0x18191A1B);
+  JLINK_CORESIGHT_WriteAP(1, 0x24);
+  JLINK_CORESIGHT_WriteAP(3,0x1C1D1E1F);
+
+  JLINK_CORESIGHT_WriteAP(1, 0x0);
+  JLINK_CORESIGHT_WriteAP(3, 0x66);
+  JLINK_CORESIGHT_WriteAP(1, 0x0);
+
+  // Change to AHB-AP to control KM4(AHB-AP, AP0)
+  JLINK_CORESIGHT_WriteDP(2, (0 << 24) | (0 << 4));  // Select AP[0], bank 0
+  Ctrl = 0x23800052; // AP0.CSW
+  JLINK_CORESIGHT_WriteAP(0, Ctrl);
+  // Halt KM4
+  JLINK_CORESIGHT_WriteAP(1, 0xE000EDF0);
+  JLINK_CORESIGHT_WriteAP(3, 0xA05F0003);
+  JLINK_CORESIGHT_ReadAP(3);
+}
+/*********************************************************************
+*
+*       InitTarget
+*
+*  Notes
+*    (1) High-level functions like MEM_xxx functions must not be used here.
+*        They may only be used in SetupTarget() which is called later in the connect process.
+*/
+void InitTarget(void) {
+  Report("******************************************************");
+  Report("J-Link script: AmebaZ2 KM4 J-Link script");
+  Report("******************************************************");
+  /*
+  if (MAIN_ActiveTIF == JLINK_TIF_JTAG) {
+    JLINK_CORESIGHT_Configure("IRPre=0;DRPre=0;IRPost=0;DRPost=0;IRLenDevice=4");
+    JTAG_AllowTAPReset = 1;           // J-Link is allowed to use a TAP reset for JTAG-chain auto-detection
+    JTAG_SetDeviceId(0, 0x4BA00477);  // 4-bits IRLen
+  } else {
+    JLINK_CORESIGHT_Configure("");    // Perform SWD init sequence
+  }
+  */
+  // Manually configured AP map
+  CORESIGHT_AddAP(0, CORESIGHT_AHB_AP);
+  CORESIGHT_AddAP(1, CORESIGHT_APB_AP);
+  CORESIGHT_IndexAHBAPToUse = 0;
+  CPU = CORTEX_M33;
+  ResetTarget();  // Reset and Halt Core
+}

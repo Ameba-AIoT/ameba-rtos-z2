@@ -9,12 +9,11 @@
 
 //#include "pnp_mqtt_message.h"
 
-typedef struct
-{
-  az_span component_name;
-  az_span manufacturer;
-  az_span model;
-  az_span fw_version;
+typedef struct {
+	az_span component_name;
+	az_span manufacturer;
+	az_span model;
+	az_span fw_version;
 } pnp_device_info_component;
 
 
@@ -31,8 +30,8 @@ typedef struct
  * @retval #AZ_ERROR_ARG The pointer to the #pnp_thermostat_component instance is NULL.
  */
 az_result pnp_device_info_init(
-    pnp_device_info_component* out_device_info_component,
-    az_span component_name);
+	pnp_device_info_component *out_device_info_component,
+	az_span component_name);
 
 /**
  * @brief Build the thermostat's maximum temperature reported property message.
@@ -43,14 +42,14 @@ az_result pnp_device_info_init(
  * @param[out] out_property_name The name of the reported property to be sent.
  */
 void pnp_device_info_append_all_reported_property(
-	pnp_device_info_component* device_info_component,
-	az_json_writer* jw);
+	pnp_device_info_component *device_info_component,
+	az_json_writer *jw);
 
 void pnp_device_info_build_reported_property(
-    pnp_device_info_component* device_info_component,
-    az_span payload,
-    az_span* out_payload,
-    az_span property_name);
+	pnp_device_info_component *device_info_component,
+	az_span payload,
+	az_span *out_payload,
+	az_span property_name);
 
 
 #endif // PNP_DEVICE_INFO_COMPONENT_H

@@ -2807,7 +2807,7 @@ static int ssl_parse_server_hello_done( mbedtls_ssl_context *ssl )
 static int ssl_write_client_key_exchange( mbedtls_ssl_context *ssl )
 {
     int ret;
-    size_t i, n;
+    size_t i, n = 0;
     const mbedtls_ssl_ciphersuite_t *ciphersuite_info = ssl->transform_negotiate->ciphersuite_info;
 
     MBEDTLS_SSL_DEBUG_MSG( 2, ( "=> write client key exchange" ) );

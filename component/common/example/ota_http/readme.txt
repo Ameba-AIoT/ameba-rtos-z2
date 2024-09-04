@@ -1,7 +1,7 @@
 OTA HTTP UPDATING EXAMPLE
 
 Description:
-Download firmware from http download server(A local HTTP server is in tools\DownloadServer)
+Download firmware from http download server(A local HTTP server is in tools\DownloadServer(HTTP))
 
 Configuration:
 1. Modify PORT, HOST and RESOURCE based on your HTTP download server.
@@ -26,7 +26,7 @@ Configuration:
 Execution:
 Can make automatical Wi-Fi connection when booting by using wlan fast connect example.
 A http download example thread will be started automatically when booting.
-A local HTTP server can be used in tools\DownloadServer.
+A local HTTP server can be used in tools\DownloadServer(HTTP).
 
 [Supported List]
 	Supported :

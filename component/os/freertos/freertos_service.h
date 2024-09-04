@@ -34,7 +34,7 @@ extern VOID RtlUdelayOS(u32 us);
 #elif defined(CONFIG_HARDWARE_8188E)
 #include "platform/platform_stdlib.h"
 #else
-// other MCU may use standard library 
+// other MCU may use standard library
 #include <string.h>
 #endif
 
@@ -42,7 +42,7 @@ extern VOID RtlUdelayOS(u32 us);
 #if (defined CONFIG_GSPI_HCI || defined CONFIG_SDIO_HCI) || defined(CONFIG_LX_HCI)
 /* For SPI interface transfer and us delay implementation */
 #if !defined(CONFIG_PLATFORM_8195A) && !defined(CONFIG_PLATFORM_8711B) && !defined(CONFIG_PLATFORM_8721D)  && !defined(CONFIG_PLATFORM_8195BHP) && !defined(CONFIG_PLATFORM_8710C)
-#include <rtwlan_bsp.h>	
+#include <rtwlan_bsp.h>
 #endif
 #endif
 
@@ -64,12 +64,12 @@ typedef unsigned long	    osdepSTACK_TYPE;
 typedef long			    osdepBASE_TYPE;
 typedef unsigned long	    osdepTickType;
 
-typedef void*	            _timerHandle;
-typedef void*	            _sema;
-typedef void*	            _mutex;
-typedef void*	            _lock;
-typedef void*	            _queueHandle;
-typedef void*	            _xqueue;
+typedef void	            *_timerHandle;
+typedef void	            *_sema;
+typedef void	            *_mutex;
+typedef void	            *_lock;
+typedef void	            *_queueHandle;
+typedef void	            *_xqueue;
 typedef struct timer_list	_timer;
 
 #define rtw_timer_list timer_list
@@ -94,12 +94,14 @@ typedef struct	__queue		_queue;
 typedef struct	list_head	_list;
 typedef unsigned long		_irqL;
 
-typedef void*			    _thread_hdl_;
+typedef void			    *_thread_hdl_;
 typedef void			    thread_return;
-typedef void*			    thread_context;
+typedef void			    *thread_context;
 
-#if !defined(CONFIG_PLATFORM_8710C) 
-typedef struct { volatile int counter; } atomic_t;
+#if !defined(CONFIG_PLATFORM_8710C)
+typedef struct {
+	volatile int counter;
+} atomic_t;
 #endif
 
 #define ATOMIC_T atomic_t
@@ -112,7 +114,7 @@ typedef struct { volatile int counter; } atomic_t;
 static __inline _list *get_next(_list	*list)
 {
 	return list->next;
-}	
+}
 
 static __inline _list	*get_list_head(_queue	*queue)
 {
@@ -215,24 +217,24 @@ void cli(void);
 #undef atomic_set
 #define atomic_set(v,i) ((v)->counter = (i))
 
- /*
-  *      These inlines deal with timer wrapping correctly. You are 
-  *      strongly encouraged to use them
-  *      1. Because people otherwise forget
-  *      2. Because if the timer wrap changes in future you wont have to
-  *         alter your driver code.
-  *
-  * time_after(a,b) returns true if the time a is after time b.
-  *
-  * Do this with "<0" and ">=0" to only test the sign of the result. A
-  * good compiler would generate better code (and a really good compiler
-  * wouldn't care). Gcc is currently neither.
-  */
- #define time_after(a,b)	((long)(b) - (long)(a) < 0)
- #define time_before(a,b)	time_after(b,a)
-  
- #define time_after_eq(a,b)	((long)(a) - (long)(b) >= 0)
- #define time_before_eq(a,b)	time_after_eq(b,a)
+/*
+ *      These inlines deal with timer wrapping correctly. You are
+ *      strongly encouraged to use them
+ *      1. Because people otherwise forget
+ *      2. Because if the timer wrap changes in future you wont have to
+ *         alter your driver code.
+ *
+ * time_after(a,b) returns true if the time a is after time b.
+ *
+ * Do this with "<0" and ">=0" to only test the sign of the result. A
+ * good compiler would generate better code (and a really good compiler
+ * wouldn't care). Gcc is currently neither.
+ */
+#define time_after(a,b)	((long)(b) - (long)(a) < 0)
+#define time_before(a,b)	time_after(b,a)
+
+#define time_after_eq(a,b)	((long)(a) - (long)(b) >= 0)
+#define time_before_eq(a,b)	time_after_eq(b,a)
 
 
 extern void	rtw_init_listhead(_list *list);

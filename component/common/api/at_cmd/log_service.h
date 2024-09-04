@@ -28,8 +28,8 @@
 //#error "not implement"
 //#endif
 */
-#define log_module_init(fn) 
-		
+#define log_module_init(fn)
+
 #define ATC_INDEX_NUM 32
 
 #ifndef SUPPORT_LOG_SERVICE
@@ -39,7 +39,7 @@
 //LOG_SERVICE_BUFLEN: default, only 63 bytes could be used for keeping input
 //                                     cmd, the last byte is for string end ('\0').
 #ifndef LOG_SERVICE_BUFLEN
-#define LOG_SERVICE_BUFLEN     64     
+#define LOG_SERVICE_BUFLEN     64
 #endif
 
 #ifndef CONFIG_LOG_HISTORY
@@ -50,7 +50,7 @@
 #endif //#ifndef CONFIG_LOG_HISTORY
 
 #ifndef MAX_ARGC
-#define MAX_ARGC 12
+#define MAX_ARGC 20
 #endif
 
 #ifndef CONFIG_LOG_SERVICE_LOCK
@@ -70,7 +70,7 @@
 #define AT_FLAG_WIFI        AT_BIT(9)
 #define AT_FLAG_RDP         AT_BIT(10)
 
-enum{
+enum {
 	AT_DBG_OFF = 0,
 	AT_DBG_ALWAYS,
 	AT_DBG_ERROR,
@@ -100,20 +100,18 @@ extern unsigned int   gDbgFlag;
 			}													\
 		}while(0)
 
-#ifndef SUPPORT_INTERACTIVE_MODE
-#define SUPPORT_INTERACTIVE_MODE	0
-#endif //#ifndef SUPPORT_INTERACTIVE_MODE
-
 typedef void (*log_init_t)(void);
-typedef void (*log_act_t)(void*);
-typedef struct _at_command_item_{
+typedef void (*log_act_t)(void *);
+typedef struct _at_command_item_ {
 	char *log_cmd;
 	log_act_t at_act;
 	struct list_head node;
-}log_item_t;
+} log_item_t;
 
 void log_service_add_table(log_item_t *tbl, int len);
 int parse_param(char *buf, char **argv);
+void at_set_debug_level(unsigned char newDbgLevel);
+void at_set_debug_mask(unsigned int newDbgFlag);
 #if CONFIG_LOG_SERVICE_LOCK
 void log_service_lock_init(void);
 void log_service_lock(void);

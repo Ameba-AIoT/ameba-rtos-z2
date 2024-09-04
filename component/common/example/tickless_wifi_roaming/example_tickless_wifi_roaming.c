@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING) && CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING
 #include <autoconf.h>
 #include "osdep_service.h"
 #include <platform/platform_stdlib.h>
@@ -8,8 +11,6 @@
 #include "flash_api.h"
 #include "device_lock.h"
 #include "freertos_pmu.h"
-
-#if defined(CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING) && CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING
 
 #ifndef WLAN0_NAME
 #define WLAN0_NAME		"wlan0"
@@ -32,7 +33,7 @@ extern xSemaphoreHandle roaming_sema;
 #define SCAN_BUFLEN 500 			//each scan list length= 14 + ssid_length(32MAX). so SCAN_BUFLEN should be AP_NUM*(14+32) at least
 #define ROAMING_DBG_ENABLE 1 			//for debug log
 
-extern u8 pmu_is_roaming_awake_fw();
+extern u8 pmu_is_roaming_awake_fw(void);
 extern void pmu_degrade_awake(u8);
 extern void pmu_reset_awake(u8);
 extern void pmu_set_roaming_awake(u8 enable, u8 threshhold);
@@ -187,7 +188,7 @@ WIFI_RETRY_LOOP:
 			return -1;
 		}
 	}
-	wifi.security_type = security_type;
+	wifi.security_type = (rtw_security_t)security_type;
 	//SSID
 	strcpy((char *)wifi.ssid.val, (char *)psk_essid);
 	wifi.ssid.len = strlen((char *)psk_essid);
@@ -505,4 +506,4 @@ void example_tickless_wifi_roaming(void)
 
 	return;
 }
-#endif
+#endif //#if defined(CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING) && CONFIG_EXAMPLE_TICKLESS_WIFI_ROAMING

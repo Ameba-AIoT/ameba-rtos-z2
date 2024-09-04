@@ -20,24 +20,21 @@
 #define PNP_WIRELESS_PING_ID		0xABCD
 #define PNP_WIRELESS_BUF_SIZE	200
 
-typedef struct
-{
+typedef struct {
 	az_span ssid;
 	int32_t channel;
 	az_span security;
 	az_span password;
 } pnp_sta_mode_setting;
 
-typedef struct
-{
+typedef struct {
 	az_span mac;
 	az_span ip;
 	az_span gw;
 	az_span msk;
 } pnp_sta_interface;
 
-typedef struct
-{
+typedef struct {
 	int32_t idx;
 	az_span bss_type;
 	az_span mac;
@@ -48,25 +45,23 @@ typedef struct
 	az_span ssid;
 } pnp_scan_info;
 
-typedef struct
-{
+typedef struct {
 	az_span info;
 	az_span content[PNP_WIRELESS_MAX_PING_TIME];
 	az_span result;
 } pnp_ping_info;
 
-typedef struct
-{
-  az_span component_name;
-  bool wireless_support;
-  az_span specification;
-  pnp_sta_mode_setting sta_mode_setting;
-  pnp_sta_interface sta_interface;
-  pnp_scan_info scan_info[PNP_WIRELESS_MAX_SCAN_AP];
-  pnp_ping_info ping_info;
-  bool telemetry_enable_wifi_info;
-  int32_t telemetry_interval;
-  int32_t telemetry_counter;
+typedef struct {
+	az_span component_name;
+	bool wireless_support;
+	az_span specification;
+	pnp_sta_mode_setting sta_mode_setting;
+	pnp_sta_interface sta_interface;
+	pnp_scan_info scan_info[PNP_WIRELESS_MAX_SCAN_AP];
+	pnp_ping_info ping_info;
+	bool telemetry_enable_wifi_info;
+	int32_t telemetry_interval;
+	int32_t telemetry_counter;
 } pnp_wireless_component;
 
 /**
@@ -82,8 +77,8 @@ typedef struct
  * @retval #AZ_ERROR_ARG The pointer to the #pnp_thermostat_component instance is NULL.
  */
 az_result pnp_wireless_init(
-    pnp_wireless_component* out_wireless_component,
-    az_span component_name);
+	pnp_wireless_component *out_wireless_component,
+	az_span component_name);
 
 /**
  * @brief Build the thermostat's temperature telemetry message.
@@ -93,9 +88,9 @@ az_result pnp_wireless_init(
  * @param[out] out_payload A pointer to the #az_span containing the output json payload.
  */
 void pnp_wireless_build_telemetry_message(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span* out_payload);
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Build the thermostat's maximum temperature reported property message.
@@ -106,14 +101,14 @@ void pnp_wireless_build_telemetry_message(
  * @param[out] out_property_name The name of the reported property to be sent.
  */
 void pnp_wireless_append_all_reported_property(
-	pnp_wireless_component* wireless_component,
-	az_json_writer* jw);
+	pnp_wireless_component *wireless_component,
+	az_json_writer *jw);
 
 void pnp_wireless_build_reported_property(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span* out_payload,
-    az_span property_name);
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span *out_payload,
+	az_span property_name);
 
 
 /**
@@ -128,13 +123,13 @@ void pnp_wireless_build_reported_property(
  * @param[out] out_payload A pointer to the #az_span containing the output json payload.
  */
 void pnp_wireless_build_error_reported_property_with_status(
-    az_span component_name,
-    az_span property_name,
-    az_json_reader* property_value,
-    az_iot_status status,
-    int32_t version,
-    az_span payload,
-    az_span* out_payload);
+	az_span component_name,
+	az_span property_name,
+	az_json_reader *property_value,
+	az_iot_status status,
+	int32_t version,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Update the thermostat's member variables and prepare reported property message.
@@ -153,12 +148,12 @@ void pnp_wireless_build_error_reported_property_with_status(
  * @retval True if property updated. False if property does not belong to thermostat component.
  */
 bool pnp_wireless_process_property_update(
-    pnp_wireless_component* ref_wireless_component,
-    az_json_token const* property_name,
-    az_json_reader const* property_value,
-    int32_t version,
-    az_span payload,
-    az_span* out_payload);
+	pnp_wireless_component *ref_wireless_component,
+	az_json_token const *property_name,
+	az_json_reader const *property_value,
+	int32_t version,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Update the thermostat's member variables and prepare reported property message.
@@ -178,12 +173,12 @@ bool pnp_wireless_process_property_update(
  * @retval True if command successfully invoked. False if command failed to be invoked.
  */
 bool pnp_wireless_process_command_request(
-    pnp_wireless_component* wireless_component,
-    az_span command_name,
-    az_span command_received_payload,
-    az_span payload,
-    az_span* out_payload,
-    az_iot_status* out_status);
+	pnp_wireless_component *wireless_component,
+	az_span command_name,
+	az_span command_received_payload,
+	az_span payload,
+	az_span *out_payload,
+	az_iot_status *out_status);
 
 #endif // PNP_WIRELESS_COMPONENT_H
 

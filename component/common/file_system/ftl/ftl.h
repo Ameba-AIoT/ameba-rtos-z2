@@ -54,11 +54,11 @@ extern  "C" {
     */
 
 typedef enum {
-   FTL_LEVEL_ERROR = 0, /**< Error */
-   FTL_LEVEL_WARN  = 1, /**< Warning */
-   FTL_LEVEL_INFO	   = 2, /**< Information */
-   FTL_LEVEL_TRACE = 3, /**< Trace Data */
-   FTL_LEVEL_NUMs	   = 4	/**< Level Number */
+	FTL_LEVEL_ERROR = 0, /**< Error */
+	FTL_LEVEL_WARN  = 1, /**< Warning */
+	FTL_LEVEL_INFO	   = 2, /**< Information */
+	FTL_LEVEL_TRACE = 3, /**< Trace Data */
+	FTL_LEVEL_NUMs	   = 4	/**< Level Number */
 } FTL_LEVEL_DEFINE;
 
 /*============================================================================*
@@ -68,14 +68,13 @@ typedef enum {
     * @brief
     * @{
     */
-typedef enum
-{
-    FTL_IOCTL_DEBUG = 0,  /**< IO code for ftl debug */
-    FTL_IOCTL_CLEAR_ALL = 2,  /**< IO code for clear ftl section*/
-    FTL_IOCTL_ERASE_INVALID_PAGE = 3,  /**< IO code to erase invalid page*/
-    FTL_IOCTL_ENABLE_GC_IN_IDLE = 4,  /**< IO code to enable garbage collection in idle task*/
-    FTL_IOCTL_DISABLE_GC_IN_IDLE = 5,  /**< IO code to disable garbage collection in idle task*/
-    FTL_IOCTL_DO_GC_IN_APP = 6,  /**< IO code to do garbage collection in app*/
+typedef enum {
+	FTL_IOCTL_DEBUG = 0,  /**< IO code for ftl debug */
+	FTL_IOCTL_CLEAR_ALL = 2,  /**< IO code for clear ftl section*/
+	FTL_IOCTL_ERASE_INVALID_PAGE = 3,  /**< IO code to erase invalid page*/
+	FTL_IOCTL_ENABLE_GC_IN_IDLE = 4,  /**< IO code to enable garbage collection in idle task*/
+	FTL_IOCTL_DISABLE_GC_IN_IDLE = 5,  /**< IO code to disable garbage collection in idle task*/
+	FTL_IOCTL_DO_GC_IN_APP = 6,  /**< IO code to do garbage collection in app*/
 } T_FTL_IOCTL_CODE;
 
 /** End of FTL_Exported_Types
@@ -138,12 +137,12 @@ uint32_t ftl_ioctl(uint32_t cmd, uint32_t p1, uint32_t p2);
 
 static inline void flash_set_bit(uint32_t *addr, uint32_t bit)
 {
-    (*addr) &= ~bit;
+	(*addr) &= ~bit;
 }
 
 static inline bool flash_get_bit(uint32_t flag, uint32_t bit)
 {
-    return (flag & bit) ? FALSE : TRUE;
+	return (flag & bit) ? FALSE : TRUE;
 }
 
 /** @} */ /* End of group FTL */

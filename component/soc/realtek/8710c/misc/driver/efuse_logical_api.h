@@ -29,7 +29,7 @@
 
 #ifndef MBED_EXT_EFUSE_LOGICAL_API_EXT_H
 #define MBED_EXT_EFUSE_LOGICAL_API_EXT_H
- 
+
 #include "device.h"
 
 #ifdef __cplusplus
@@ -51,11 +51,11 @@ extern "C" {
 int efuse_logical_read(u16 laddr, u16 size, u8 *pbuf);
 
 /**
-  * @brief  write in pg packet format 
+  * @brief  write in pg packet format
   * @param  offset: offset is to set the number of 8 bytes
   * @param  wden: word enable is to decide which word need to be written
   * @param  data: data need to be written
-  * @retval 0: success -1: failure 
+  * @retval 0: success -1: failure
   */
 //static int efuse_pg_packet(u8 offset , u8 wden, u8 *data);
 
@@ -64,19 +64,19 @@ int efuse_logical_read(u16 laddr, u16 size, u8 *pbuf);
   * @param  addr: address on logical map
   * @param  cnts: how many bytes of data
   * @param  data: data need to be written
-  * @retval 0: success <0: failure   
+  * @retval 0: success <0: failure
   */
 int efuse_logical_write(u16 addr, u16 cnts, u8 *data);
 
 /**
   * @brief  To enable secure boot
-  * @retval 0: success <0: failure 
+  * @retval 0: success <0: failure
   */
 int efuse_fw_verify_enable(void);
 
 /**
   * @brief  To check the secure boot is enabled or not
-  * @retval 1: success 0: failure 
+  * @retval 1: success 0: failure
   */
 int efuse_fw_verify_check(void);
 
@@ -96,4 +96,4 @@ int efuse_boot_message_enable(void);
 }
 #endif
 
-#endif 
+#endif

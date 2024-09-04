@@ -93,10 +93,18 @@ typedef unsigned long long      __uint64_t;
 typedef unsigned int            BOOL;
 #else
 #ifndef BOOL
+#ifdef PLATFORM_OHOS
+typedef unsigned int           BOOL;
+#else
 typedef unsigned char           BOOL;
 #endif
+#endif
 #ifndef bool
+#ifdef PLATFORM_OHOS
+typedef unsigned int           bool;
+#elif !(defined(CHIP_PROJECT) && CHIP_PROJECT)
 typedef unsigned char           bool;
+#endif
 #endif
 #endif
 
@@ -112,7 +120,9 @@ typedef enum _RTK_STATUS_ {
     _EXIT_FAILURE = 1
 }RTK_STATUS, *PRTK_STATUS;
 
+#if !(defined(CHIP_PROJECT) && CHIP_PROJECT)
 #define IN
+#endif
 #define OUT
 #define VOID void
 #define INOUT
@@ -536,5 +546,9 @@ typedef unsigned char	BOOLEAN,*PBOOLEAN;
 #define __extension__		/* Ignore */
 #define	__restrict			/* Ignore */
 #endif
+
+#if defined(CHIP_PROJECT) && CHIP_PROJECT /* For Matter */
+#include "platform_stdlib_matter.h"
+#endif /* CHIP_PROJECT */
 
 #endif// __BASIC_TYPES_H__

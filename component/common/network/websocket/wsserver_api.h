@@ -1,5 +1,24 @@
+/**
+  ******************************************************************************
+  * @file    wsserver_api.h
+  * @author
+  * @version
+  * @brief   This file provides user interface for websocket server.
+  ******************************************************************************
+  */
 #ifndef _WS_SERVER_API_H_
 #define _WS_SERVER_API_H_
+
+/** @addtogroup websocket       WebSocket
+ *  @ingroup    network
+ *  @brief      WebSocket functions
+ *  @{
+ */
+
+/** @addtogroup server WebSocket Server
+ *  @brief      WebSocket server functions
+ *  @{
+ */
 
 #include "platform_stdlib.h"
 #include "platform_opts.h"
@@ -52,7 +71,7 @@ extern uint8_t ws_server_debug;
   * @brief	The enum is the list of client connection status.
   */
 
-typedef enum{ 
+typedef enum {
 	CLOSED = 0,		/*!< Client Connection closed */
 	CONNECTING,	/*!< Client is connecting */
 	CONNECTED1,	/*!< Client is connected */
@@ -99,7 +118,7 @@ typedef struct _ws_conn {
 	uint8_t *receivedData;			/*!< Pointer to decoded receiving data which received from client */
 	ws_conn_state state;			/*!< Connection state */
 	struct task_struct task;		/*!< Connection task context */
-}ws_conn;
+} ws_conn;
 
 /**
   * @brief  The structure is the context used for websocket opcode.
@@ -213,7 +232,7 @@ void ws_server_sendPing(ws_conn *conn);
  * @param[in] ws_conn: the websocket connection
  * @return    None
  */
- void ws_server_sendBinary(uint8_t* message, int message_len, int use_mask, ws_conn *conn);
+void ws_server_sendBinary(uint8_t *message, int message_len, int use_mask, ws_conn *conn);
 
 /**
  * @brief	  This function is used to create the sending text data and copy to tx_bufs. Data will be sent while polling.
@@ -223,7 +242,7 @@ void ws_server_sendPing(ws_conn *conn);
  * @param[in] ws_conn: the websocket connection
  * @return    None
  */
-void ws_server_sendText(char* message, int message_len, int use_mask, ws_conn *conn);
+void ws_server_sendText(char *message, int message_len, int use_mask, ws_conn *conn);
 
 /**
  * @brief	  This function is used to create the sending binary data and send directly instead of sending while polling.
@@ -233,7 +252,7 @@ void ws_server_sendText(char* message, int message_len, int use_mask, ws_conn *c
  * @param[in] ws_conn: the websocket connection
  * @return    None
  */
- void ws_server_direct_sendBinary(uint8_t* message, int message_len, int use_mask, ws_conn *conn);
+void ws_server_direct_sendBinary(uint8_t *message, int message_len, int use_mask, ws_conn *conn);
 
 /**
  * @brief	  This function is used to create the sending text data and send directly instead of sending while polling.
@@ -243,7 +262,7 @@ void ws_server_sendText(char* message, int message_len, int use_mask, ws_conn *c
  * @param[in] ws_conn: the websocket connection
  * @return    None
  */
-void ws_server_direct_sendText(char* message, int message_len, int use_mask, ws_conn *conn);
+void ws_server_direct_sendText(char *message, int message_len, int use_mask, ws_conn *conn);
 
 
 /**
@@ -261,4 +280,6 @@ void ws_server_sendClose(ws_conn *conn);
 void ws_server_conn_remove(ws_conn *conn);
 /***************************************************************************/
 
+/**@}*/
+/**@}*/
 #endif /* _WS_SERVER_API_H_ */

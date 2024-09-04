@@ -4,18 +4,18 @@
 #include "lwip_netconf.h"
 
 #ifndef WLAN0_NAME
-  #define WLAN0_NAME		"wlan0"
+#define WLAN0_NAME		"wlan0"
 #endif
 #ifndef WLAN1_NAME
-  #define WLAN1_NAME		"wlan1"
+#define WLAN1_NAME		"wlan1"
 #endif
 /* Give default value if not defined */
 #ifndef NET_IF_NUM
-  #ifdef CONFIG_CONCURRENT_MODE
-    #define NET_IF_NUM ((CONFIG_ETHERNET) + (CONFIG_WLAN) + 1)
-  #else
-    #define NET_IF_NUM ((CONFIG_ETHERNET) + (CONFIG_WLAN))
-  #endif  // end of CONFIG_CONCURRENT_MODE
+#ifdef CONFIG_CONCURRENT_MODE
+#define NET_IF_NUM ((CONFIG_WLAN) + 1)
+#else
+#define NET_IF_NUM CONFIG_WLAN
+#endif  // end of CONFIG_CONCURRENT_MODE
 #endif  // end of NET_IF_NUM
 
 /*Static IP ADDRESS*/
@@ -49,7 +49,7 @@
 #define AP_IP_ADDR2   43
 #define AP_IP_ADDR3   1
 #endif
-   
+
 /*NETMASK*/
 #ifndef AP_NETMASK_ADDR0
 #define AP_NETMASK_ADDR0   255
@@ -63,31 +63,31 @@
 #define AP_GW_ADDR0   192
 #define AP_GW_ADDR1   168
 #define AP_GW_ADDR2   43
-#define AP_GW_ADDR3   1  
+#define AP_GW_ADDR3   1
 #endif
 
 #if (defined(CONFIG_EXAMPLE_UART_ATCMD) && (CONFIG_EXAMPLE_UART_ATCMD))
 #include "wifi_structures.h"
 #include <wlan_fast_connect/example_wlan_fast_connect.h>
-typedef struct _UART_LOG_CONF_{
+typedef struct _UART_LOG_CONF_ {
 	u32 BaudRate;
 	u8 DataBits;
 	u8 StopBits;
 	u8 Parity;
 	u8 FlowControl;
-}UART_LOG_CONF, *PUART_LOG_CONF;
+} UART_LOG_CONF, *PUART_LOG_CONF;
 
 #define ATCMD_WIFI_CONN_STORE_MAX_NUM (1)
-struct atcmd_wifi_conf{
+struct atcmd_wifi_conf {
 	int32_t auto_enable;
 	rtw_wifi_setting_t setting;
 	int32_t reconn_num;
-	int32_t reconn_last_index;	
+	int32_t reconn_last_index;
 	struct wlan_fast_reconnect reconn[ATCMD_WIFI_CONN_STORE_MAX_NUM];
 };
 
 #define ATCMD_LWIP_CONN_STORE_MAX_NUM (1)
-struct atcmd_lwip_conn_info{
+struct atcmd_lwip_conn_info {
 	int32_t role; //client, server or seed
 	uint32_t protocol; //tcp or udp
 	uint32_t remote_addr; //remote ip
@@ -160,23 +160,23 @@ extern void uart_at_send_buf(u8 *buf, u32 len);
 #include "wifi_structures.h"
 #include <wlan_fast_connect/example_wlan_fast_connect.h>
 
-typedef struct _SPI_LOG_CONF_{
-    int frequency;
-    int bits;
-    int mode;
-}SPI_LOG_CONF, *PSPI_LOG_CONF;
+typedef struct _SPI_LOG_CONF_ {
+	int frequency;
+	int bits;
+	int mode;
+} SPI_LOG_CONF, *PSPI_LOG_CONF;
 
 #define ATCMD_WIFI_CONN_STORE_MAX_NUM (1)
-struct atcmd_wifi_conf{
+struct atcmd_wifi_conf {
 	int32_t auto_enable;
 	rtw_wifi_setting_t setting;
 	int32_t reconn_num;
-	int32_t reconn_last_index;	
+	int32_t reconn_last_index;
 	struct wlan_fast_reconnect reconn[ATCMD_WIFI_CONN_STORE_MAX_NUM];
 };
 
 #define ATCMD_LWIP_CONN_STORE_MAX_NUM (1)
-struct atcmd_lwip_conn_info{
+struct atcmd_lwip_conn_info {
 	int32_t role; //client, server or seed
 	uint32_t protocol; //tcp or udp
 	uint32_t remote_addr; //remote ip
@@ -240,7 +240,7 @@ extern void spi_at_send_buf(u8 *buf, u32 len);
 	}while(0)
 
 #else // #elif CONFIG_EXAMPLE_SPI_ATCMD
-          
+
 #define at_printf(fmt, args...) do{printf(fmt, ##args);}while(0)
 #define at_print_data(data, size) do{__rtl_memDump(data, size, NULL);}while(0)
 #endif//#if (defined(CONFIG_EXAMPLE_UART_ATCMD) && CONFIG_EXAMPLE_UART_ATCMD)

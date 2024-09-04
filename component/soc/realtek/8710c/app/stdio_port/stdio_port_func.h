@@ -44,69 +44,69 @@ extern const stdio_printf_func_stubs_t stdio_printf_stubs;     // symbol from li
 #if defined(CONFIG_PLATFORM_8195BHP) || defined(CONFIG_PLATFORM_8710C)
 #if !defined(CONFIG_BUILD_NONSECURE) || defined (CONFIG_BUILD_RAM)
 __STATIC_INLINE
-void stdio_port_init_s (void *adapter, stdio_putc_t putc, stdio_getc_t getc)
+void stdio_port_init_s(void *adapter, stdio_putc_t putc, stdio_getc_t getc)
 {
-    __rom_stubs_stdprintf_s.stdio_port_init (adapter, putc, getc);
+	__rom_stubs_stdprintf_s.stdio_port_init(adapter, putc, getc);
 }
-    
+
 __STATIC_INLINE
-void stdio_port_deinit_s (void)
+void stdio_port_deinit_s(void)
 {
-    __rom_stubs_stdprintf_s.stdio_port_deinit ();
+	__rom_stubs_stdprintf_s.stdio_port_deinit();
 }
 #endif
-    
+
 #if !defined(CONFIG_BUILD_SECURE) || defined (CONFIG_BUILD_RAM)
 __STATIC_INLINE
-void stdio_port_init_ns (void *adapter, stdio_putc_t putc, stdio_getc_t getc)
+void stdio_port_init_ns(void *adapter, stdio_putc_t putc, stdio_getc_t getc)
 {
-    __rom_stubs_stdprintf_ns.stdio_port_init (adapter, putc, getc);
+	__rom_stubs_stdprintf_ns.stdio_port_init(adapter, putc, getc);
 }
 
 __STATIC_INLINE
-void stdio_port_deinit_ns (void)
+void stdio_port_deinit_ns(void)
 {
-    __rom_stubs_stdprintf_ns.stdio_port_deinit ();
+	__rom_stubs_stdprintf_ns.stdio_port_deinit();
 }
 #endif
-    
+
 #endif  // end of "#if defined(CONFIG_PLATFORM_8195BHP) || defined(CONFIG_PLATFORM_8710C)"
-    
+
 __STATIC_INLINE
-void stdio_port_init (void *adapter, stdio_putc_t putc, stdio_getc_t getc)
+void stdio_port_init(void *adapter, stdio_putc_t putc, stdio_getc_t getc)
 {
-    stdio_printf_stubs.stdio_port_init (adapter, putc, getc);
+	stdio_printf_stubs.stdio_port_init(adapter, putc, getc);
 }
 
 __STATIC_INLINE
-void stdio_port_deinit (void)
+void stdio_port_deinit(void)
 {
-    stdio_printf_stubs.stdio_port_deinit ();
+	stdio_printf_stubs.stdio_port_deinit();
 }
 
 __STATIC_INLINE
-int stdio_port_putc (char c)
+int stdio_port_putc(char c)
 {
-    return stdio_printf_stubs.stdio_port_putc (c);
+	return stdio_printf_stubs.stdio_port_putc(c);
 }
 
 __STATIC_INLINE
-int stdio_port_sputc (void *arg, char c)
+int stdio_port_sputc(void *arg, char c)
 {
-    return stdio_printf_stubs.stdio_port_sputc (arg, c);
+	return stdio_printf_stubs.stdio_port_sputc(arg, c);
 }
 
 __STATIC_INLINE
-void stdio_port_bufputc (void *buf, char c)
+void stdio_port_bufputc(void *buf, char c)
 {
-    stdio_printf_stubs.stdio_port_bufputc (buf, c);
+	stdio_printf_stubs.stdio_port_bufputc(buf, c);
 }
 
 __STATIC_INLINE
-int stdio_port_getc (char *data)
+int stdio_port_getc(char *data)
 {
-    return stdio_printf_stubs.stdio_port_getc (data);
-}    
+	return stdio_printf_stubs.stdio_port_getc(data);
+}
 
 #endif  // end of "#if !defined(ROM_REGION)"
 

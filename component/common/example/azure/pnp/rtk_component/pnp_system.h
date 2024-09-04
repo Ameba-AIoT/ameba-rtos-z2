@@ -13,28 +13,26 @@
 
 //#include "pnp_mqtt_message.h"
 
-typedef struct
-{
-  az_span build_info_fw_compile_time;
-  az_span build_info_fw_compile_by;
-  az_span build_info_fw_compile_host;
-  az_span build_info_fw_compiler;
+typedef struct {
+	az_span build_info_fw_compile_time;
+	az_span build_info_fw_compile_by;
+	az_span build_info_fw_compile_host;
+	az_span build_info_fw_compiler;
 } pnp_build_info;
 
-typedef struct
-{
-  az_span component_name;
-  pnp_build_info build_info;
-  az_span os_info;
-  az_span processor_architecture;
-  int64_t device_runtime;
-  char cpu_usage[512];
-  bool trustzone_support;
-  bool telemetry_enable_device_runtime;
-  bool telemetry_enable_cpu_usage;
-  int32_t telemetry_interval;
-  int32_t telemetry_counter;
-  int32_t reboot_delay;
+typedef struct {
+	az_span component_name;
+	pnp_build_info build_info;
+	az_span os_info;
+	az_span processor_architecture;
+	int64_t device_runtime;
+	char cpu_usage[512];
+	bool trustzone_support;
+	bool telemetry_enable_device_runtime;
+	bool telemetry_enable_cpu_usage;
+	int32_t telemetry_interval;
+	int32_t telemetry_counter;
+	int32_t reboot_delay;
 } pnp_system_component;
 
 /**
@@ -50,8 +48,8 @@ typedef struct
  * @retval #AZ_ERROR_ARG The pointer to the #pnp_thermostat_component instance is NULL.
  */
 az_result pnp_system_init(
-    pnp_system_component* out_system_component,
-    az_span component_name);
+	pnp_system_component *out_system_component,
+	az_span component_name);
 
 /**
  * @brief Build the thermostat's temperature telemetry message.
@@ -61,9 +59,9 @@ az_result pnp_system_init(
  * @param[out] out_payload A pointer to the #az_span containing the output json payload.
  */
 void pnp_system_build_telemetry_message(
-    pnp_system_component* system_component,
-    az_span payload,
-    az_span* out_payload);
+	pnp_system_component *system_component,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Build the thermostat's maximum temperature reported property message.
@@ -74,14 +72,14 @@ void pnp_system_build_telemetry_message(
  * @param[out] out_property_name The name of the reported property to be sent.
  */
 void pnp_system_append_all_reported_property(
-	pnp_system_component* system_component,
-	az_json_writer* jw);
+	pnp_system_component *system_component,
+	az_json_writer *jw);
 
 void pnp_system_build_reported_property(
-    pnp_system_component* system_component,
-    az_span payload,
-    az_span* out_payload,
-    az_span property_name);
+	pnp_system_component *system_component,
+	az_span payload,
+	az_span *out_payload,
+	az_span property_name);
 
 
 /**
@@ -96,13 +94,13 @@ void pnp_system_build_reported_property(
  * @param[out] out_payload A pointer to the #az_span containing the output json payload.
  */
 void pnp_system_build_error_reported_property_with_status(
-    az_span component_name,
-    az_span property_name,
-    az_json_reader* property_value,
-    az_iot_status status,
-    int32_t version,
-    az_span payload,
-    az_span* out_payload);
+	az_span component_name,
+	az_span property_name,
+	az_json_reader *property_value,
+	az_iot_status status,
+	int32_t version,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Update the thermostat's member variables and prepare reported property message.
@@ -121,12 +119,12 @@ void pnp_system_build_error_reported_property_with_status(
  * @retval True if property updated. False if property does not belong to thermostat component.
  */
 bool pnp_system_process_property_update(
-    pnp_system_component* ref_system_component,
-    az_json_token const* property_name,
-    az_json_reader const* property_value,
-    int32_t version,
-    az_span payload,
-    az_span* out_payload);
+	pnp_system_component *ref_system_component,
+	az_json_token const *property_name,
+	az_json_reader const *property_value,
+	int32_t version,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Update the thermostat's member variables and prepare reported property message.
@@ -146,12 +144,12 @@ bool pnp_system_process_property_update(
  * @retval True if command successfully invoked. False if command failed to be invoked.
  */
 bool pnp_system_process_command_request(
-    pnp_system_component* system_component,
-    az_span command_name,
-    az_span command_received_payload,
-    az_span payload,
-    az_span* out_payload,
-    az_iot_status* out_status);
+	pnp_system_component *system_component,
+	az_span command_name,
+	az_span command_received_payload,
+	az_span payload,
+	az_span *out_payload,
+	az_iot_status *out_status);
 
 #endif // PNP_SYSTEM_COMPONENT_H
 

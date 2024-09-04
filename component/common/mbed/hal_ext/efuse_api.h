@@ -247,6 +247,11 @@ int efuse_lock_susec_key(void);
 ///@}
 #endif  // end of "#if defined(CONFIG_PLATFORM_8710C)"
 
+/**
+  * @brief  enable rotpk in efuse
+  */
+void efuse_rotpk_enable(void);
+
 /*\@}*/
 
 #ifdef __cplusplus

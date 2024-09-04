@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_XML) && CONFIG_EXAMPLE_XML
 #include "FreeRTOS.h"
 #include "task.h"
 #include <platform_stdlib.h>
@@ -6,8 +9,8 @@
 static void example_xml_thread(void *param)
 {
 	/* To avoid gcc warnings */
-	( void ) param;
-	
+	(void) param;
+
 	/* Create XML document
 	 * <Home:Light xmlns:Home="http://www.home.com" xmlns="http://www.device.com" fw_ver="1.0.0">
 	 *     <Power>on</Power>
@@ -68,7 +71,7 @@ static void example_xml_thread(void *param)
 	// Parse document buffer to XML tree. Prolog will be dropped
 	struct xml_node *root = xml_parse(doc, strlen(doc));
 
-	if(root) {
+	if (root) {
 		dump_buf = xml_dump_tree_ex(root, NULL, 1, 4);
 		printf("\n%s\n", dump_buf);
 		xml_free(dump_buf);
@@ -76,13 +79,13 @@ static void example_xml_thread(void *param)
 		// Search by XPath, prefix and name in path should be matched
 		struct xml_node_set *set = xml_find_path(root, "/Home:Sensor/Thermostat/Temperature");
 
-		if(set->count) {
+		if (set->count) {
 			printf("\nFind %d element by %s\n", set->count, "/Home:Sensor/Thermostat/Temperature");
 
 			// Get XML tree search result 0
 			struct xml_node *temperature_node = set->node[0];
 
-			if(xml_is_text(temperature_node->child)) {
+			if (xml_is_text(temperature_node->child)) {
 				// Get text
 				printf("Temperature[0] is %s\n", temperature_node->child->text);
 			}
@@ -98,8 +101,7 @@ static void example_xml_thread(void *param)
 		xml_delete_set(set);
 
 		xml_delete_tree(root);
-	}
-	else {
+	} else {
 		printf("Xml parse failed\n");
 	}
 
@@ -108,7 +110,9 @@ static void example_xml_thread(void *param)
 
 void example_xml(void)
 {
-	if(xTaskCreate(example_xml_thread, ((const char*)"example_xml_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+	if (xTaskCreate(example_xml_thread, ((const char *)"example_xml_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate(init_thread) failed", __FUNCTION__);
+	}
 }
 
+#endif //#if defined(CONFIG_EXAMPLE_XML) && CONFIG_EXAMPLE_XML

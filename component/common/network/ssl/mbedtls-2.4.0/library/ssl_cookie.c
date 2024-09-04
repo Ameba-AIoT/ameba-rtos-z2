@@ -135,7 +135,7 @@ static int ssl_cookie_hmac( mbedtls_md_context_t *hmac_ctx,
                             unsigned char **p, unsigned char *end,
                             const unsigned char *cli_id, size_t cli_id_len )
 {
-    unsigned char hmac_out[COOKIE_MD_OUTLEN];
+    unsigned char hmac_out[COOKIE_MD_OUTLEN] = {0};
 
     if( (size_t)( end - *p ) < COOKIE_HMAC_LEN )
         return( MBEDTLS_ERR_SSL_BUFFER_TOO_SMALL );

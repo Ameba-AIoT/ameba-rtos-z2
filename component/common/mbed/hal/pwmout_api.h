@@ -126,6 +126,22 @@ void pwmout_pulsewidth_us(pwmout_t* obj, int us);
 
 ///@}
 
+#if (defined(CONFIG_PLATFORM_8195BHP) && (CONFIG_PLATFORM_8195BHP == 1))  ||  (defined(CONFIG_PLATFORM_8195BLP) && (CONFIG_PLATFORM_8195BLP == 1))||  (defined(CONFIG_PLATFORM_8710C) && (CONFIG_PLATFORM_8710C == 1))
+///@name AmebaPro & AmebaZ2 
+///@{
+/**
+  * @brief  Set the polarity of the specified PWM channel.
+  * @param  obj: PWM object define in application software.
+  * @param  polarity: 
+  				0: Output low when timer count < setvalue.
+  				1: Output high when timer count < setvalue.(default)
+  * note: use before setting duty cycle or pulse width.
+  * @retval none
+  */
+void pwmout_set_polarity(pwmout_t* obj, int polarity);
+#endif  // end of "#if defined(CONFIG_PLATFORM_8195BHP) || defined(CONFIG_PLATFORM_8195BLP) || (defined(CONFIG_PLATFORM_8710C)"
+///@}
+
 /*\@}*/
 
 #ifdef __cplusplus

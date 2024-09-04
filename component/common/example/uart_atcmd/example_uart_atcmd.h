@@ -10,6 +10,7 @@
 #if CONFIG_EXAMPLE_UART_ATCMD
 #include "FreeRTOS.h"
 #include "semphr.h"
+#include <stdio.h>
 #define AMEBA1		1
 #define AMEBAZ		2
 #define AMEBAD		3
@@ -57,14 +58,14 @@ static void at_hex2str(const u8 *start, u32 size, u8 *out, u32 out_size)
 	int index, index2;
 	u8 *buf, *line;
 
-	if(!start ||(size==0)||(!out)||(out_size==0))
+	if (!start || (size == 0) || (!out) || (out_size == 0)) {
 		return;
+	}
 
-	buf = (u8*)start;
-	line = (u8*)out;
-	for (index = 0, index2=0; (index < size)&&(index2<out_size); index++, index2+=2) 
-	{
-		sprintf((char *)line+index2, "%02x", (u8) buf[index]); 
+	buf = (u8 *)start;
+	line = (u8 *)out;
+	for (index = 0, index2 = 0; (index < size) && (index2 < out_size); index++, index2 += 2) {
+		sprintf((char *)line + index2, "%02x", (u8) buf[index]);
 	}
 
 	return;
@@ -74,14 +75,15 @@ static void at_str2hex(const u8 *start, u32 size, u8 *out, u32 out_size)
 	int index, index2;
 	u8 *buf, *line;
 
-	if(!start ||(size==0))
+	if (!start || (size == 0)) {
 		return;
+	}
 
-	buf = (u8*)start;
-	line = (u8*)out;
+	buf = (u8 *)start;
+	line = (u8 *)out;
 
-	for (index=0, index2=0; index<size; index+=2, index2++){
-		line[index2] = key_2char2num(buf[index], buf[index+1]);
+	for (index = 0, index2 = 0; index < size; index += 2, index2++) {
+		line[index2] = key_2char2num(buf[index], buf[index + 1]);
 	}
 
 	return;

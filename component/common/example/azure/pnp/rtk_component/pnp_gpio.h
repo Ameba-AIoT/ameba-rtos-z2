@@ -13,14 +13,13 @@
 #define PNP_GPIO_PA_NUM 32
 #define PNP_GPIO_PB_NUM 32
 
-typedef struct
-{
-  az_span component_name;
-  gpio_t GPIO_PA_set[PNP_GPIO_PA_NUM];
-  gpio_t GPIO_PB_set[PNP_GPIO_PB_NUM];
-  bool GPIO_PA_is_used[PNP_GPIO_PA_NUM];
-  bool GPIO_PB_is_used[PNP_GPIO_PB_NUM];
-  bool gpio_support;
+typedef struct {
+	az_span component_name;
+	gpio_t GPIO_PA_set[PNP_GPIO_PA_NUM];
+	gpio_t GPIO_PB_set[PNP_GPIO_PB_NUM];
+	bool GPIO_PA_is_used[PNP_GPIO_PA_NUM];
+	bool GPIO_PB_is_used[PNP_GPIO_PB_NUM];
+	bool gpio_support;
 } pnp_gpio_component;
 
 
@@ -37,8 +36,8 @@ typedef struct
  * @retval #AZ_ERROR_ARG The pointer to the #pnp_thermostat_component instance is NULL.
  */
 az_result pnp_gpio_init(
-    pnp_gpio_component* out_gpio_component,
-    az_span component_name);
+	pnp_gpio_component *out_gpio_component,
+	az_span component_name);
 
 /**
  * @brief Build the thermostat's temperature telemetry message.
@@ -48,9 +47,9 @@ az_result pnp_gpio_init(
  * @param[out] out_payload A pointer to the #az_span containing the output json payload.
  */
 void pnp_gpio_build_telemetry_message(
-    pnp_gpio_component* gpio_component,
-    az_span payload,
-    az_span* out_payload);
+	pnp_gpio_component *gpio_component,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Build the thermostat's maximum temperature reported property message.
@@ -61,15 +60,15 @@ void pnp_gpio_build_telemetry_message(
  * @param[out] out_property_name The name of the reported property to be sent.
  */
 void pnp_gpio_append_all_reported_property(
-		pnp_gpio_component* gpio_component,
-		az_json_writer* jw);
+	pnp_gpio_component *gpio_component,
+	az_json_writer *jw);
 
 
 void pnp_gpio_build_reported_property(
-    pnp_gpio_component* gpio_component,
-    az_span payload,
-    az_span* out_payload,
-    az_span property_name);
+	pnp_gpio_component *gpio_component,
+	az_span payload,
+	az_span *out_payload,
+	az_span property_name);
 
 
 /**
@@ -84,13 +83,13 @@ void pnp_gpio_build_reported_property(
  * @param[out] out_payload A pointer to the #az_span containing the output json payload.
  */
 void pnp_gpio_build_error_reported_property_with_status(
-    az_span component_name,
-    az_span property_name,
-    az_json_reader* property_value,
-    az_iot_status status,
-    int32_t version,
-    az_span payload,
-    az_span* out_payload);
+	az_span component_name,
+	az_span property_name,
+	az_json_reader *property_value,
+	az_iot_status status,
+	int32_t version,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Update the thermostat's member variables and prepare reported property message.
@@ -109,12 +108,12 @@ void pnp_gpio_build_error_reported_property_with_status(
  * @retval True if property updated. False if property does not belong to thermostat component.
  */
 bool pnp_gpio_process_property_update(
-    pnp_gpio_component* ref_gpio_component,
-    az_json_token const* property_name,
-    az_json_reader const* property_value,
-    int32_t version,
-    az_span payload,
-    az_span* out_payload);
+	pnp_gpio_component *ref_gpio_component,
+	az_json_token const *property_name,
+	az_json_reader const *property_value,
+	int32_t version,
+	az_span payload,
+	az_span *out_payload);
 
 /**
  * @brief Update the thermostat's member variables and prepare reported property message.
@@ -134,11 +133,11 @@ bool pnp_gpio_process_property_update(
  * @retval True if command successfully invoked. False if command failed to be invoked.
  */
 bool pnp_gpio_process_command_request(
-    pnp_gpio_component* gpio_component,
-    az_span command_name,
-    az_span command_received_payload,
-    az_span payload,
-    az_span* out_payload,
-    az_iot_status* out_status);
+	pnp_gpio_component *gpio_component,
+	az_span command_name,
+	az_span command_received_payload,
+	az_span payload,
+	az_span *out_payload,
+	az_iot_status *out_status);
 
 #endif // PNP_GPIO_COMPONENT_H

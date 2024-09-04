@@ -65,7 +65,7 @@ extern const hal_ssi_func_stubs_t hal_ssi_stubs;
         @{
 */
 
-#if (CHIP_VER == CHIP_A_CUT) && (defined(CONFIG_BUILD_RAM))
+#if 1//(CHIP_VER == CHIP_A_CUT) && (defined(CONFIG_BUILD_RAM))
 hal_status_t hal_ssi_init_setting_rtl8710c_patch(phal_ssi_adaptor_t phal_ssi_adaptor);
 void SPI_IRQHandler_patch(void);
 void hal_ssi_irq_handle_rtl8710c_patch(phal_ssi_adaptor_t phal_ssi_adaptor);
@@ -126,7 +126,7 @@ __STATIC_INLINE hal_status_t hal_ssi_disable (phal_ssi_adaptor_t phal_ssi_adapto
  */
 __STATIC_INLINE hal_status_t hal_ssi_init_setting (phal_ssi_adaptor_t phal_ssi_adaptor)
 {
-#if (CHIP_VER == CHIP_A_CUT) && (defined(CONFIG_BUILD_RAM))
+#if 1//(CHIP_VER == CHIP_A_CUT) && (defined(CONFIG_BUILD_RAM))
     return hal_ssi_init_setting_rtl8710c_patch(phal_ssi_adaptor);
 #else
     return hal_ssi_stubs.hal_ssi_init_setting (phal_ssi_adaptor);
@@ -267,12 +267,12 @@ __STATIC_INLINE hal_status_t hal_ssi_interrupt_init_write (phal_ssi_adaptor_t ph
  *
  *   \return hal_status_t.
  */
-__STATIC_INLINE hal_status_t hal_ssi_set_sclk (phal_ssi_adaptor_t phal_ssi_adaptor, u32 clk_rate)
+__STATIC_INLINE hal_status_t hal_ssi_set_sclk(phal_ssi_adaptor_t phal_ssi_adaptor, u32 clk_rate)
 {
 #if ((CHIP_VER == CHIP_A_CUT) || (CHIP_VER == CHIP_B_CUT)) && (defined(CONFIG_BUILD_RAM))
     return hal_ssi_set_sclk_rtl8710c_patch(phal_ssi_adaptor, clk_rate);
 #else
-    return hal_ssi_stubs.hal_ssi_set_sclk (phal_ssi_adaptor, clk_rate);
+    return hal_ssi_stubs.hal_ssi_set_sclk(phal_ssi_adaptor, clk_rate);
 #endif
 }
 
@@ -707,6 +707,7 @@ __STATIC_INLINE hal_status_t hal_ssi_dma_recv_init (phal_ssi_adaptor_t phal_ssi_
 
 hal_status_t hal_ssi_pin_ctl(phal_ssi_adaptor_t phal_ssi_adaptor, u8 ctl);
 hal_status_t hal_ssi_init(phal_ssi_adaptor_t phal_ssi_adaptor);
+void hal_ssi_toggle_between_frame(phal_ssi_adaptor_t phal_ssi_adaptor, u8 ctl);
 void hal_spi_format(phal_ssi_adaptor_t phal_ssi_adaptor, u8 bits, u8 mode);
 void hal_ssi_irq_hook(phal_ssi_adaptor_t phal_ssi_adaptor, u32 tx_handler, u32 rx_handler);
 hal_status_t hal_ssi_deinit(phal_ssi_adaptor_t phal_ssi_adaptor);
@@ -717,6 +718,7 @@ hal_status_t hal_ssi_rx_gdma_deinit(phal_ssi_adaptor_t phal_ssi_adaptor);
 hal_status_t hal_ssi_dma_send(phal_ssi_adaptor_t phal_ssi_adaptor, u8  *ptx_data, u32 length);
 hal_status_t hal_ssi_dma_recv(phal_ssi_adaptor_t phal_ssi_adaptor, u8  *prx_data, u32 length);
 void hal_ssi_callback_hook(phal_ssi_adaptor_t phal_ssi_adaptor, void *tx_handler, void *rx_handler);
+hal_status_t hal_ssi_stop_recv_rtl8710c_ram(phal_ssi_adaptor_t phal_ssi_adaptor);
 
 /** *@} */ /* End of group hs_hal_ssi_ram_func */
 

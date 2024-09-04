@@ -223,7 +223,7 @@
  * already use it.
  */
 #if !defined MEM_LIBC_MALLOC || defined __DOXYGEN__
-#define MEM_LIBC_MALLOC                 0
+#define MEM_LIBC_MALLOC                 1
 #endif
 
 /**
@@ -236,7 +236,7 @@
  * not only for internal pools defined in memp_std.h)!
  */
 #if !defined MEMP_MEM_MALLOC || defined __DOXYGEN__
-#define MEMP_MEM_MALLOC                 0
+#define MEMP_MEM_MALLOC                 1
 #endif
 
 /**
@@ -1013,7 +1013,7 @@
 
 /** DNS maximum number of entries to maintain locally. */
 #if !defined DNS_TABLE_SIZE || defined __DOXYGEN__
-#define DNS_TABLE_SIZE                  4
+#define DNS_TABLE_SIZE                  2
 #endif
 
 /** DNS maximum host name length supported in the name table. */
@@ -2220,10 +2220,12 @@
 
 /**
  * LWIP_ICMP6_DATASIZE: bytes from original packet to send back in
- * ICMPv6 error messages.
+ * ICMPv6 error messages (0 = default of IP6_MIN_MTU_LENGTH)
+ * ATTENTION: RFC4443 section 2.4 says IP6_MIN_MTU_LENGTH is a MUST,
+ * so override this only if you absolutely have to!
  */
 #if !defined LWIP_ICMP6_DATASIZE || defined __DOXYGEN__
-#define LWIP_ICMP6_DATASIZE             8
+#define LWIP_ICMP6_DATASIZE             0
 #endif
 
 /**
@@ -2442,7 +2444,8 @@
  * - the 32-bit Initial Sequence Number to use for the new TCP connection.
  */
 #ifdef __DOXYGEN__
-#define LWIP_HOOK_TCP_ISN(local_ip, local_port, remote_ip, remote_port)
+#include <tcp_isn.h>
+#define LWIP_HOOK_TCP_ISN(local_ip, local_port, remote_ip, remote_port) lwip_hook_tcp_isn(local_ip, local_port, remote_ip, remote_port)
 #endif
 
 /**

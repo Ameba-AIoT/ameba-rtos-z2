@@ -76,6 +76,7 @@
 #include "lwip/etharp.h"
 #include "lwip/prot/dhcp.h"
 #include "lwip/sys.h" //Realtek add
+#include "wifi_ind.h"
 
 #include <string.h>
 
@@ -1928,7 +1929,7 @@ dhcp_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
     else if ((dhcp->state == DHCP_STATE_REBOOTING) || (dhcp->state == DHCP_STATE_REBINDING) ||
              (dhcp->state == DHCP_STATE_RENEWING)) {
 	  if(dhcp->state == DHCP_STATE_RENEWING){
-		wifi_indication(27, NULL,0, 0);
+		wifi_indication(WIFI_EVENT_DHCP_RENEW, NULL,0, 0);
 	  }			   
       dhcp_handle_ack(netif);
       dhcp_bind(netif);

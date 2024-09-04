@@ -55,19 +55,19 @@ extern uint32_t is_mbd_gpio_com_inited;
   *		@arg PIN_OUTPUT: port pins are output
   * @retval none
   */
-void port_init (port_t *obj, PortName port, int mask, PinDirection dir)
+void port_init(port_t *obj, PortName port, int mask, PinDirection dir)
 {
-    hal_status_t ret;
-	
-    if (!is_mbd_gpio_com_inited) {
-        hal_gpio_comm_init (&mbd_gpio_com_adp);
-        is_mbd_gpio_com_inited = 1;
-    }
+	hal_status_t ret;
 
-    ret = hal_gpio_port_init (&obj->hal_port, (uint32_t)port, mask, dir);
-    if (ret != HAL_OK) {
-        DBG_GPIO_ERR ("port_init error (%d)\r\n", ret);
-    }
+	if (!is_mbd_gpio_com_inited) {
+		hal_gpio_comm_init(&mbd_gpio_com_adp);
+		is_mbd_gpio_com_inited = 1;
+	}
+
+	ret = hal_gpio_port_init(&obj->hal_port, (uint32_t)port, mask, dir);
+	if (ret != HAL_OK) {
+		DBG_GPIO_ERR("port_init error (%d)\r\n", ret);
+	}
 }
 
 /**
@@ -78,9 +78,9 @@ void port_init (port_t *obj, PortName port, int mask, PinDirection dir)
   *		@arg PIN_OUTPUT: port pins are output
   * @retval none
   */
-void port_dir (port_t *obj, PinDirection dir)
+void port_dir(port_t *obj, PinDirection dir)
 {
-    hal_gpio_port_dir (&obj->hal_port, dir);
+	hal_gpio_port_dir(&obj->hal_port, dir);
 }
 
 /**
@@ -93,23 +93,23 @@ void port_dir (port_t *obj, PinDirection dir)
   *		@arg PullUp: pull up
   * @retval none
   */
-void port_mode (port_t *obj, PinMode mode)
+void port_mode(port_t *obj, PinMode mode)
 {
-    phal_gpio_port_adapter_t phal_port;
-    gpio_pin_t pin;
-    uint32_t i;
-    uint32_t mask;
+	phal_gpio_port_adapter_t phal_port;
+	gpio_pin_t pin = {0};
+	uint32_t i;
+	uint32_t mask;
 
-    phal_port = &obj->hal_port;
+	phal_port = &obj->hal_port;
 
-    pin.pin_name_b.port = phal_port->port_idx;
-    mask = phal_port->pin_mask;
-    for (i=0; i<MAX_PIN_IN_PORT; i++) {
-        if (mask & (1 << i)) {
-            pin.pin_name_b.pin = i;
-            hal_gpio_pull_ctrl (pin.pin_name, mode);
-        }
-    }    
+	pin.pin_name_b.port = phal_port->port_idx;
+	mask = phal_port->pin_mask;
+	for (i = 0; i < MAX_PIN_IN_PORT; i++) {
+		if (mask & (1 << i)) {
+			pin.pin_name_b.pin = i;
+			hal_gpio_pull_ctrl(pin.pin_name, mode);
+		}
+	}
 }
 
 /**
@@ -119,9 +119,9 @@ void port_mode (port_t *obj, PinMode mode)
   * @retval none
   * @note corresponding bit is 1, pin state set to high; corresponding bit is 0, pin state set to low
   */
-void port_write (port_t *obj, int value)
+void port_write(port_t *obj, int value)
 {
-    hal_gpio_port_write (&obj->hal_port, value);
+	hal_gpio_port_write(&obj->hal_port, value);
 }
 
 /**
@@ -130,9 +130,9 @@ void port_write (port_t *obj, int value)
   * @retval[in] : state of the specified gpio port pins
   * @note corresponding bit is 1, pin state is high; corresponding bit is 0, pin state is low
   */
-int port_read (port_t *obj)
+int port_read(port_t *obj)
 {
-    return hal_gpio_port_read (&obj->hal_port);
+	return hal_gpio_port_read(&obj->hal_port);
 }
 
 #endif

@@ -1175,17 +1175,7 @@ void wext_wlan_indicate(unsigned int cmd, union iwreq_data *wrqu, char *extra)
 				wifi_indication(WIFI_EVENT_ICV_ERROR, extra, strlen(IW_EVT_STR_ICV_ERROR), 0);
 			} else if (!memcmp(IW_EVT_STR_CHALLENGE_FAIL, extra, strlen(IW_EVT_STR_CHALLENGE_FAIL))) {
 				wifi_indication(WIFI_EVENT_CHALLENGE_FAIL, extra, strlen(IW_EVT_STR_CHALLENGE_FAIL), 0);
-			}
-#if CONFIG_ENABLE_P2P || defined(CONFIG_AP_MODE)
-			else if (!memcmp(IW_EVT_STR_STA_ASSOC, extra, strlen(IW_EVT_STR_STA_ASSOC))) {
-				wifi_indication(WIFI_EVENT_STA_ASSOC, wrqu->data.pointer, wrqu->data.length, 0);
-			} else if (!memcmp(IW_EVT_STR_STA_DISASSOC, extra, strlen(IW_EVT_STR_STA_DISASSOC))) {
-				wifi_indication(WIFI_EVENT_STA_DISASSOC, wrqu->addr.sa_data, sizeof(null_mac), 0);
-			} else if (!memcmp(IW_EVT_STR_SEND_ACTION_DONE, extra, strlen(IW_EVT_STR_SEND_ACTION_DONE))) {
-				wifi_indication(WIFI_EVENT_SEND_ACTION_DONE, NULL, 0, wrqu->data.flags);
-			}
-#endif
-			else if (!memcmp(IW_EVT_STR_NO_BEACON, extra, strlen(IW_EVT_STR_NO_BEACON))) {
+			} else if (!memcmp(IW_EVT_STR_NO_BEACON, extra, strlen(IW_EVT_STR_NO_BEACON))) {
 				wifi_indication(WIFI_EVENT_NO_BEACON, extra, strlen(IW_EVT_STR_NO_BEACON), 0);
 			}
 		}
@@ -1250,6 +1240,31 @@ int wext_send_mgnt(const char *ifname, char *buf, __u16 buf_len, __u16 flags)
 		ret = -1;
 	}
 	return ret;
+}
+
+/*
+Rate index table
+0x02 - 1M(default)
+0x04 - 2M
+0x0B - 5.5M
+0x0C - 6M
+0x12 - 9M
+0x16 - 11M
+0x18 - 12M
+0x24 - 18M
+0x30 - 24M
+0x48 - 36M
+0x60 - 48M
+0x6C - 54M
+*/
+void wext_set_user_mgnt_rate(unsigned char rate_idx)
+{
+	if (rate_idx > 0x6c) {
+		printf("[%s] rate index exceeds limit\n", __FUNCTION__);
+		return;
+	}
+	extern u8 user_mgnt_rate;
+	user_mgnt_rate = rate_idx;
 }
 
 int wext_set_gen_ie(const char *ifname, char *buf, __u16 buf_len, __u16 flags)
@@ -1706,12 +1721,50 @@ int wext_del_mac_filter(unsigned char *hwaddr)
 	return -1;
 }
 
+extern void rtw_wifi_connect_monitor_mgnt(int enable);
+void wext_wifi_connect_monitor_mgnt(int enable)
+{
+	rtw_wifi_connect_monitor_mgnt(enable);
+	return;
+}
+
 extern void rtw_set_indicate_mgnt(int enable);
 void wext_set_indicate_mgnt(int enable)
 {
 	rtw_set_indicate_mgnt(enable);
 	return;
 }
+
+#if defined(CONFIG_RX_FRAME_INFO_INDICATE) && (CONFIG_RX_FRAME_INFO_INDICATE == 1)
+extern void rtw_set_indicate_rx_frame(int enable, void (*user_rx_frame_callback)(u8 *buf, uint buf_len, struct rtw_rx_frame_info *pkt_info, void *user_data),
+									  void *user_data);
+void wext_set_indicate_rx_frame(int enable, void (*user_rx_frame_callback)(u8 *buf, uint buf_len, struct rtw_rx_frame_info *pkt_info, void *user_data),
+								void *user_data)
+{
+	rtw_set_indicate_rx_frame(enable, user_rx_frame_callback, user_data);
+	return;
+}
+#endif
+
+#if defined(CONFIG_DYNAMIC_IGI) && (CONFIG_DYNAMIC_IGI == 1)
+/*
+param[in]
+en: 0 - disable; 1 - enable. Default is disable.
+low_th : low igi value. 0 - use default value(0x28)
+high_th: high igi value. 0 - use default value(0x3c)
+intvl_ms: periodic time(ms) of switching igi. 0 - use default value(20ms)
+*/
+void wext_config_dyn_igi(unsigned char en, unsigned char low_th, unsigned char high_th, unsigned int intvl_ms)
+{
+	if ((en == 1) &&
+		((low_th != 0 && low_th < 0x20) || (high_th != 0 && high_th > 0x5a))) {
+		printf("[%s]set value exceeds limit\n", __FUNCTION__);
+		return;
+	}
+	extern void rltk_wlan_config_dyn_igi(unsigned char en, unsigned char low_th, unsigned char high_th, unsigned int intvl_ms);
+	rltk_wlan_config_dyn_igi(en, low_th, high_th, intvl_ms);
+}
+#endif
 
 #ifdef CONFIG_AP_MODE
 void wext_suspend_softap(const char *ifname)
@@ -1852,3 +1905,12 @@ void wext_set_lowrssi_use_b(int enable, int rssi)
 	rtw_set_lowrssi_use_b(enable, rssi);
 	return ;
 }
+
+
+#ifdef CONFIG_80211N_HT
+extern u8 g_tx_ampdu_enable;
+void wext_set_wifi_ampdu_tx(__u8 enable)
+{
+	g_tx_ampdu_enable = enable;
+}
+#endif

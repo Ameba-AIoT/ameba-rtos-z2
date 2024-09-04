@@ -3,7 +3,7 @@
   * @file    pcm_api.h
   * @author
   * @version V1.0.0
-  * @brief   This file provides following mbed I2S API
+  * @brief   This file provides following mbed PCM API
   ******************************************************************************
   * @attention
   *
@@ -44,62 +44,62 @@ typedef enum {
 } pcm_ua_law;
 
 typedef enum {
-    CH0  = PCM_CH0,
-    CH1  = PCM_CH1,
-    CH2  = PCM_CH2,
-    CH3  = PCM_CH3,
-    CH4  = PCM_CH4,
-    CH5  = PCM_CH5,
-    CH6  = PCM_CH6,
-    CH7  = PCM_CH7,
-    CH8  = PCM_CH8,
-    CH9  = PCM_CH9,
-    CH10 = PCM_CH10,
-    CH11 = PCM_CH11,
-    CH12 = PCM_CH12,
-    CH13 = PCM_CH13,
-    CH14 = PCM_CH14,
-    CH15 = PCM_CH15
+	CH0  = PCM_CH0,
+	CH1  = PCM_CH1,
+	CH2  = PCM_CH2,
+	CH3  = PCM_CH3,
+	CH4  = PCM_CH4,
+	CH5  = PCM_CH5,
+	CH6  = PCM_CH6,
+	CH7  = PCM_CH7,
+	CH8  = PCM_CH8,
+	CH9  = PCM_CH9,
+	CH10 = PCM_CH10,
+	CH11 = PCM_CH11,
+	CH12 = PCM_CH12,
+	CH13 = PCM_CH13,
+	CH14 = PCM_CH14,
+	CH15 = PCM_CH15
 } pcm_ch;
 
 typedef enum {
-    SLOT0  = PCM_SLOT0,
-    SLOT1  = PCM_SLOT1,
-    SLOT2  = PCM_SLOT2,
-    SLOT3  = PCM_SLOT3,
-    SLOT4  = PCM_SLOT4,
-    SLOT5  = PCM_SLOT5,
-    SLOT6  = PCM_SLOT6,
-    SLOT7  = PCM_SLOT7,
-    SLOT8  = PCM_SLOT8,
-    SLOT9  = PCM_SLOT9,
-    SLOT10 = PCM_SLOT10,
-    SLOT11 = PCM_SLOT11,
-    SLOT12 = PCM_SLOT12,
-    SLOT13 = PCM_SLOT13,
-    SLOT14 = PCM_SLOT14,
-    SLOT15 = PCM_SLOT15,
-    SLOT16 = PCM_SLOT16,
-    SLOT17 = PCM_SLOT17,
-    SLOT18 = PCM_SLOT18,
-    SLOT19 = PCM_SLOT19,
-    SLOT20 = PCM_SLOT20,
-    SLOT21 = PCM_SLOT21,
-    SLOT22 = PCM_SLOT22,
-    SLOT23 = PCM_SLOT23,
-    SLOT24 = PCM_SLOT24,
-    SLOT25 = PCM_SLOT25,
-    SLOT26 = PCM_SLOT26,
-    SLOT27 = PCM_SLOT27,
-    SLOT28 = PCM_SLOT28,
-    SLOT29 = PCM_SLOT29,
-    SLOT30 = PCM_SLOT30,
-    SLOT31 = PCM_SLOT31
+	SLOT0  = PCM_SLOT0,
+	SLOT1  = PCM_SLOT1,
+	SLOT2  = PCM_SLOT2,
+	SLOT3  = PCM_SLOT3,
+	SLOT4  = PCM_SLOT4,
+	SLOT5  = PCM_SLOT5,
+	SLOT6  = PCM_SLOT6,
+	SLOT7  = PCM_SLOT7,
+	SLOT8  = PCM_SLOT8,
+	SLOT9  = PCM_SLOT9,
+	SLOT10 = PCM_SLOT10,
+	SLOT11 = PCM_SLOT11,
+	SLOT12 = PCM_SLOT12,
+	SLOT13 = PCM_SLOT13,
+	SLOT14 = PCM_SLOT14,
+	SLOT15 = PCM_SLOT15,
+	SLOT16 = PCM_SLOT16,
+	SLOT17 = PCM_SLOT17,
+	SLOT18 = PCM_SLOT18,
+	SLOT19 = PCM_SLOT19,
+	SLOT20 = PCM_SLOT20,
+	SLOT21 = PCM_SLOT21,
+	SLOT22 = PCM_SLOT22,
+	SLOT23 = PCM_SLOT23,
+	SLOT24 = PCM_SLOT24,
+	SLOT25 = PCM_SLOT25,
+	SLOT26 = PCM_SLOT26,
+	SLOT27 = PCM_SLOT27,
+	SLOT28 = PCM_SLOT28,
+	SLOT29 = PCM_SLOT29,
+	SLOT30 = PCM_SLOT30,
+	SLOT31 = PCM_SLOT31
 } pcm_slot;
 
 typedef enum {
-    PCM_MASTER = PCM_MASTER_MODE,
-    PCM_SLAVE = PCM_SLAVE_MODE
+	PCM_MASTER = PCM_MASTER_MODE,
+	PCM_SLAVE = PCM_SLAVE_MODE
 } pcm_ms_mode;
 
 typedef enum {

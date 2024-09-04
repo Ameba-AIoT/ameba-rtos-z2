@@ -220,6 +220,9 @@ sys_timeout(u32_t msecs, sys_timeout_handler handler, void *arg)
   } else {
     diff = now - timeouts_last_time;
   }
+#if CONFIG_DYNAMIC_TICKLESS
+  diff = 0;
+#endif
 
   timeout->next = NULL;
   timeout->h = handler;
@@ -330,7 +333,12 @@ sys_check_timeouts(void)
       if (tmptimeout && (tmptimeout->time <= diff)) {
         /* timeout has expired */
         had_one = 1;
+
+#if CONFIG_DYNAMIC_TICKLESS
+        timeouts_last_time = now;
+#else
         timeouts_last_time += tmptimeout->time;
+#endif
         diff -= tmptimeout->time;
         next_timeout = tmptimeout->next;
         handler = tmptimeout->h;

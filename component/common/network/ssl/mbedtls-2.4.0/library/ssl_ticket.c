@@ -303,7 +303,7 @@ int mbedtls_ssl_ticket_write( void *p_ticket,
     unsigned char *state_len_bytes = iv + 12;
     unsigned char *state = state_len_bytes + 2;
     unsigned char *tag;
-    size_t clear_len, ciph_len;
+    size_t clear_len, ciph_len = 0;
 
     *tlen = 0;
 
@@ -405,7 +405,7 @@ int mbedtls_ssl_ticket_parse( void *p_ticket,
     unsigned char *enc_len_p = iv + 12;
     unsigned char *ticket = enc_len_p + 2;
     unsigned char *tag;
-    size_t enc_len, clear_len;
+    size_t enc_len, clear_len = 0;
 
     if( ctx == NULL || ctx->f_rng == NULL )
         return( MBEDTLS_ERR_SSL_BAD_INPUT_DATA );

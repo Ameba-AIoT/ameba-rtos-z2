@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if ((defined(CONFIG_EXAMPLE_MDNS) && CONFIG_EXAMPLE_MDNS) && !CONFIG_EXAMPLE_UART_ADAPTER)
 #include "FreeRTOS.h"
 #include "task.h"
 #include <platform/platform_stdlib.h>
@@ -11,8 +14,8 @@ extern struct netif xnetif[];
 static void example_mdns_thread(void *param)
 {
 	/* To avoid gcc warnings */
-	( void ) param;
-	
+	(void) param;
+
 	DNSServiceRef dnsServiceRef = NULL;
 	TXTRecordRef txtRecord;
 	unsigned char txt_buf[100];	// use fixed buffer for text record to prevent malloc/free
@@ -21,7 +24,7 @@ static void example_mdns_thread(void *param)
 	vTaskDelay(10000);
 
 	printf("\nmDNS Init\n");
-	if(mDNSResponderInit() == 0) {
+	if (mDNSResponderInit() == 0) {
 		printf("mDNS Register service\n");
 		TXTRecordCreate(&txtRecord, sizeof(txt_buf), txt_buf);
 		TXTRecordSetValue(&txtRecord, "text1", strlen("text1_content"), "text1_content");
@@ -29,18 +32,19 @@ static void example_mdns_thread(void *param)
 		dnsServiceRef = mDNSRegisterService("ameba", "_service1._tcp", "local", 5000, &txtRecord);
 		TXTRecordDeallocate(&txtRecord);
 		printf("wait for 30s ... \n");
-		vTaskDelay(30*1000);
-		
+		vTaskDelay(30 * 1000);
+
 		printf("mDNS Update service\n");
 		TXTRecordCreate(&txtRecord, sizeof(txt_buf), txt_buf);
 		TXTRecordSetValue(&txtRecord, "text1", strlen("text1_content_new"), "text1_content_new");
 		mDNSUpdateService(dnsServiceRef, &txtRecord, 0);
 		TXTRecordDeallocate(&txtRecord);
 		printf("wait for 30s ... \n");
-		vTaskDelay(30*1000);
+		vTaskDelay(30 * 1000);
 
-		if(dnsServiceRef)
+		if (dnsServiceRef) {
 			mDNSDeregisterService(dnsServiceRef);
+		}
 
 		// deregister service before mdns deinit is not necessary
 		// mDNS deinit will also deregister all services
@@ -53,6 +57,9 @@ static void example_mdns_thread(void *param)
 
 void example_mdns(void)
 {
-	if(xTaskCreate(example_mdns_thread, ((const char*)"example_mdns_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+	if (xTaskCreate(example_mdns_thread, ((const char *)"example_mdns_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate(init_thread) failed", __FUNCTION__);
+	}
 }
+
+#endif //#if ((defined(CONFIG_EXAMPLE_MDNS) && CONFIG_EXAMPLE_MDNS) && !CONFIG_EXAMPLE_UART_ADAPTER)

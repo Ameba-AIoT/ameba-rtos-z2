@@ -1,7 +1,7 @@
 /** mbed Microcontroller Library
   ******************************************************************************
   * @file    reset_reason_api.h
-  * @author 
+  * @author
   * @version V1.0.0
   * @brief   This file provides following mbed Reset Reason API
   ******************************************************************************
@@ -12,7 +12,7 @@
   *
   * This module is a confidential and proprietary property of RealTek and
   * possession or use of this module requires written permission of RealTek.
-  ****************************************************************************** 
+  ******************************************************************************
   */
 #ifndef MBED_RESET_REASON_API_H
 #define MBED_RESET_REASON_API_H
@@ -25,20 +25,22 @@ extern "C" {
 
 #if defined(CONFIG_PLATFORM_8710C)
 /**
- * \defgroup hal_reset_reason Reset Reason HAL API
- * @{
- */
+ * @addtogroup hal_reset_reason Reset Reason HAL API
+ * @ingroup    hal
+ * @brief      Reset Reason functions
+ * @{ */
+
 /** Definitions of different reset reasons
  */
 typedef enum {
-  RESET_REASON_POWER_ON,       /**< Set when power is initially applied to the board. The power-on-reset circuit causes a POWER_ON reset when this occurs */
-  RESET_REASON_PIN_RESET,      /**< Set when a reset is triggered by the hardware pin on the board */
-  RESET_REASON_BROWN_OUT,      /**< Triggered when the voltage drops below the low voltage detect (LVD) threshold the system will be held in a reset until the voltage rises above the threshold */
-  RESET_REASON_SOFTWARE,       /**< Set during software reset, typically triggered by writing the SYSRESETREQ bit in the Application Interrupt and Reset Control register */
-  RESET_REASON_WATCHDOG,       /**< Set when a running watchdog timer fails to be refreshed */
-  RESET_REASON_WAKE_LOW_POWER, /**< Set when waking from deep sleep mode */
-  RESET_REASON_MULTIPLE,       /**< Set if multiple reset reasons are set within the board. Occurs when the reset reason registers aren't cleared between resets */
-  RESET_REASON_UNKNOWN         /**< Unknown or unreadable reset reason **/
+	RESET_REASON_POWER_ON,       /**< Set when power is initially applied to the board. The power-on-reset circuit causes a POWER_ON reset when this occurs */
+	RESET_REASON_PIN_RESET,      /**< Set when a reset is triggered by the hardware pin on the board */
+	RESET_REASON_BROWN_OUT,      /**< Triggered when the voltage drops below the low voltage detect (LVD) threshold the system will be held in a reset until the voltage rises above the threshold */
+	RESET_REASON_SOFTWARE,       /**< Set during software reset, typically triggered by writing the SYSRESETREQ bit in the Application Interrupt and Reset Control register */
+	RESET_REASON_WATCHDOG,       /**< Set when a running watchdog timer fails to be refreshed */
+	RESET_REASON_WAKE_LOW_POWER, /**< Set when waking from deep sleep mode */
+	RESET_REASON_MULTIPLE,       /**< Set if multiple reset reasons are set within the board. Occurs when the reset reason registers aren't cleared between resets */
+	RESET_REASON_UNKNOWN         /**< Unknown or unreadable reset reason **/
 } reset_reason_t;
 
 /** Fetch the reset reason for the last system reset

@@ -37,6 +37,8 @@
 #define CHIP_B_CUT                          1
 #define CHIP_C_CUT                          2
 #define CHIP_D_CUT                          3
+#define CHIP_E_CUT                          4
+#define CHIP_f_CUT                          5
 
 #if CONFIG_FPGA
 // FPGA

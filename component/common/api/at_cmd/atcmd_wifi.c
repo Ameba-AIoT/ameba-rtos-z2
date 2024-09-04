@@ -5,7 +5,6 @@
 #include "tcpip.h"
 #include <dhcp/dhcps.h>
 #if CONFIG_WLAN
-#include <wlan/wlan_test_inc.h>
 #include <wifi/wifi_conf.h>
 #include <wifi/wifi_util.h>
 #endif
@@ -43,18 +42,11 @@
 #define	_AT_WLAN_JOIN_NET_          "ATWC"
 #define	_AT_WLAN_DISC_NET_          "ATWD"
 #define	_AT_WLAN_WEB_SERVER_        "ATWE"
-#define _AT_WLAN_P2P_FIND_          "ATWF"
-#define _AT_WLAN_P2P_START_         "ATWG"
-#define _AT_WLAN_P2P_STOP_          "ATWH"
 #define _AT_WLAN_PING_TEST_         "ATWI"
-#define _AT_WLAN_P2P_CONNECT_       "ATWJ"
-#define _AT_WLAN_P2P_DISCONNECT_    "ATWK"
 #define _AT_WLAN_SSL_CLIENT_        "ATWL"
 #define _AT_WLAN_PROMISC_           "ATWM"
-#define _AT_WLAN_P2P_INFO_          "ATWN"
 #define _AT_WLAN_OTA_UPDATE_        "ATWO"
 #define	_AT_WLAN_POWER_             "ATWP"
-#define	_AT_WLAN_SIMPLE_CONFIG_     "ATWQ"
 #define	_AT_WLAN_GET_RSSI_          "ATWR"
 #define	_AT_WLAN_SCAN_              "ATWS"
 #define _AT_WLAN_SCAN_WITH_SSID_    "ATWs"
@@ -77,14 +69,7 @@
 #ifndef CONFIG_BSD_TCP
 #define CONFIG_BSD_TCP	        1
 #endif
-#ifndef CONFIG_ENABLE_P2P
-#define CONFIG_ENABLE_P2P		0
-#endif
 #define SCAN_WITH_SSID		0
-
-#ifndef CONFIG_WOWLAN_SERVICE
-#define CONFIG_WOWLAN_SERVICE 0
-#endif
 
 #if ATCMD_VER == ATVER_2
 extern int SwithToUtf_8(const unsigned char *pszBufIn, int nBufInLen, unsigned char *pszBufOut, int *pnBufOutLen);
@@ -102,9 +87,6 @@ extern void cmd_ssl_client(int argc, char **argv);
 extern void cmd_promisc(int argc, char **argv);
 extern void cmd_update(int argc, char **argv);
 extern void cmd_simple_config(int argc, char **argv);
-#if defined(CONFIG_INCLUDE_DPP_CONFIG) && CONFIG_INCLUDE_DPP_CONFIG
-extern void cmd_dpp(int argc, char **argv);
-#endif
 #if CONFIG_ENABLE_WPS
 extern void cmd_wps(int argc, char **argv);
 #endif
@@ -113,26 +95,9 @@ extern void cmd_wps(int argc, char **argv);
 extern void cmd_ap_wps(int argc, char **argv);
 extern int wpas_wps_dev_config(u8 *dev_addr, u8 bregistrar);
 #endif
-#if CONFIG_ENABLE_P2P
-extern void cmd_wifi_p2p_start(int argc, char **argv);
-extern void cmd_wifi_p2p_stop(int argc, char **argv);
-extern void cmd_p2p_listen(int argc, char **argv);
-extern void cmd_p2p_find(int argc, char **argv);
-extern void cmd_p2p_peers(int argc, char **argv);
-extern void cmd_p2p_info(int argc, char **argv);
-extern void cmd_p2p_disconnect(int argc, char **argv);
-extern void cmd_p2p_connect(int argc, char **argv);
-extern int cmd_wifi_p2p_auto_go_start(int argc, char **argv);
-#endif //CONFIG_ENABLE_P2P
-#if CONFIG_AIRKISS
-extern int airkiss_start(rtw_network_info_t *);
-extern int airkiss_stop(void);
-#endif
+
 #if CONFIG_LWIP_LAYER
 extern struct netif xnetif[NET_IF_NUM];
-#endif
-#if CONFIG_WOWLAN_SERVICE
-extern void cmd_wowlan_service(int argc, char **argv);
 #endif
 #if defined(CONFIG_INIC_CMD_RSP) && CONFIG_INIC_CMD_RSP
 extern void inic_c2h_wifi_info(const char *atcmd, char status);
@@ -150,7 +115,7 @@ static rtw_network_info_t wifi = {0};
 
 static rtw_ap_info_t ap = {0};
 static unsigned char password[129] = {0};
-#ifdef CONFIG_FPGA
+#ifdef CONFIG_AP_SECURITY
 int security = -1;
 #endif
 
@@ -185,7 +150,7 @@ static void init_wifi_struct(void)
 	ap.password = NULL;
 	ap.password_len = 0;
 	ap.channel = 1;
-#ifdef CONFIG_FPGA
+#ifdef CONFIG_AP_SECURITY
 	security = -1;
 #endif
 }
@@ -206,7 +171,7 @@ static void print_scan_result(rtw_scan_result_t *record)
 			  (record->security == RTW_SECURITY_WPA_WPA2_AES_PSK) ? "WPA/WPA2 AES" :
 			  (record->security == RTW_SECURITY_WPA_WPA2_MIXED_PSK) ? "WPA/WPA2 Mixed" :
 			  (record->security == RTW_SECURITY_WPA_TKIP_ENTERPRISE) ? "WPA TKIP Enterprise" :
-			  (record->security == RTW_SECURITY_WPA_AES_ENTERPRISE) ? "WP AES Enterprise" :
+			  (record->security == RTW_SECURITY_WPA_AES_ENTERPRISE) ? "WPA AES Enterprise" :
 			  (record->security == RTW_SECURITY_WPA_MIXED_ENTERPRISE) ? "WPA Mixed Enterprise" :
 			  (record->security == RTW_SECURITY_WPA2_TKIP_ENTERPRISE) ? "WPA2 TKIP Enterprise" :
 			  (record->security == RTW_SECURITY_WPA2_AES_ENTERPRISE) ? "WPA2 AES Enterprise" :
@@ -217,6 +182,7 @@ static void print_scan_result(rtw_scan_result_t *record)
 #ifdef CONFIG_SAE_SUPPORT
 			  (record->security == RTW_SECURITY_WPA3_AES_PSK) ? "WPA3-SAE AES" :
 			  (record->security == RTW_SECURITY_WPA2_WPA3_MIXED) ? "WPA2/WPA3-SAE AES" :
+			  (record->security == RTW_SECURITY_WPA3_OWE) ? "WAP3 OWE" :
 #endif
 			  "Unknown",
 			  record->signal_strength, MAC_ARG(record->BSSID.octet));
@@ -249,6 +215,7 @@ static void print_scan_result(rtw_scan_result_t *record)
 #ifdef CONFIG_SAE_SUPPORT
 				 (record->security == RTW_SECURITY_WPA3_AES_PSK) ? "WPA3-SAE AES" :
 				 (record->security == RTW_SECURITY_WPA2_WPA3_MIXED) ? "WPA2/WPA3-SAE AES" :
+				 (record->security == RTW_SECURITY_WPA3_OWE) ? "WAP3 OWE" :
 #endif
 				 "Unknown");
 
@@ -271,7 +238,7 @@ static rtw_result_t app_scan_result_handler(rtw_scan_handler_result_t *malloced_
 		RTW_API_INFO("%d\t ", ++ApNum);
 #endif
 #if ATCMD_VER == ATVER_2
-		if (is_str_utf8(record->SSID.val)) {
+		if (is_str_utf8((const char *)record->SSID.val)) {
 			unsigned char GBKbuf[33];
 			int GBKbuflen = 0;
 			memset(&GBKbuf[0], 0x00, 33);
@@ -381,39 +348,6 @@ exit_success:
 #endif
 	return;
 }
-
-#if (CONFIG_INCLUDE_SIMPLE_CONFIG)
-void fATWQ(void *arg)
-{
-	int argc = 0;
-	char *argv[2] = {0};
-	printf("[ATWQ]: _AT_WLAN_SIMPLE_CONFIG_\n\r");
-	argv[argc++] = "wifi_simple_config";
-	if (arg) {
-		argv[argc++] = arg;
-	}
-#if ATCMD_VER == ATVER_2
-	wifi_unreg_event_handler(WIFI_EVENT_DISCONNECT, atcmd_wifi_disconn_hdl);
-#endif
-	cmd_simple_config(argc, argv);
-}
-#endif
-
-#if defined(CONFIG_INCLUDE_DPP_CONFIG) && CONFIG_INCLUDE_DPP_CONFIG
-void fATWq(void *arg)
-{
-	int argc;
-	char *argv[MAX_ARGC] = {0};
-
-	char buf[256] = {0};
-	printf("[ATWq]:\n\r");
-	if (arg) {
-		strncpy(buf, arg, sizeof(buf));
-		argc = parse_param(buf, argv);
-	}
-	cmd_dpp(argc, argv);
-}
-#endif
 
 void fATWS(void *arg)
 {
@@ -546,9 +480,9 @@ void fATWx(void *arg)
 #if CONFIG_LWIP_LAYER
 	u8 *mac = LwIP_GetMAC(&xnetif[0]);
 	u8 *ip = LwIP_GetIP(&xnetif[0]);
-#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
-#if LWIP_IPV6 && LWIP_IPV6_DHCP6
+#if LWIP_IPV6
 	u8 *ipv6_0 = LwIP_GetIPv6_linklocal(&xnetif[0]);
+#if LWIP_IPV6_DHCP6 && (LWIP_VERSION_MAJOR >= 2) && (LWIP_VERSION_MINOR >= 1)
 	u8 *ipv6_1 = LwIP_GetIPv6_global(&xnetif[0]);
 #endif
 #endif
@@ -573,9 +507,9 @@ void fATWx(void *arg)
 #if CONFIG_LWIP_LAYER
 			mac = LwIP_GetMAC(&xnetif[i]);
 			ip = LwIP_GetIP(&xnetif[i]);
-#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
-#if LWIP_IPV6 && LWIP_IPV6_DHCP6
+#if LWIP_IPV6
 			ipv6_0 = LwIP_GetIPv6_linklocal(&xnetif[i]);
+#if LWIP_IPV6_DHCP6 && (LWIP_VERSION_MAJOR >= 2) && (LWIP_VERSION_MINOR >= 1)
 			ipv6_1 = LwIP_GetIPv6_global(&xnetif[i]);
 #endif
 #endif
@@ -606,21 +540,22 @@ void fATWx(void *arg)
 			printf("\n\r==============================");
 			printf("\n\r\tMAC => %02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 			printf("\n\r\tIP  => %d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
-#if LWIP_IPV6 && LWIP_IPV6_DHCP6
-			printf("\n\r\tLink-local IPV6 => %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
-				   ipv6_0[0], ipv6_0[1],  ipv6_0[2],  ipv6_0[3],  ipv6_0[4],  ipv6_0[5],  ipv6_0[6], ipv6_0[7],
-				   ipv6_0[8], ipv6_0[9], ipv6_0[10], ipv6_0[11], ipv6_0[12], ipv6_0[13], ipv6_0[14], ipv6_0[15]);
-			printf("\n\r\tIPV6            => %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
-				   ipv6_1[0], ipv6_1[1],  ipv6_1[2],  ipv6_1[3],  ipv6_1[4],  ipv6_1[5],  ipv6_1[6], ipv6_1[7],
-				   ipv6_1[8], ipv6_1[9], ipv6_1[10], ipv6_1[11], ipv6_1[12], ipv6_1[13], ipv6_1[14], ipv6_1[15]);
-#endif
-#endif
 			printf("\n\r\tGW  => %d.%d.%d.%d", gw[0], gw[1], gw[2], gw[3]);
 			printf("\n\r\tmsk  => %d.%d.%d.%d\n\r", msk[0], msk[1], msk[2], msk[3]);
 
 			wext_get_bssid((const char *)ifname[i], mac_1);
-			printf("\n\r\tBSSID => %02x:%02x:%02x:%02x:%02x:%02x", mac_1[0], mac_1[1], mac_1[2], mac_1[3], mac_1[4], mac_1[5]);
+			printf("\n\r\tBSSID => %02x:%02x:%02x:%02x:%02x:%02x\n\r", mac_1[0], mac_1[1], mac_1[2], mac_1[3], mac_1[4], mac_1[5]);
+
+#if LWIP_IPV6
+			printf("\n\r\tLinklocal IPV6 => %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
+				   ipv6_0[0], ipv6_0[1], ipv6_0[2], ipv6_0[3], ipv6_0[4], ipv6_0[5], ipv6_0[6], ipv6_0[7],
+				   ipv6_0[8], ipv6_0[9], ipv6_0[10], ipv6_0[11], ipv6_0[12], ipv6_0[13], ipv6_0[14], ipv6_0[15]);
+#if LWIP_IPV6_DHCP6 && (LWIP_VERSION_MAJOR >= 2) && (LWIP_VERSION_MINOR >= 1)
+			printf("\n\r\tGlobal IPV6    => %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x\n\r",
+				   ipv6_1[0], ipv6_1[1], ipv6_1[2], ipv6_1[3], ipv6_1[4], ipv6_1[5], ipv6_1[6], ipv6_1[7],
+				   ipv6_1[8], ipv6_1[9], ipv6_1[10], ipv6_1[11], ipv6_1[12], ipv6_1[13], ipv6_1[14], ipv6_1[15]);
+#endif
+#endif
 #endif
 			if (setting.mode == RTW_MODE_AP || i == 1) {
 				int client_number;
@@ -659,20 +594,6 @@ void fATWx(void *arg)
 		}
 // show the ethernet interface info
 		else {
-#if CONFIG_ETHERNET
-			if (i == NET_IF_NUM - 1) {
-#if CONFIG_LWIP_LAYER
-				mac = LwIP_GetMAC(&xnetif[i]);
-				ip = LwIP_GetIP(&xnetif[i]);
-				gw = LwIP_GetGW(&xnetif[i]);
-				printf("\n\rInterface ethernet\n");
-				printf("\n\r==============================");
-				printf("\n\r\tMAC => %02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]) ;
-				printf("\n\r\tIP  => %d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-				printf("\n\r\tGW  => %d.%d.%d.%d\n\r", gw[0], gw[1], gw[2], gw[3]);
-#endif // end CONFIG_LWIP_LAYER
-			}
-#endif // end CONFIG_ETHERNET
 		}
 	}
 
@@ -851,6 +772,13 @@ void fATW6(void *arg)
 		printf("[ATW6]Usage: ATW6=BSSID\n\r");
 		ret =  RTW_BADARG;
 		goto exit;
+	} else {
+		if ((strlen((const char *)arg) != 17) || (((char *)arg)[2] != ':') || (((char *)arg)[5] != ':') || (((char *)arg)[8] != ':') || (((char *)arg)[11] != ':') ||
+			(((char *)arg)[14] != ':')) {
+			printf("[ATW6]Please make sure BSSID format follows XX:XX:XX:XX:XX:XX\n\r");
+			ret =  RTW_BADARG;
+			goto exit;
+		}
 	}
 	printf("[ATW6]: _AT_WLAN_SET_BSSID_ [%s]\n\r", (char *)arg);
 	sscanf(arg, MAC_FMT, mac, mac + 1, mac + 2, mac + 3, mac + 4, mac + 5);
@@ -864,22 +792,25 @@ exit:
 	return;
 }
 
-#ifdef CONFIG_FPGA
+#ifdef CONFIG_AP_SECURITY
 void fATW7(void *arg)
 {
 	if (!arg) {
-		printf("[ATW7]Usage: ATW7=0,1,2 or 3(open, WEP, TKIP or AES)\n\r");
+		printf("[ATW7]Usage: ATW7=0,1 or 2(open, WEP or WPA2 AES)\n\r");
 		return;
 	}
 	volatile int ret = RTW_SUCCESS;
 	(void) ret;
 	printf("[ATW7]: _AT_WLAN_SET_SECURITY [%s]\n\r", (char *)arg);
-	if ((strlen((const char *)arg) != 1) || (*(char *)arg < '0' || *(char *)arg > '3')) {
-		printf("\n\rWrong num. Must be one of 0,1,2 or 3.");
+	if ((strlen((const char *)arg) != 1) || (*(char *)arg < '0' || *(char *)arg > '2')) {
+		printf("\n\rWrong num. Must be one of 0,1 or 2.");
 		ret = RTW_BADARG;
 		goto exit;
 	}
 	security = atoi((const char *)(arg));
+	if ((security == 1) && (CONFIG_AP_SECURITY != 1)) {
+		printf("\n\rset CONFIG_AP_SECURITY MACRO to 1 in platform_opts.h to set AP security to 1(WEP)");
+	}
 exit:
 #if defined(CONFIG_INIC_CMD_RSP) && CONFIG_INIC_CMD_RSP
 	inic_c2h_msg("ATW7", ret, NULL, 0);
@@ -892,7 +823,7 @@ void fATW8(void *arg)
 {
 	if (!arg) {
 		printf("[ATW8]Usage: ATW8=[WPA_MODE]\n\r");
-		printf("        0 : WPA_AUTO_MODE\n\r");
+		printf("        0 : WPA_AUTO_MODE (WPA/WPA2/WPA3)\n\r");
 		printf("        1 : WPA_ONLY_MODE\n\r");
 		printf("        2 : WPA2_ONLY_MODE\n\r");
 		printf("        3 : WPA3_ONLY_MODE\n\r");
@@ -906,7 +837,7 @@ void fATW8(void *arg)
 		wifi_set_wpa_mode(wpa_mode);
 		switch (wpa_mode) {
 		case 0:
-			printf("[ATW8]: _AT_WLAN_AP_SET_WPA_MODE_ [WPA_AUTO_MODE]\n\r");
+			printf("[ATW8]: _AT_WLAN_AP_SET_WPA_MODE_ [WPA_AUTO_MODE] (WPA/WPA2/WPA3)\n\r");
 			break;
 		case 1:
 			printf("[ATW8]: _AT_WLAN_AP_SET_WPA_MODE_ [WPA_ONLY_MODE]\n\r");
@@ -994,7 +925,7 @@ void fATWA(void *arg)
 				}
 			}
 		}
-#ifdef CONFIG_FPGA
+#if defined(CONFIG_AP_SECURITY) && CONFIG_AP_SECURITY
 		else if (ap.password_len == 5) {
 			ap.security_type = RTW_SECURITY_WEP_PSK;
 		}
@@ -1005,14 +936,16 @@ void fATWA(void *arg)
 			goto exit;
 		}
 	}
-#ifdef CONFIG_FPGA
+#ifdef CONFIG_AP_SECURITY
 	if (security == 0) {
 		ap.security_type = RTW_SECURITY_OPEN;
-	} else if (security == 1) {
+	}
+#if CONFIG_AP_SECURITY
+	else if (security == 1) {
 		ap.security_type = RTW_SECURITY_WEP_PSK;
-	} else if (security == 2) {
-		ap.security_type = RTW_SECURITY_WPA2_TKIP_PSK;
-	} else if (security == 3) {
+	}
+#endif
+	else if (security == 2) {
 		ap.security_type = RTW_SECURITY_WPA2_AES_PSK;
 	}
 #endif
@@ -1129,6 +1062,8 @@ static int _find_ap_from_scan_buf(char *buf, int buflen, char *target_ssid, void
 				pwifi->security_type = RTW_SECURITY_WEP_PSK;
 			} else if (security_mode == IW_ENCODE_ALG_CCMP) {
 				pwifi->security_type = RTW_SECURITY_WPA2_AES_PSK;
+			} else if (security_mode == IW_ENCODE_ALG_OWE) {
+				pwifi->security_type = RTW_SECURITY_WPA3_OWE;
 			}
 			break;
 		}
@@ -1181,7 +1116,11 @@ void fATWC(void *arg)
 		if ((wifi.key_id >= 0) && (wifi.key_id <= 3)) {
 			wifi.security_type = RTW_SECURITY_WEP_PSK;
 		} else {
+#ifdef CONFIG_SAE_SUPPORT
+			wifi.security_type = RTW_SECURITY_WPA3_AES_PSK;
+#else
 			wifi.security_type = RTW_SECURITY_WPA2_AES_PSK;
+#endif
 		}
 	} else {
 		wifi.security_type = RTW_SECURITY_OPEN;
@@ -1295,8 +1234,8 @@ void fATWC(void *arg)
 #if CONFIG_LWIP_LAYER
 		/* Start DHCPClient */
 		LwIP_DHCP(0, DHCP_START);
-#if LWIP_VERSION_MAJOR >= 2 && LWIP_VERSION_MINOR >= 1
-#if LWIP_IPV6 && LWIP_IPV6_DHCP6
+#if LWIP_IPV6
+#if LWIP_IPV6_DHCP6 && (LWIP_VERSION_MAJOR >= 2) && (LWIP_VERSION_MINOR >= 1)
 		LwIP_DHCP6(0, DHCP6_START);
 #endif
 #endif
@@ -1418,23 +1357,6 @@ void fATWP(void *arg)
 	}
 }
 
-#if CONFIG_WOWLAN_SERVICE
-//for wowlan setting
-void fATWV(void *arg)
-{
-	int argc;
-	char *argv[MAX_ARGC] = {0};
-
-	printf("[ATWV]: _AT_WLAN_WOWLAN_\r\n");
-
-	argc = parse_param(arg, argv);
-
-	cmd_wowlan_service(argc, argv);
-
-	return;
-}
-#endif
-
 #ifdef  CONFIG_CONCURRENT_MODE
 void fATWB(void *arg)
 {
@@ -1546,7 +1468,7 @@ void fATWb(void *arg)
 	(void) ret;
 	(void) arg;
 	char *argv[MAX_ARGC] = {0};
-	int argc = parse_param(arg, argv);
+	parse_param(arg, argv);
 	if (!arg) {
 		printf("[ATWb]: _AT_WLAN_AP_STA_CONTROL_\n\r");
 		printf("[ATWb] Usage: ATWI=[-s|-b]\n");
@@ -1721,76 +1643,6 @@ void fATWw(void *arg)
 #endif
 }
 
-#if CONFIG_ENABLE_P2P
-void fATWG(void *arg)
-{
-	int argc = 0;
-	char *argv[4];
-	printf("[ATWG]: _AT_WLAN_P2P_START_\n\r");
-	argv[argc++] = "p2p_start";
-	cmd_wifi_p2p_start(argc, argv);
-}
-
-void fATWg(void *arg)
-{
-	int argc = 0;
-	char *argv[4];
-	int ret = 0;
-	printf("[ATWg]: _AT_WLAN_P2P_AUTO_GO_START_\n\r");
-	argv[argc++] = "p2p_auto_go_start";
-	ret = cmd_wifi_p2p_auto_go_start(argc, argv);
-	if (ret < 0) {
-		printf("\r\n[ATWG]: Nothing to do. Please enter ATWG to initialize P2P.\n\r");
-	}
-}
-
-void fATWH(void *arg)
-{
-	int argc = 0;
-	char *argv[4];
-	printf("[ATWH]: _AT_WLAN_P2P_STOP_\n\r");
-	argv[argc++] = "p2p_stop";
-	cmd_wifi_p2p_stop(argc, argv);
-}
-void fATWJ(void *arg)
-{
-	int argc = 0;
-	char *argv[4];
-	printf("[ATWJ]: _AT_WLAN_P2P_CONNECT_\n\r");
-	argv[0] = "p2p_connect";
-	if (!arg) {
-		printf("ATWc=[DEST_MAC,pbc/pin]\n\r");
-		return;
-	}
-	if ((argc = parse_param(arg, argv)) > 1) {
-		cmd_p2p_connect(argc, argv);
-	}
-}
-void fATWK(void *arg)
-{
-	int argc = 0;
-	char *argv[4];
-	printf("[ATWK]: _AT_WLAN_P2P_DISCONNECT_\n\r");
-	argv[argc++] = "p2p_disconnect";
-	cmd_p2p_disconnect(argc, argv);
-}
-void fATWN(void *arg)
-{
-	int argc = 0;
-	char *argv[4];
-	printf("[ATWN]: _AT_WLAN_P2P_INFO_\n\r");
-	argv[argc++] = "p2p_info";
-	cmd_p2p_info(argc, argv);
-}
-void fATWF(void *arg)
-{
-	int argc = 0;
-	char *argv[4];
-	printf("[ATWF]: _AT_WLAN_P2P_FIND_\n\r");
-	argv[argc++] = "p2p_find";
-	cmd_p2p_find(argc, argv);
-}
-#endif
 #if CONFIG_OTA_UPDATE
 void fATWO(void *arg)
 {
@@ -1807,37 +1659,6 @@ void fATWO(void *arg)
 		return;
 	}
 	cmd_update(argc, argv);
-}
-#endif
-
-#if CONFIG_AIRKISS
-void fATWX(void *arg)
-{
-	int argc;
-	int ret = RTW_SUCCESS;
-	unsigned char *argv[MAX_ARGC] = {0};
-
-	argv[0] = "airkiss";
-	argc = parse_param(arg, argv);
-	if (argc == 2) {
-		if (strcmp(argv[1], "start") == 0) {
-			ret = airkiss_start(NULL);
-		} else if (strcmp(argv[1], "stop") == 0) {
-			ret = airkiss_stop();
-		} else {
-			printf("\r\n[ATWX] Usage: ATWX=[start/stop]");
-		}
-	} else {
-		printf("\r\n[ATWX] start/stop airkiss config\r\n");
-		printf("\r\n[ATWX] Usage: ATWX=[start/stop]");
-		ret = RTW_ERROR;
-	}
-
-#if defined(CONFIG_INIC_CMD_RSP) && CONFIG_INIC_CMD_RSP
-	if (ret != RTW_SUCCESS) {
-		inic_c2h_msg("ATWX", RTW_ERROR, NULL, 0);
-	}
-#endif
 }
 #endif
 
@@ -2224,9 +2045,6 @@ void fATPA(void *arg)
 	char *argv[MAX_ARGC] = {0};
 
 #if CONFIG_LWIP_LAYER
-	struct ip_addr ipaddr;
-	struct ip_addr netmask;
-	struct ip_addr gw;
 	struct netif *pnetif;
 #endif
 	int timeout = 20;
@@ -2431,6 +2249,8 @@ static int _find_ap_from_scan_buf(char *buf, int buflen, char *target_ssid, void
 				pwifi->security_type = RTW_SECURITY_WEP_PSK;
 			} else if (security_mode == IW_ENCODE_ALG_CCMP) {
 				pwifi->security_type = RTW_SECURITY_WPA2_AES_PSK;
+			} else if (security_mode == IW_ENCODE_ALG_OWE) {
+				pwifi->security_type = RTW_SECURITY_WPA3_OWE;
 			}
 			break;
 		}
@@ -2452,7 +2272,7 @@ static int _get_ap_security_mode(IN char *ssid, OUT rtw_security_t *security_mod
 		return 0;
 	}
 
-	if (strcmp(wifi.ssid, ssid) == 0) {
+	if (strcmp((char *)wifi.ssid, ssid) == 0) {
 		*security_mode = wifi.security_type;
 		*channel = wifi.channel;
 		return 1;
@@ -2464,6 +2284,7 @@ static int _get_ap_security_mode(IN char *ssid, OUT rtw_security_t *security_mod
 //ATPN=<ssid>,<pwd>[,<key_id>,<bssid>]
 static char g_assoc_by_bssid = 0;
 static int connect_async = 0;
+extern u8 key_2char2num(u8 hch, u8 lch);
 
 static void atcmd_wifi_disconn_hdl(char *buf, int buf_len, int flags, void *userdata)
 {
@@ -2481,7 +2302,7 @@ static void atcmd_wifi_disconn_hdl(char *buf, int buf_len, int flags, void *user
 u32 connect_by_rssi(char *buf, int buflen, char *target_ssid, void *user_data)
 {
 
-	u32 len, ssid_len, security_mode, channel;
+	u32 len, ssid_len;
 	s32 rssi, last_rssi = 0;
 	u8 *mac, *ssid;
 	int same_ssid_cnt = 0;
@@ -2494,9 +2315,6 @@ u32 connect_by_rssi(char *buf, int buflen, char *target_ssid, void *user_data)
 		}
 		mac = (u8 *)(buf + plen + 1);
 		rssi = *(s32 *)(buf + plen + 1 + 6);
-		// security_mode offset = 11
-		security_mode = (u8) * (buf + plen + 1 + 6 + 4);
-		channel = *(buf + plen + 1 + 6 + 4 + 1 + 1);
 		ssid_len = len - 1 - 6 - 4 - 1 - 1 - 1;
 		ssid = (u8 *)(buf + plen + 1 + 6 + 4 + 1 + 1 + 1);
 
@@ -2525,7 +2343,7 @@ u32 connect_by_rssi(char *buf, int buflen, char *target_ssid, void *user_data)
 	return 0;
 }
 
-void scan_and_sort()
+void scan_and_sort(void)
 {
 	int scan_buf_len = 500;
 	if (wifi_scan_networks_with_ssid((int (*)(char *, int, char *, void *))connect_by_rssi,
@@ -2587,9 +2405,6 @@ void fATPN(void *arg)
 	char *argv[MAX_ARGC] = {0};
 
 	int mode, ret;
-	unsigned long tick1 = xTaskGetTickCount();
-	unsigned long tick2, tick3;
-	char empty_bssid[6] = {0};
 	u8 connect_channel;
 	u8 pscan_config;
 
@@ -2725,7 +2540,7 @@ void fATPN(void *arg)
 		if (security_retry_count == 3)
 #if ATCMD_VER == ATVER_2
 		{
-			if (is_str_utf8(wifi.ssid.val)) {
+			if (is_str_utf8((const char *)wifi.ssid.val)) {
 				AT_DBG_MSG(AT_FLAG_WIFI, AT_DBG_INFO,
 						   "\r\n[ATPN] Switch to GBK to scan again");
 				rc = SwitchToGbk(wifi.ssid.val, wifi.ssid.len, (unsigned char *)&switch_buf, &switch_buflen);
@@ -3037,10 +2852,8 @@ void atcmd_wifi_write_info_to_flash(rtw_wifi_setting_t *setting, int enable)
 	struct atcmd_wifi_conf *data_to_flash;
 	rtw_wifi_setting_t *old_setting;
 
-	flash_t flash;
 	u32 channel = 0, i, write_needed = 0;
 	u8 index = 0;
-	u32 data;
 
 	data_to_flash = (struct atcmd_wifi_conf *)malloc(sizeof(struct atcmd_wifi_conf));
 
@@ -3062,12 +2875,13 @@ void atcmd_wifi_write_info_to_flash(rtw_wifi_setting_t *setting, int enable)
 				channel = setting->channel;
 
 				memset(psk_essid[index], 0, sizeof(psk_essid[index]));
-				strncpy(psk_essid[index], setting->ssid, sizeof(psk_essid[index]));
+				strncpy((char *)psk_essid[index], (char *)setting->ssid, sizeof(psk_essid[index]));
 				switch (setting->security_type) {
 				case RTW_SECURITY_OPEN:
+				case RTW_SECURITY_WPA3_OWE:
 					memset(psk_passphrase[index], 0, sizeof(psk_passphrase[index]));
 					memset(wpa_global_PSK[index], 0, sizeof(wpa_global_PSK[index]));
-					reconn.security_type = RTW_SECURITY_OPEN;
+					reconn.security_type = setting->security_type;
 					break;
 				case RTW_SECURITY_WEP_PSK:
 					channel |= (setting->key_idx) << 28;
@@ -3096,7 +2910,7 @@ void atcmd_wifi_write_info_to_flash(rtw_wifi_setting_t *setting, int enable)
 				}
 
 				memcpy(reconn.psk_essid, psk_essid[index], sizeof(reconn.psk_essid));
-				if (strlen(psk_passphrase64) == IW_WPA2_PASSPHRASE_MAX_SIZE) {
+				if (strlen((char *)psk_passphrase64) == IW_WPA2_PASSPHRASE_MAX_SIZE) {
 					memcpy(reconn.psk_passphrase, psk_passphrase64, sizeof(reconn.psk_passphrase));
 				} else {
 					memcpy(reconn.psk_passphrase, psk_passphrase[index], sizeof(reconn.psk_passphrase));
@@ -3148,7 +2962,6 @@ void atcmd_wifi_write_info_to_flash(rtw_wifi_setting_t *setting, int enable)
 
 int atcmd_wifi_restore_from_flash(void)
 {
-	flash_t		flash;
 	struct atcmd_wifi_conf *data;
 	rtw_wifi_setting_t *setting;
 	struct wlan_fast_reconnect *reconn;
@@ -3161,7 +2974,7 @@ int atcmd_wifi_restore_from_flash(void)
 	rtw_network_info_t wifi = {
 		{0},    // ssid
 		{0},    // bssid
-		0,      // security
+		(rtw_security_t)0,      // security
 		NULL,   // password
 		0,      // password len
 		-1      // key id
@@ -3219,7 +3032,7 @@ int atcmd_wifi_restore_from_flash(void)
 			//set partial scan for entering to listen beacon quickly
 			wifi_set_pscan_chan((uint8_t *)&channel, &pscan_config, 1);
 
-			wifi.security_type = security_type;
+			wifi.security_type = (rtw_security_t)security_type;
 			//SSID
 			strncpy((char *)wifi.ssid.val, (char *)psk_essid, sizeof(wifi.ssid.val));
 			wifi.ssid.len = strlen((char *)psk_essid);
@@ -3314,8 +3127,8 @@ void fATPG(void *arg)
 			goto exit;
 		}
 		if (enable == 1) {
-			u8 *ifname[1] = {WLAN0_NAME};
-			if (wifi_get_setting((const char *)ifname[0], &setting)) {
+			const char *ifname = WLAN0_NAME;
+			if (wifi_get_setting((const char *)ifname, &setting)) {
 				AT_DBG_MSG(AT_FLAG_WIFI, AT_DBG_ERROR,
 						   "wifi_get_setting fail");
 				error_no = 3;
@@ -3397,7 +3210,7 @@ void fATPW(void *arg)
 	}
 
 	if (argv[1] != NULL) {
-		wifi_mode_new = atoi((const char *)(argv[1]));
+		wifi_mode_new = (rtw_mode_t)atoi((const char *)(argv[1]));
 		if ((wifi_mode_new != RTW_MODE_STA) && (wifi_mode_new != RTW_MODE_AP) && (wifi_mode_new != RTW_MODE_STA_AP)) {
 			//at_printf("\r\n[ATPW] ERROR : parameter must be 1 , 2 or 3");
 			error_no = 2;
@@ -3602,7 +3415,7 @@ log_item_t at_wifi_items[ ] = {
 	{"ATW6", fATW6, {NULL, NULL}},
 	{"ATW8", fATW8, {NULL, NULL}},
 	{"ATW9", fATW9, {NULL, NULL}}, //Set auto reconnect mode
-#ifdef CONFIG_FPGA
+#ifdef CONFIG_AP_SECURITY
 	{"ATW7", fATW7,},
 #endif
 	{"ATWA", fATWA, {NULL, NULL}},
@@ -3614,9 +3427,6 @@ log_item_t at_wifi_items[ ] = {
 	{"ATWC", fATWC, {NULL, NULL}},
 	{"ATWD", fATWD, {NULL, NULL}},
 	{"ATWP", fATWP, {NULL, NULL}},
-#if CONFIG_WOWLAN_SERVICE
-	{"ATWV", fATWV,},
-#endif
 	{"ATWR", fATWR, {NULL, NULL}},
 	{"ATWS", fATWS, {NULL, NULL}},
 #ifdef WIFI_PERFORMANCE_MONITOR
@@ -3632,28 +3442,9 @@ log_item_t at_wifi_items[ ] = {
 #if CONFIG_OTA_UPDATE
 	{"ATWO", fATWO,},
 #endif
-#if (CONFIG_INCLUDE_SIMPLE_CONFIG)
-	{"ATWQ", fATWQ, {NULL, NULL}},
-#endif
-#if defined(CONFIG_INCLUDE_DPP_CONFIG) && CONFIG_INCLUDE_DPP_CONFIG
-	{"ATWq", fATWq,},
-#endif
 #ifdef CONFIG_WPS
 	{"ATWW", fATWW, {NULL, NULL}},
 	{"ATWw", fATWw, {NULL, NULL}}, //wps registrar for softap
-#if CONFIG_ENABLE_P2P
-	{"ATWG", fATWG,},  //p2p start
-	{"ATWH", fATWH,},  //p2p stop
-	{"ATWJ", fATWJ,},  //p2p connect
-	{"ATWK", fATWK,},  //p2p disconnect
-	{"ATWN", fATWN,},  //p2p info
-	{"ATWF", fATWF,},  //p2p find
-	{"ATWg", fATWg,},  //p2p auto go start
-#endif
-#endif
-
-#if CONFIG_AIRKISS
-	{"ATWX", fATWX,},
 #endif
 	{"ATWY", fATWY,},
 	{"ATW?", fATWx, {NULL, NULL}},
@@ -3675,9 +3466,6 @@ log_item_t at_wifi_items[ ] = {
 	{"ATWD", fATWD,},
 	{"ATWS", fATWS,},
 	{"ATW?", fATWx,},
-#if (CONFIG_INCLUDE_SIMPLE_CONFIG)
-	{"ATWQ", fATWQ,},
-#endif // #if (CONFIG_INCLUDE_SIMPLE_CONFIG)
 #endif // #if CONFIG_WLAN
 #endif // end of #if ATCMD_VER == ATVER_1
 };

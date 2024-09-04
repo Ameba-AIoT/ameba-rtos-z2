@@ -290,6 +290,12 @@ static struct lwip_select_cb *select_cb_list;
 static volatile int select_cb_ctr;
 
 #if LWIP_SOCKET_SET_ERRNO
+#if defined(CONFIG_AMAZON_FREERTOS) && CONFIG_AMAZON_FREERTOS
+#ifndef errno
+_WEAK int errno = 0;
+#endif
+#endif
+
 #ifndef set_errno
 #define set_errno(err) do { if (err) { errno = (err); } } while(0)
 #endif

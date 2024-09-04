@@ -20,5 +20,8 @@ extern void mDNSResponderDeinit(void);
 extern DNSServiceRef mDNSRegisterService(char *name, char *service_type, char *domain, unsigned short port, TXTRecordRef *txtRecord);
 extern void mDNSDeregisterService(DNSServiceRef serviceRef);
 extern void mDNSUpdateService(DNSServiceRef serviceRef, TXTRecordRef *txtRecord, unsigned int ttl);
+extern void mDNSRegisterAllInterfaces(void);
+extern void mDNSDeregisterAllInterfaces(void);
+extern void mDNSSetupDebug(uint8_t debug);
 
 #endif  /* _MDNS_H */

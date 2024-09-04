@@ -6,8 +6,7 @@
 #include <osdep_service.h>
 
 /* NOTE: struct size must be a 2's power! */
-typedef struct _PsramMemChunk
-{
+typedef struct _PsramMemChunk {
 	struct _PsramMemChunk *next;
 	int size;
 } PsramMemChunk;
@@ -15,12 +14,11 @@ typedef struct _PsramMemChunk
 typedef PsramMemChunk Psram_heap_buf_t;
 
 // A heap
-typedef struct Psram_Heap
-{
+typedef struct Psram_Heap {
 	struct _PsramMemChunk *FreeList;	///< Head of the free list
 } Psram_Heap;
 
- 
+
 /**
  * Utility macro to allocate a heap of size \a size.
  *

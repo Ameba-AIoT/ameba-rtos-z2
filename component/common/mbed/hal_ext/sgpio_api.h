@@ -3,7 +3,7 @@
   * @file    sgpio_api.h
   * @author
   * @version V1.0.0
-  * @brief   This file provides following mbed I2S API
+  * @brief   This file provides following mbed SGPIO API
   ******************************************************************************
   * @attention
   *
@@ -26,7 +26,7 @@
 #ifndef MBED_EXT_SGPIO_API_EXT_H
 #define MBED_EXT_SGPIO_API_EXT_H
 #if (defined(CONFIG_PLATFORM_8195BHP) && (CONFIG_PLATFORM_8195BHP == 1))  ||  (defined(CONFIG_PLATFORM_8195BLP) && (CONFIG_PLATFORM_8195BLP == 1))
-///@name AmebaPro Only 
+///@name AmebaPro Only
 ///@{
 #include "device.h"
 
@@ -41,103 +41,103 @@ extern "C" {
  */
 
 typedef enum {
-    RXTC_NO_TRIGGER = Rxtc_None,
-    RXTC_RISE_EDGE  = Rxtc_InputRiseEg,
-    RXTC_FALL_EDGE  = Rxtc_InputFallEg,
-    RXTC_BOTH_EDGE  = Rxtc_InputBothEg,
-    RXTC_ACTIVE = 4   
+	RXTC_NO_TRIGGER = Rxtc_None,
+	RXTC_RISE_EDGE  = Rxtc_InputRiseEg,
+	RXTC_FALL_EDGE  = Rxtc_InputFallEg,
+	RXTC_BOTH_EDGE  = Rxtc_InputBothEg,
+	RXTC_ACTIVE = 4
 } sgpio_rxtc_input_start;
 
 typedef enum {
-    RXTC_MATCH_EVENT0 = Rxtc_MatchEvent0,
-    RXTC_MATCH_EVENT1 = Rxtc_MatchEvent1,
-    RXTC_MATCH_EVENT2 = Rxtc_MatchEvent2
+	RXTC_MATCH_EVENT0 = Rxtc_MatchEvent0,
+	RXTC_MATCH_EVENT1 = Rxtc_MatchEvent1,
+	RXTC_MATCH_EVENT2 = Rxtc_MatchEvent2
 } sgpio_rxtc_match_event;
 
 typedef enum {
-    CAP_NO_TRIGGER         = Cap_None,
-    CAP_RISE_EDGE          = Cap_InputRiseEg,
-    CAP_FALL_EDGE          = Cap_InputFallEg,
-    CAP_BOTH_EDGE          = Cap_InputBothEg,
-    CAP_MULTC_MATCH_EVENT0 = Cap_MultcMatchEvent0
+	CAP_NO_TRIGGER         = Cap_None,
+	CAP_RISE_EDGE          = Cap_InputRiseEg,
+	CAP_FALL_EDGE          = Cap_InputFallEg,
+	CAP_BOTH_EDGE          = Cap_InputBothEg,
+	CAP_MULTC_MATCH_EVENT0 = Cap_MultcMatchEvent0
 } sgpio_capture_type;
 
 typedef enum {
-    MULTC_TIMER             = Multc_Timer_Mode,
-    MULTC_COUNTER_RISE_EDGE = Multc_Counter_InputRiseEg,
-    MULTC_COUNTER_FALL_EDGE = Multc_Counter_InputFallEg,
-    MULTC_COUNTER_BOTH_EDGE = Multc_Counter_InputBothEg
+	MULTC_TIMER             = Multc_Timer_Mode,
+	MULTC_COUNTER_RISE_EDGE = Multc_Counter_InputRiseEg,
+	MULTC_COUNTER_FALL_EDGE = Multc_Counter_InputFallEg,
+	MULTC_COUNTER_BOTH_EDGE = Multc_Counter_InputBothEg
 } sgpio_multc_mode;
 
 typedef enum {
-    INPUT_NO_TRIGGER = Input_None,
-    INPUT_RISE_EDGE  = Input_RiseEdge,
-    INPUT_FALL_EDGE  = Input_FallEdge,
-    INPUT_BOTH_EDGE  = Input_BothEdge
+	INPUT_NO_TRIGGER = Input_None,
+	INPUT_RISE_EDGE  = Input_RiseEdge,
+	INPUT_FALL_EDGE  = Input_FallEdge,
+	INPUT_BOTH_EDGE  = Input_BothEdge
 } sgpio_counter_edge;
 
 typedef enum {
-    MULTC_MATCH_EVENT0 = Multc_MatchEvent0,
-    MULTC_MATCH_EVENT1 = Multc_MatchEvent1,
-    MULTC_MATCH_EVENT2 = Multc_MatchEvent2,
-    MULTC_MATCH_EVENT3 = Multc_MatchEvent3
+	MULTC_MATCH_EVENT0 = Multc_MatchEvent0,
+	MULTC_MATCH_EVENT1 = Multc_MatchEvent1,
+	MULTC_MATCH_EVENT2 = Multc_MatchEvent2,
+	MULTC_MATCH_EVENT3 = Multc_MatchEvent3
 } sgpio_multc_match_event;
 
 typedef enum {
-    MULTC_MATCH_GROUP0 = Multc_MatchGroup0,
-    MULTC_MATCH_GROUP1 = Multc_MatchGroup1
+	MULTC_MATCH_GROUP0 = Multc_MatchGroup0,
+	MULTC_MATCH_GROUP1 = Multc_MatchGroup1
 } sgpio_multc_match_group;
 
 typedef enum {
-    MATCH_OUTPUT_NONE   = External_None,
-    MATCH_OUTPUT_LOW    = External_Low,
-    MATCH_OUTPUT_HIGH   = External_High,
-    MATCH_OUTPUT_TOGGLE = External_Toggle
+	MATCH_OUTPUT_NONE   = External_None,
+	MATCH_OUTPUT_LOW    = External_Low,
+	MATCH_OUTPUT_HIGH   = External_High,
+	MATCH_OUTPUT_TOGGLE = External_Toggle
 } sgpio_external_output;
 
 typedef enum {
-    INPUT_ONLY  = Rx_Input_Only,
-    BIDIRECTION = Rx_In_And_Output
+	INPUT_ONLY  = Rx_Input_Only,
+	BIDIRECTION = Rx_In_And_Output
 } sgpio_rx_inoutput;
 
 typedef enum {
-    OUTPUT_LOW  = Output_Is_Low,
-    OUTPUT_HIGH = Output_Is_High
+	OUTPUT_LOW  = Output_Is_Low,
+	OUTPUT_HIGH = Output_Is_High
 } sgpio_output_value;
 
 typedef enum {
-    FIRST_LSB = First_Data_LSB,
-    FIRST_MSB = First_Data_MSB
+	FIRST_LSB = First_Data_LSB,
+	FIRST_MSB = First_Data_MSB
 } sgpio_first_msb_or_lsb;
 
 typedef enum {
-    GET_BIT0 = Compare_Result_Bit0,
-    GET_BIT1 = Compare_Result_Bit1
+	GET_BIT0 = Compare_Result_Bit0,
+	GET_BIT1 = Compare_Result_Bit1
 } sgpio_cmp_result_bit;
 
 typedef enum {
-    UNIT_US = Time_unit_us,
-    UNIT_NS = Time_unit_ns
+	UNIT_US = Time_unit_us,
+	UNIT_NS = Time_unit_ns
 } sgpio_time_unit;
 
 typedef enum {
-    TIMER_US    = Timer_mode_unit_us,
-    TIMER_NS    = Timer_mode_unit_ns,
-    COUNTER_CNT = Countr_mode_unit_cnt
+	TIMER_US    = Timer_mode_unit_us,
+	TIMER_NS    = Timer_mode_unit_ns,
+	COUNTER_CNT = Countr_mode_unit_cnt
 } sgpio_source_unit;
 
 typedef enum {
-    RXTC_INACTIVE   = 0x00,
-    RXTC_RESET      = 0x01,
-    RXTC_STOP       = 0x02,
-    RXTC_RESET_STOP = 0x03    
+	RXTC_INACTIVE   = 0x00,
+	RXTC_RESET      = 0x01,
+	RXTC_STOP       = 0x02,
+	RXTC_RESET_STOP = 0x03
 } sgpio_rxtc_ctrl;
 
 typedef enum {
-    MULTC_INACTIVE   = 0x00,
-    MULTC_RESET      = 0x01,
-    MULTC_STOP       = 0x02,
-    MULTC_RESET_STOP = 0x03    
+	MULTC_INACTIVE   = 0x00,
+	MULTC_RESET      = 0x01,
+	MULTC_STOP       = 0x02,
+	MULTC_RESET_STOP = 0x03
 } sgpio_multc_ctrl;
 
 typedef void (*sgpio_irq_handler)(void *);
@@ -151,28 +151,28 @@ typedef struct sgpio_s sgpio_t;
   * @param  bi_dir_rx: Bidirectional Rx PinName according to pinmux spec.
   * @retval none
   */
-void sgpio_init (sgpio_t *obj, PinName tx, PinName bi_dir_rx);
+void sgpio_init(sgpio_t *obj, PinName tx, PinName bi_dir_rx);
 
 /**
   * @brief  Deinitializes the SGPIO device, include function/interrupt/SGPIO registers.
   * @param  obj: SGPIO object define in application software.
   * @retval none
   */
-void sgpio_deinit (sgpio_t *obj);
+void sgpio_deinit(sgpio_t *obj);
 
 /**
   * @brief  Be able to release the SGPIO pins from the pin mux after initializes the SGPIO device.
   * @param  obj: SGPIO object define in application software.
   * @retval none
   */
-void sgpio_pin_free (sgpio_t *obj);
+void sgpio_pin_free(sgpio_t *obj);
 
 /**
   * @brief  Reset SGPIO and registers.
   * @param  obj: SGPIO object define in application software.
   * @retval none
   */
-void sgpio_reset (sgpio_t *obj);
+void sgpio_reset(sgpio_t *obj);
 
 /**
   * @brief  Configure SGPIO to become the rxtc timer. Use RXTC.
@@ -196,13 +196,13 @@ void sgpio_reset (sgpio_t *obj);
   * @param  ptime_reset_arg: User defined IRQ callback parameter.
   * @retval none
   */
-void sgpio_rxtc_timer_mode (sgpio_t *obj, BOOL timer_once_en, sgpio_time_unit time_unit,
-                                u32 match_time1, sgpio_irq_handler match_time1_cb, void *pmatch_time1_arg,
-                                u32 match_time2, sgpio_irq_handler match_time2_cb, void *pmatch_time2_arg,
-                                u32 match_time_reset, sgpio_irq_handler time_reset_cb, void *ptime_reset_arg);
+void sgpio_rxtc_timer_mode(sgpio_t *obj, BOOL timer_once_en, sgpio_time_unit time_unit,
+						   u32 match_time1, sgpio_irq_handler match_time1_cb, void *pmatch_time1_arg,
+						   u32 match_time2, sgpio_irq_handler match_time2_cb, void *pmatch_time2_arg,
+						   u32 match_time_reset, sgpio_irq_handler time_reset_cb, void *ptime_reset_arg);
 
 /**
-  * @brief  Generate the external output when happen the match events of the rxtc timer. 
+  * @brief  Generate the external output when happen the match events of the rxtc timer.
   * @param  obj: SGPIO object define in application software.
   * @param  match_time1_output: Set the output value when match the time 1.
   *		@arg 0 : Inactive.
@@ -213,8 +213,8 @@ void sgpio_rxtc_timer_mode (sgpio_t *obj, BOOL timer_once_en, sgpio_time_unit ti
   * @param  match_reset_time_output: Set the output value when match the reset time.
   * @retval none
   */
-void sgpio_rxtc_timer_match_output (sgpio_t *obj, sgpio_external_output match_time1_output, sgpio_external_output match_time2_output,
-                                        sgpio_external_output match_reset_time_output);
+void sgpio_rxtc_timer_match_output(sgpio_t *obj, sgpio_external_output match_time1_output, sgpio_external_output match_time2_output,
+								   sgpio_external_output match_reset_time_output);
 
 /**
   * @brief  Control to start the rxtc timer. Use RXTC.
@@ -222,7 +222,7 @@ void sgpio_rxtc_timer_match_output (sgpio_t *obj, sgpio_external_output match_ti
   * @param  start_en: To enable or disable.
   * @retval none
   */
-void sgpio_rxtc_start_en (sgpio_t *obj, BOOL start_en);
+void sgpio_rxtc_start_en(sgpio_t *obj, BOOL start_en);
 
 /**
   * @brief  Configure SGPIO to become the multc timer. Use MULTC.
@@ -238,8 +238,8 @@ void sgpio_rxtc_start_en (sgpio_t *obj, BOOL start_en);
   * @param  ptime_reset_arg: User defined IRQ callback parameter.
   * @retval none
   */
-void sgpio_multc_timer_mode (sgpio_t *obj, BOOL timer_once_en, sgpio_time_unit time_unit,
-                                u32 match_time_reset, sgpio_irq_handler time_reset_cb, void *ptime_reset_arg);
+void sgpio_multc_timer_mode(sgpio_t *obj, BOOL timer_once_en, sgpio_time_unit time_unit,
+							u32 match_time_reset, sgpio_irq_handler time_reset_cb, void *ptime_reset_arg);
 
 /**
   * @brief  Configure SGPIO to count input triggers. Use MULTC. When use the timeout function, use RXTC.
@@ -257,9 +257,9 @@ void sgpio_multc_timer_mode (sgpio_t *obj, BOOL timer_once_en, sgpio_time_unit t
   * @param  pmatch_arg: User defined IRQ callback parameter.
   * @param  multc_ctrl: When the counter value is equal to match_value, control multc reset and stop.
   *		@arg 0 : Inactive
-  *		@arg 1 : Reset MULTC.  
-  *		@arg 2 : Stop MULTC.  
-  *		@arg 3 : Reset and stop MULTC.     
+  *		@arg 1 : Reset MULTC.
+  *		@arg 2 : Stop MULTC.
+  *		@arg 3 : Reset and stop MULTC.
   * @param  timeout_unit: Select the timeout unit.
   *		@arg 0 : The unit is us.
   *		@arg 1 : The unit is ns.
@@ -268,13 +268,13 @@ void sgpio_multc_timer_mode (sgpio_t *obj, BOOL timer_once_en, sgpio_time_unit t
   * @param  ptimeout_arg: User defined IRQ callback parameter.
   * @retval none
   */
-void sgpio_multc_counter_mode (sgpio_t *obj, BOOL counter_en, sgpio_counter_edge input_edge, u16 match_value, 
-                                    sgpio_irq_handler match_cb, void *pmatch_arg, sgpio_multc_ctrl multc_ctrl,                                    
-                                    sgpio_time_unit timeout_unit, u32 counter_timeout, sgpio_irq_handler timeout_cb, void *ptimeout_arg);
+void sgpio_multc_counter_mode(sgpio_t *obj, BOOL counter_en, sgpio_counter_edge input_edge, u16 match_value,
+							  sgpio_irq_handler match_cb, void *pmatch_arg, sgpio_multc_ctrl multc_ctrl,
+							  sgpio_time_unit timeout_unit, u32 counter_timeout, sgpio_irq_handler timeout_cb, void *ptimeout_arg);
 
 
 /**
-  * @brief  Generate the external output when happen the match events of the multc timer counter. 
+  * @brief  Generate the external output when happen the match events of the multc timer counter.
   * @param  obj: SGPIO object define in application software.
   * @param  source_unit: Select the time unit.
   *		@arg 0 : The unit is us in the timer mode.
@@ -292,10 +292,10 @@ void sgpio_multc_counter_mode (sgpio_t *obj, BOOL counter_en, sgpio_counter_edge
   * @param  match_value3: The match value 3 of the multc timer counter .
   * @retval none
   */
-void sgpio_multc_timer_counter_match_output (sgpio_t *obj, sgpio_source_unit source_unit,
-                                                    sgpio_external_output match_value1_output, u32 match_value1,
-                                                    sgpio_external_output match_value2_output, u32 match_value2,
-                                                    sgpio_external_output match_value3_output, u32 match_value3);
+void sgpio_multc_timer_counter_match_output(sgpio_t *obj, sgpio_source_unit source_unit,
+		sgpio_external_output match_value1_output, u32 match_value1,
+		sgpio_external_output match_value2_output, u32 match_value2,
+		sgpio_external_output match_value3_output, u32 match_value3);
 
 /**
   * @brief  Control to start the multc timer. Use MULTC.
@@ -303,7 +303,7 @@ void sgpio_multc_timer_counter_match_output (sgpio_t *obj, sgpio_source_unit sou
   * @param  start_en: To enable or disable.
   * @retval none
   */
-void sgpio_multc_start_en (sgpio_t *obj, BOOL start_en);
+void sgpio_multc_start_en(sgpio_t *obj, BOOL start_en);
 
 /**
   * @brief  Configure SGPIO to become the capture mode for measuring the pulse width. Use RXTC.
@@ -317,17 +317,17 @@ void sgpio_multc_start_en (sgpio_t *obj, BOOL start_en);
   *		@arg 3 : Capture on the both edge.
   * @param  rxtc_ctrl: When happen the capture event, control rxtc reset and stop.
   *		@arg 0 : Inactive
-  *		@arg 1 : Reset RXTC.  
-  *		@arg 2 : Stop RXTC.  
-  *		@arg 3 : Reset and stop RXTC.     
+  *		@arg 1 : Reset RXTC.
+  *		@arg 2 : Stop RXTC.
+  *		@arg 3 : Reset and stop RXTC.
   * @param  max_capture_range_us: Set the maximum possible measurement value for making the prescale of the timer automatically.
   *         This setting will affect the accuracy.
   * @param  capture_cb: User defined IRQ callback function. Using "NULL" will not generate this interrupt.
   * @param  pcapture_arg: User defined IRQ callback parameter.
   * @retval none
   */
-void sgpio_rxtc_capture_mode (sgpio_t *obj, BOOL capture_en, sgpio_rxtc_input_start start_timer_edge, sgpio_capture_type input_capture_edge,
-                                    sgpio_rxtc_ctrl rxtc_ctrl, u32 max_capture_range_us, sgpio_irq_handler capture_cb, void *pcapture_arg);
+void sgpio_rxtc_capture_mode(sgpio_t *obj, BOOL capture_en, sgpio_rxtc_input_start start_timer_edge, sgpio_capture_type input_capture_edge,
+							 sgpio_rxtc_ctrl rxtc_ctrl, u32 max_capture_range_us, sgpio_irq_handler capture_cb, void *pcapture_arg);
 
 /**
   * @brief  Make the capture timer reset and stop in the capture mode when the timer value is equal to timeout_value. Use RXTC.
@@ -335,9 +335,9 @@ void sgpio_rxtc_capture_mode (sgpio_t *obj, BOOL capture_en, sgpio_rxtc_input_st
   * @param  capture_timeout_en: To enable or disable.
   * @param  rxtc_ctrl: When happen the capture timeout, control rxtc reset and stop.
   *		@arg 0 : Inactive
-  *		@arg 1 : Reset RXTC.  
-  *		@arg 2 : Stop RXTC.  
-  *		@arg 3 : Reset and stop RXTC.     
+  *		@arg 1 : Reset RXTC.
+  *		@arg 2 : Stop RXTC.
+  *		@arg 3 : Reset and stop RXTC.
   * @param  time_unit: Select the time unit.
   *		@arg 0 : The unit is us.
   *		@arg 1 : The unit is ns.
@@ -347,7 +347,7 @@ void sgpio_rxtc_capture_mode (sgpio_t *obj, BOOL capture_en, sgpio_rxtc_input_st
   * @retval none
   */
 void sgpio_rxtc_capture_timeout(sgpio_t *obj, BOOL capture_timeout_en, sgpio_rxtc_ctrl rxtc_ctrl,
-                                    sgpio_time_unit time_unit, u32 timeout_value, sgpio_irq_handler capture_timeout_cb, void *pcapture_timeout_arg);
+								sgpio_time_unit time_unit, u32 timeout_value, sgpio_irq_handler capture_timeout_cb, void *pcapture_timeout_arg);
 
 /**
   * @brief  Monitor the capture value. When the capture value is bigger than monitor time, generate the interrupt. Use RXTC.
@@ -363,7 +363,7 @@ void sgpio_rxtc_capture_timeout(sgpio_t *obj, BOOL capture_timeout_en, sgpio_rxt
   * @retval none
   */
 void sgpio_rxtc_capture_monitor(sgpio_t *obj, BOOL capture_monitor_en, sgpio_time_unit time_unit, u32 monitor_time, u8 monitor_count,
-                                    sgpio_irq_handler capture_monitor_cb, void *pcapture_monitor_arg);
+								sgpio_irq_handler capture_monitor_cb, void *pcapture_monitor_arg);
 
 /**
   * @brief  Get the capture value. Use RXTC.
@@ -373,7 +373,7 @@ void sgpio_rxtc_capture_monitor(sgpio_t *obj, BOOL capture_monitor_en, sgpio_tim
   *		@arg 1 : The unit is ns.
   * @retval The capture value.
   */
-u32 sgpio_get_rxtc_capture_time (sgpio_t *obj, sgpio_time_unit time_unit);
+u32 sgpio_get_rxtc_capture_time(sgpio_t *obj, sgpio_time_unit time_unit);
 
 /**
   * @brief  Set the trigger edge to start the timer, and sample the input value according to the sampling time.
@@ -393,9 +393,9 @@ u32 sgpio_get_rxtc_capture_time (sgpio_t *obj, sgpio_time_unit time_unit);
   * @param  psampling_finish_arg: User defined IRQ callback parameter.
   * @retval none
   */
-void sgpio_sampling_rxdata (sgpio_t *obj, BOOL sampling_en, sgpio_rxtc_input_start start_timer_edge, sgpio_time_unit time_unit,
-                                u32 sampling_time1, u32 sampling_time2, u32 sampling_end_time, u8 sampling_bit_length,
-                                sgpio_first_msb_or_lsb first_msb_or_lsb, sgpio_irq_handler sampling_finish_cb, void *psampling_finish_arg);
+void sgpio_sampling_rxdata(sgpio_t *obj, BOOL sampling_en, sgpio_rxtc_input_start start_timer_edge, sgpio_time_unit time_unit,
+						   u32 sampling_time1, u32 sampling_time2, u32 sampling_end_time, u8 sampling_bit_length,
+						   sgpio_first_msb_or_lsb first_msb_or_lsb, sgpio_irq_handler sampling_finish_cb, void *psampling_finish_arg);
 
 /**
   * @brief  Set the trigger edge to start the timer, and translate the capture time into "0" or "1" according to the result of the comparison.
@@ -422,16 +422,16 @@ void sgpio_sampling_rxdata (sgpio_t *obj, BOOL sampling_en, sgpio_rxtc_input_sta
   * @param  psampling_finish_arg: User defined IRQ callback parameter.
   * @retval none
   */
-void sgpio_capture_compare_rxdata (sgpio_t *obj, BOOL capture_en, sgpio_rxtc_input_start start_timer_edge, sgpio_capture_type input_capture_edge,
-                                        u32 max_capture_range_us, sgpio_time_unit time_unit, u32 capture_compare_value_time, sgpio_cmp_result_bit compare_result_bit,
-                                        u8 compare_bit_length, sgpio_first_msb_or_lsb first_msb_or_lsb, sgpio_irq_handler compare_finish_cb, void *pcompare_finish_arg);
+void sgpio_capture_compare_rxdata(sgpio_t *obj, BOOL capture_en, sgpio_rxtc_input_start start_timer_edge, sgpio_capture_type input_capture_edge,
+								  u32 max_capture_range_us, sgpio_time_unit time_unit, u32 capture_compare_value_time, sgpio_cmp_result_bit compare_result_bit,
+								  u8 compare_bit_length, sgpio_first_msb_or_lsb first_msb_or_lsb, sgpio_irq_handler compare_finish_cb, void *pcompare_finish_arg);
 
 /**
   * @brief  Get the register of the RX data by sample or capture.
   * @param  obj: SGPIO object define in application software.
   * @retval The result register.
   */
-u32 sgpio_get_input_rxdata (sgpio_t *obj);
+u32 sgpio_get_input_rxdata(sgpio_t *obj);
 
 /**
   * @brief  Configure the waveforms of the bit 0 and bit 1 for the output.
@@ -446,9 +446,9 @@ u32 sgpio_get_input_rxdata (sgpio_t *obj);
   * @param  bit1_duration_time: The duration of the bit 1.
   * @retval none
   */
-void sgpio_set_bit_symbol_of_txdata (sgpio_t *obj, sgpio_output_value_t initial_output_value, sgpio_time_unit time_unit,
-                                        u32 bit0_middle_change_time, u32 bit0_duration_time,
-                                        u32 bit1_middle_change_time, u32 bit1_duration_time);
+void sgpio_set_bit_symbol_of_txdata(sgpio_t *obj, sgpio_output_value_t initial_output_value, sgpio_time_unit time_unit,
+									u32 bit0_middle_change_time, u32 bit0_duration_time,
+									u32 bit1_middle_change_time, u32 bit1_duration_time);
 
 /**
   * @brief  Set the output data according to the waveforms of the bit 0 and bit 1. Use MULTC.
@@ -462,15 +462,15 @@ void sgpio_set_bit_symbol_of_txdata (sgpio_t *obj, sgpio_output_value_t initial_
   * @param  ptxdata_finish_arg: User defined IRQ callback parameter.
   * @retval none
   */
-void sgpio_set_txdata (sgpio_t *obj, BOOL txdata_en, BOOL rx_output_en, u16 output_bit_counts, u32 *ptxdata_pointer,
-                        sgpio_irq_handler txdata_finish_cb, void *ptxdata_finish_arg);
+void sgpio_set_txdata(sgpio_t *obj, BOOL txdata_en, BOOL rx_output_en, u16 output_bit_counts, u32 *ptxdata_pointer,
+					  sgpio_irq_handler txdata_finish_cb, void *ptxdata_finish_arg);
 
 /**
   * @brief  Start to output the TX data. Use MULTC.
   * @param  obj: SGPIO object define in application software.
   * @retval none
   */
-void sgpio_start_send_txdata (sgpio_t *obj);
+void sgpio_start_send_txdata(sgpio_t *obj);
 
 
 /**
@@ -483,15 +483,15 @@ void sgpio_start_send_txdata (sgpio_t *obj);
   * @param  pmonitor_rxdata_arg: User defined IRQ callback parameter.
   * @retval none
   */
-void sgpio_set_rxdata_monitor (sgpio_t *obj, BOOL monitor_en, u32 monitor_data, u32 monitor_input_data_mask,
-                                    sgpio_irq_handler monitor_rxdata_cb, void *pmonitor_rxdata_arg);
+void sgpio_set_rxdata_monitor(sgpio_t *obj, BOOL monitor_en, u32 monitor_data, u32 monitor_input_data_mask,
+							  sgpio_irq_handler monitor_rxdata_cb, void *pmonitor_rxdata_arg);
 
 /**
   * @brief  Disable the monitor mode.
   * @param  obj: SGPIO object define in application software.
   * @retval none
   */
-void sgpio_disable_rxdata_monitor (sgpio_t *obj);
+void sgpio_disable_rxdata_monitor(sgpio_t *obj);
 
 /**
   * @brief  Reset the register of the RX data.
@@ -522,23 +522,23 @@ void sgpio_reset_receive_rxdata(sgpio_t *obj);
   * @param  pcounter_finish_arg: User defined IRQ callback parameter.
   * @retval none
   */
-void sgpio_init_dma_match_output (sgpio_t *obj, u16 *pmatch_value_ptr, u8 reset_time_num, sgpio_time_unit time_unit,
-                                                sgpio_external_output match_time1_output, sgpio_external_output match_time2_output, sgpio_external_output match_time3_output,
-                                                sgpio_irq_handler counter_finish_cb, void *pcounter_finish_arg);
+void sgpio_init_dma_match_output(sgpio_t *obj, u16 *pmatch_value_ptr, u8 reset_time_num, sgpio_time_unit time_unit,
+								 sgpio_external_output match_time1_output, sgpio_external_output match_time2_output, sgpio_external_output match_time3_output,
+								 sgpio_irq_handler counter_finish_cb, void *pcounter_finish_arg);
 
 /**
   * @brief  Deinitializes the GDMA of SGPIO.
   * @param  obj: SGPIO object define in application software.
   * @retval none
   */
-void sgpio_deinit_dma_match_output (sgpio_t *obj);
+void sgpio_deinit_dma_match_output(sgpio_t *obj);
 
 /**
   * @brief  Start the GDMA to send the TX waveform.
   * @param  obj: SGPIO object define in application software.
   * @retval none
   */
-void sgpio_start_dma (sgpio_t *obj);
+void sgpio_start_dma(sgpio_t *obj);
 
 /**
   * @brief  Set the TX output value.
@@ -548,42 +548,42 @@ void sgpio_start_dma (sgpio_t *obj);
   *		@arg 2 : The output is high.
   * @retval none
   */
-void sgpio_set_output_value (sgpio_t *obj, sgpio_output_value value);
+void sgpio_set_output_value(sgpio_t *obj, sgpio_output_value value);
 
 /**
   * @brief  Make the inverse output
   * @param  obj: SGPIO object define in application software.
   * @retval none
   */
-void sgpio_set_inverse_output (sgpio_t *obj);
+void sgpio_set_inverse_output(sgpio_t *obj);
 
 /**
 * @brief  Get the register value of the rxtc timer.
 * @param  obj: SGPIO object define in application software.
 * @retval The register value of the rxtc timer.
 */
-u16 sgpio_get_rxtc_value (sgpio_t *obj);
+u16 sgpio_get_rxtc_value(sgpio_t *obj);
 
 /**
 * @brief Reset the rxtc timer.
 * @param  obj: SGPIO object define in application software.
 * @retval none
 */
-void sgpio_reset_rxtc (sgpio_t *obj);
+void sgpio_reset_rxtc(sgpio_t *obj);
 
 /**
 * @brief  Get the register value of the multc timer.
 * @param  obj: SGPIO object define in application software.
 * @retval The register value of the multc timer.
 */
-u16 sgpio_get_multc_value (sgpio_t *obj);
+u16 sgpio_get_multc_value(sgpio_t *obj);
 
 /**
 * @brief Reset the multc timer.
 * @param  obj: SGPIO object define in application software.
 * @retval none
 */
-void sgpio_reset_multc (sgpio_t *obj);
+void sgpio_reset_multc(sgpio_t *obj);
 
 /**
 * @brief Control the rx to become the bi-direction.
@@ -593,7 +593,7 @@ void sgpio_reset_multc (sgpio_t *obj);
 *     @arg 1 : Bi-direction.
 * @retval none
 */
-void sgpio_set_rx_in_out_ctrl (sgpio_t *obj, sgpio_rx_inoutput rx_in_out);
+void sgpio_set_rx_in_out_ctrl(sgpio_t *obj, sgpio_rx_inoutput rx_in_out);
 
 
 /*\@}*/

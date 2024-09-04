@@ -28,25 +28,25 @@ extern "C" {
 		defined(USE_STM324xG_EVAL)+\
 		defined(CONFIG_PLATFOMR_CUSTOMER_RTOS)+\
 		defined(STM32F10X_XL) > 1
-		#error "Cannot define two or more platform at one time"
+#error "Cannot define two or more platform at one time"
 #endif
 
 #if defined(CONFIG_PLATFORM_8195A)
-	#include "platform_stdlib_rtl8195a.h"
+#include "platform_stdlib_rtl8195a.h"
 #elif defined (CONFIG_PLATFORM_8711B)
-	#include "platform_stdlib_rtl8711b.h"
+#include "platform_stdlib_rtl8711b.h"
 #elif defined (CONFIG_PLATFORM_8721D)
-	#include "platform_stdlib_rtl8721d.h"
+#include "platform_stdlib_rtl8721d.h"
 #elif defined(CONFIG_PLATFORM_8195BHP)
-	#include "platform_stdlib_rtl8195bhp.h"	
-#elif defined(USE_STM322xG_EVAL) || defined(USE_STM324xG_EVAL)  || defined(STM32F10X_XL) 
-	#include "platform_stdlib_stm32.h"
+#include "platform_stdlib_rtl8195bhp.h"
+#elif defined(USE_STM322xG_EVAL) || defined(USE_STM324xG_EVAL)  || defined(STM32F10X_XL)
+#include "platform_stdlib_stm32.h"
 #elif defined(CONFIG_PLATFOMR_CUSTOMER_RTOS)
-	#include "platform_stdlib_customer.h"
+#include "platform_stdlib_customer.h"
 #elif defined (CONFIG_PLATFORM_8710C)
-	#include "platform_stdlib_rtl8710c.h"
+#include "platform_stdlib_rtl8710c.h"
 #else
-	#error "Undefined Platform stdlib"
+#error "Undefined Platform stdlib"
 #endif
 
 

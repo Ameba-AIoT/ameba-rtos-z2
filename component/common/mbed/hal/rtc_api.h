@@ -26,8 +26,8 @@
 #define MBED_RTC_API_H
 
 #include "device.h"
-
-#if CONFIG_SYSTEM_TIME64
+#if (defined(CONFIG_PLATFORM_8710C) && CONFIG_PLATFORM_8710C)
+#if (defined(CONFIG_SYSTEM_TIME64) && CONFIG_SYSTEM_TIME64)
 #include "time64.h"
 #else
 #include <time.h>
@@ -35,6 +35,9 @@
 
 #undef time_t
 #define time_t long long
+#else
+#include <time.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,6 +57,7 @@ extern "C" {
 typedef void (*alarm_irq_handler)(void);
 
 struct alarm_s {
+	uint32_t year;
 	uint32_t yday;//which day of the year
 	uint32_t hour;
 	uint32_t min;

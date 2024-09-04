@@ -12,6 +12,7 @@ extern "C" {
 #include <string.h>
 
 bool hci_board_init(void);
+void hci_board_init_done(void);
 void bt_reset(void);
 void bt_power_on(void);
 void bt_power_off(void);

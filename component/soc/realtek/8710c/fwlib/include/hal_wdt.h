@@ -79,7 +79,7 @@ void hal_misc_rst_by_wdt (void)
     hal_misc_stubs.hal_misc_rst_by_wdt ();
 }
 
-/** 
+/**
  *  @brief Changes the watch dog timer timeout period.
  *
  *  @param[in]  time_us  The timeout period in micro-second.
@@ -88,7 +88,7 @@ void hal_misc_rst_by_wdt (void)
  */
 void hal_misc_wdt_set_timeout (uint32_t time_us);
 
-/** 
+/**
  *  @brief Initials the watch dog timer and setup the timeout period.
  *         The system will be reset by the watch dog timeout event by default.
  *

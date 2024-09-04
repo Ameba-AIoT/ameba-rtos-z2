@@ -557,6 +557,7 @@ uint8_t hci_tp_hci_reset(void)
     {
         return HCI_TP_CONFIG_FAIL;
     }
+    hci_board_init_done();
     return HCI_TP_CHECK_OK;
 }
 

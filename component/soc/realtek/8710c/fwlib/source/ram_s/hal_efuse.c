@@ -29,6 +29,7 @@
 
 
 #include "hal_efuse.h"
+#include "hal_sys_ctrl.h"
 
 #if CONFIG_EFUSE_EN
 /**

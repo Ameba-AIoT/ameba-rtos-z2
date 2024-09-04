@@ -70,10 +70,6 @@ typedef struct {
 
 #define 	SCAN_BUFFER_LENGTH	(4096)
 
-#if defined(CONFIG_ENABLE_P2P) && CONFIG_ENABLE_P2P
-extern void _wifi_p2p_wps_success(const u8 *peer_addr, int registrar);
-extern void _wifi_p2p_wps_failed();
-#endif
 #if defined(CONFIG_ENABLE_WPS_AP) && CONFIG_ENABLE_WPS_AP
 extern u32 _wps_registrar_process_msg(void *priv, u32 op_code, const void *pmsg);
 extern void *_wps_registrar_get_msg(void *priv, u32 *op_code);
@@ -97,23 +93,6 @@ extern void wpas_wsc_sta_wps_start_hdl(char *buf, int buf_len, int flags, void *
 extern void wpas_wsc_wps_finish_hdl(char *buf, int buf_len, int flags, void *userdata);
 extern void wpas_wsc_server_wps_finish_hdl(char *buf, int buf_len, int flags, void *userdata);
 extern void wpas_wsc_eapol_recvd_hdl(char *buf, int buf_len, int flags, void *userdata);
-
-void wifi_p2p_wps_success(const u8 *peer_addr, int registrar)
-{
-	/* To avoid gcc warnnings */
-	(void) peer_addr;
-	(void) registrar;
-#if CONFIG_ENABLE_P2P
-	_wifi_p2p_wps_success(peer_addr, registrar);
-#endif
-}
-
-void wifi_p2p_wps_failed(void)
-{
-#if CONFIG_ENABLE_P2P
-	_wifi_p2p_wps_failed();
-#endif
-}
 
 void *wps_registrar_init(void *priv, void *pcfg)
 {
@@ -283,6 +262,12 @@ u8 wps_password_id;
 static TaskHandle_t ap_wps_task = NULL;
 static unsigned char wps_stop_notified = 0;
 
+extern int wpas_wps_enrollee_init_probe_ie(u16 config_methods);
+extern int wpas_wps_enrollee_init_assoc_ie(void);
+extern void wpas_wps_deinit(void);
+extern unsigned int wps_generate_pin(void);
+extern unsigned int wps_pin_valid(unsigned int pin);
+
 void wps_check_and_show_connection_info(void)
 {
 	rtw_wifi_setting_t setting;
@@ -384,8 +369,8 @@ static int wps_connect_to_AP_by_certificate(rtw_network_info_t *wifi)
 #if defined(CONFIG_AUTO_RECONNECT) && CONFIG_AUTO_RECONNECT
 				memset(wps_profile_ssid, 0, 33);
 				memset(wps_profile_password, 0, 65);
-				strncpy(wps_profile_ssid, wifi->ssid.val, wifi->ssid.len);
-				strncpy(wps_profile_password, wifi->password, wifi->password_len);
+				strncpy(wps_profile_ssid, (char *)wifi->ssid.val, wifi->ssid.len);
+				strncpy(wps_profile_password, (char *)wifi->password, wifi->password_len);
 #endif
 				break;
 			}
@@ -641,7 +626,7 @@ static rtw_result_t wps_scan_result_handler(rtw_scan_handler_result_t *malloced_
 		if (((wps_arg->config_method == WPS_CONFIG_DISPLAY) || (wps_arg->config_method == WPS_CONFIG_KEYPAD))
 			&& (record->wps_type == 0x07)) {
 
-			update_discovered_ssids(record->SSID.val);
+			update_discovered_ssids((char *)record->SSID.val);
 		}
 #endif
 	} else {
@@ -1265,5 +1250,5 @@ void cmd_ap_wps(int argc, char **argv)
 	}
 	return;
 }
-#endif //CONFIG_ENABLE_P2P
+#endif //CONFIG_ENABLE_WPS_AP
 #endif //CONFIG_ENABLE_WPS

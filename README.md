@@ -1,9 +1,17 @@
 # ameba-rtos-z2
-GitHub `ameba-rtos-z2` repository is the development framework for AmebaZ2 SOC.
+GitHub `ameba-rtos-z2` repository is the development framework for AmebaZ2 and AmebaZ2Plus SOCs.
+
+# Supported SoCs
+
+|Chip         |                Project                 |
+|-------------|----------------------------------------|
+|AmebaZ2      |/project/realtek_amebaz2_v0_example     |
+|AmebaZ2Plus  |/project/realtek_amebaz2plus_v0_example |
 
 # Documentation
-* :books: [Application Notes](https://github.com/Ameba-AIoT/ameba-rtos-z2/blob/main/doc/AN0500_Realtek_Ameba-ZII_application_note.en_v1.40.pdf)
-* :books: [Datasheet](https://github.com/Ameba-AIoT/ameba-rtos-z2/blob/main/doc/RTL8720Cx-VH2_Datasheet_V1.0_20230224.pdf)
+* :books: [Application Notes](https://github.com/Ameba-AIoT/ameba-rtos-z2/blob/main/doc/AN0500_Realtek_Ameba-ZII_Application_Note.pdf)
+* :books: [Z2 Datasheet](https://github.com/Ameba-AIoT/ameba-rtos-z2/blob/main/doc/RTL8720Cx-VH2_Datasheet_V1.0_20230224.pdf)
+* :books: [Z2plus Datasheet](https://github.com/Ameba-AIoT/ameba-rtos-z2/blob/main/doc/Realtek_AmebaZII+_Datasheet_v1.1.pdf)
 
 # Setup Build Environments
 
@@ -25,7 +33,7 @@ On Linux, please install packages for the GCC environment.
 
 # Compile the Project
 1) Open the Cygwin Terminal or Linux terminal.
-2) Direct to compile path. Execute command `cd /project/realtek_amebaz2_v0_example/GCC-RELEASE`.
+2) Direct to compile path. Execute command `cd /project/.../GCC-RELEASE`.
 3) Clean up pervious compilation files. Execute command `make clean`.
 4) Build the SDK. Execute command `make all`.
 5) Make sure there is no error after compilation.
@@ -44,4 +52,4 @@ To download image to board, you can either
 # Release Notes
 
 ## Vesion Sync
-GitHub `ameba-rtos-z2` is currently synchronized with 7.1 GIT 240412_b9f8a996.
+GitHub `ameba-rtos-z2` is currently synchronized with 7.1 GIT 240830_26dad548.

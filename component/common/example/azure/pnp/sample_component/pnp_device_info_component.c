@@ -31,9 +31,9 @@ static double const total_storage_property_value = 1024.0;
 static az_span const total_memory_property_name = AZ_SPAN_LITERAL_FROM_STR("totalMemory");
 static double const total_memory_property_value = 128;
 
-void pnp_device_info_build_reported_property(az_span payload, az_span* out_payload)
+void pnp_device_info_build_reported_property(az_span payload, az_span *out_payload)
 {
-	char const* const log = "Failed to build reported property payload for device info";
+	char const *const log = "Failed to build reported property payload for device info";
 
 	az_json_writer jw;
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_init(&jw, payload, NULL), log);

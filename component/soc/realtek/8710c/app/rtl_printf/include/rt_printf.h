@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file     rt_printf.h
  * @brief    This file defines the wrapper functions for printf API in ROM.
- * 
+ *
  * @version  V1.00
  * @date     2016-09-28
  *
@@ -26,7 +26,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
- 
+
 #ifndef _RT_PRINTF__H
 #define _RT_PRINTF__H
 
@@ -40,15 +40,15 @@ extern "C" {
 
 #if defined(ROM_REGION)
 
-int _rtl_printf(const char *fmt,...);
+int _rtl_printf(const char *fmt, ...);
 #if defined(CONFIG_VRF_MODE) && (CONFIG_VRF_MODE==1)
-int _mutex_rtl_printf(osMutexId printlock,const char *fmt, ...);
+int _mutex_rtl_printf(osMutexId printlock, const char *fmt, ...);
 #endif
-int _rtl_sprintf(char *buf, const char *fmt,...);
+int _rtl_sprintf(char *buf, const char *fmt, ...);
 int _rtl_snprintf(char *buf, size_t size, const char *fmt, ...);
 
-int _xprintf(const char * fmt,...);
-int _xsprintf(char *buf, const char * fmt,...);
+int _xprintf(const char *fmt, ...);
+int _xsprintf(char *buf, const char *fmt, ...);
 int _xsnprintf(char *buf, size_t size, const char *fmt, ...);
 
 #else   // else of "#if defined(ROM_REGION)"
@@ -100,21 +100,21 @@ extern const stdio_printf_func_stubs_t stdio_printf_stubs;     // symbol from li
 #if !defined(CONFIG_BUILD_SECURE)
 // Only Non-Secure region support printf to buffer
 __STATIC_INLINE
-void log_buf_show (log_buf_type_t *plog)
+void log_buf_show(log_buf_type_t *plog)
 {
-    stdio_printf_stubs.log_buf_show (plog);
+	stdio_printf_stubs.log_buf_show(plog);
 }
 
 __STATIC_INLINE
-void log_buf_init (log_buf_type_t *plog)
+void log_buf_init(log_buf_type_t *plog)
 {
-    stdio_printf_stubs.log_buf_init (plog);
+	stdio_printf_stubs.log_buf_init(plog);
 }
 
 __STATIC_INLINE
-void log_buf_set_msg_buf (log_buf_type_t *plog, char *pbuf, uint32_t buf_size)
+void log_buf_set_msg_buf(log_buf_type_t *plog, char *pbuf, uint32_t buf_size)
 {
-    stdio_printf_stubs.log_buf_set_msg_buf (plog, pbuf, buf_size);
+	stdio_printf_stubs.log_buf_set_msg_buf(plog, pbuf, buf_size);
 }
 #endif  // end of "#if !defined(CONFIG_BUILD_SECURE)"
 

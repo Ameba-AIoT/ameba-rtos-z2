@@ -7,47 +7,47 @@
 extern struct _rom_ssl_ram_map rom_ssl_ram_map;
 
 //AES HW CRYPTO
-extern int rtl_crypto_aes_ecb_init(IN const u8* key, IN const u32 keylen);
+extern int rtl_crypto_aes_ecb_init(IN const u8 *key, IN const u32 keylen);
 extern int rtl_crypto_aes_ecb_decrypt(
-	IN const u8* message, 	IN const u32 msglen, 
-	IN const u8* iv, 		IN const u32 ivlen, 
-	OUT u8* pResult);
+	IN const u8 *message, 	IN const u32 msglen,
+	IN const u8 *iv, 		IN const u32 ivlen,
+	OUT u8 *pResult);
 extern int rtl_crypto_aes_ecb_encrypt(
-	IN const u8* message, 	IN const u32 msglen, 
-	IN const u8* iv, 		IN const u32 ivlen, 
-	OUT u8* pResult);
-extern int rtl_crypto_aes_cbc_init(IN const u8* key, 	IN const u32 keylen);
+	IN const u8 *message, 	IN const u32 msglen,
+	IN const u8 *iv, 		IN const u32 ivlen,
+	OUT u8 *pResult);
+extern int rtl_crypto_aes_cbc_init(IN const u8 *key, 	IN const u32 keylen);
 extern int rtl_crypto_aes_cbc_decrypt(
-	IN const u8* message, 	IN const u32 msglen, 
-	IN const u8* iv, 		IN const u32 ivlen, 
-	OUT u8* pResult);
+	IN const u8 *message, 	IN const u32 msglen,
+	IN const u8 *iv, 		IN const u32 ivlen,
+	OUT u8 *pResult);
 extern int rtl_crypto_aes_cbc_encrypt(
-	IN const u8* message, 	IN const u32 msglen, 
-	IN const u8* iv, 		IN const u32 ivlen, 
-	OUT u8* pResult);
+	IN const u8 *message, 	IN const u32 msglen,
+	IN const u8 *iv, 		IN const u32 ivlen,
+	OUT u8 *pResult);
 
 //DES HW CRYPTO
-extern int rtl_crypto_des_cbc_init(IN const u8* key, IN const u32 keylen);
+extern int rtl_crypto_des_cbc_init(IN const u8 *key, IN const u32 keylen);
 extern int rtl_crypto_des_cbc_decrypt(
-	IN const u8* message, 	IN const u32 msglen, 
-	IN const u8* iv, 		IN const u32 ivlen, 
-	OUT u8* pResult);
+	IN const u8 *message, 	IN const u32 msglen,
+	IN const u8 *iv, 		IN const u32 ivlen,
+	OUT u8 *pResult);
 extern int rtl_crypto_des_cbc_encrypt(
-	IN const u8* message, 	IN const u32 msglen, 
-	IN const u8* iv, 		IN const u32 ivlen, 
-	OUT u8* pResult);
-extern int rtl_crypto_3des_cbc_init(IN const u8* key, IN const u32 keylen);
+	IN const u8 *message, 	IN const u32 msglen,
+	IN const u8 *iv, 		IN const u32 ivlen,
+	OUT u8 *pResult);
+extern int rtl_crypto_3des_cbc_init(IN const u8 *key, IN const u32 keylen);
 extern int rtl_crypto_3des_cbc_decrypt(
-	IN const u8* message, 	IN const u32 msglen, 
-	IN const u8* iv, 		IN const u32 ivlen, 
-	OUT u8* pResult);
+	IN const u8 *message, 	IN const u32 msglen,
+	IN const u8 *iv, 		IN const u32 ivlen,
+	OUT u8 *pResult);
 extern int rtl_crypto_3des_cbc_encrypt(
-	IN const u8* message, 	IN const u32 msglen, 
-	IN const u8* iv, 		IN const u32 ivlen, 
-	OUT u8* pResult);
+	IN const u8 *message, 	IN const u32 msglen,
+	IN const u8 *iv, 		IN const u32 ivlen,
+	OUT u8 *pResult);
 
-int platform_set_malloc_free( void * (*malloc_func)( size_t ),
-                              void (*free_func)( void * ) )
+int platform_set_malloc_free(void *(*malloc_func)(size_t),
+							 void (*free_func)(void *))
 {
 	/* OS interface */
 	rom_ssl_ram_map.ssl_malloc = malloc_func;

@@ -114,9 +114,15 @@ extern u32 ConfigDebugWarn;
 #endif
 
 #else
+#ifndef PLATFORM_MSMART
 #define dbg_printf                          rt_printfl
 #define dbg_sprintf                         rt_sprintfl
 #define dbg_snprintf                        rt_snprintfl
+#else
+#define dbg_printf                          __wrap_printf
+#define dbg_sprintf                         __wrap_sprintf
+#define dbg_snprintf                        __wrap_snprintf
+#endif
 // Verifi mode, _DbgDump() for RAM Code
 #if defined(CONFIG_VRF_MODE) && (CONFIG_VRF_MODE==1)
 #define _DbgDump(...) do{\
@@ -659,9 +665,9 @@ extern u32 ConfigDebugWarn;
 
 #if CONFIG_DEBUG_LOG
 typedef enum _DBG_CFG_TYPE_ {
-	DBG_CFG_ERR=0,
-	DBG_CFG_WARN=1,
-	DBG_CFG_INFO=2
+	DBG_CFG_ERR = 0,
+	DBG_CFG_WARN = 1,
+	DBG_CFG_INFO = 2
 } DBG_CFG_TYPE;
 
 typedef struct _DBG_CFG_CMD_ {
@@ -672,8 +678,8 @@ typedef struct _DBG_CFG_CMD_ {
 #endif
 
 typedef enum _CONSOLE_OP_STAGE_ {
-    ROM_STAGE = 0,
-    RAM_STAGE = 1
-}CONSOLE_OP_STAGE;
+	ROM_STAGE = 0,
+	RAM_STAGE = 1
+} CONSOLE_OP_STAGE;
 
 #endif //_DIAG_H_

@@ -30,7 +30,7 @@
 
 #if DEVICE_RTC
 
-#if CONFIG_SYSTEM_TIME64
+#if defined(CONFIG_SYSTEM_TIME64) && CONFIG_SYSTEM_TIME64
 #include "time64.h"
 #else
 #include <time.h>
@@ -38,8 +38,8 @@
 
 #include "timer_api.h"     // software-RTC: use a g-timer for the tick of the RTC
 
-extern long long __wrap_mktime (struct tm *);
-extern struct tm * __wrap_localtime (long long *);
+extern long long __wrap_mktime(struct tm *);
+extern struct tm *__wrap_localtime(long long *);
 #undef time_t
 #define time_t long long
 #undef localtime
@@ -62,108 +62,120 @@ const static u8 dim[12] = { 31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 static inline bool is_leap_year(unsigned int year)
 {
-    return (!(year % 4) && (year % 100)) || !(year % 400);
+	return (!(year % 4) && (year % 100)) || !(year % 400);
 }
 
-static u8 days_in_month (u8 month, u8 year)
+static u8 days_in_month(u8 month, unsigned int year)
 {
-    u8 ret = dim [month];
-    if (ret == 0) {
-        ret = is_leap_year (year) ? 29 : 28;
-    }
-    return ret;
+	u8 ret = dim [month];
+	if (ret == 0) {
+		ret = is_leap_year(year) ? 29 : 28;
+	}
+	return ret;
 }
 
 void sw_rtc_tick_handler(uint32_t id)
 {
-    if (++rtc_timeinfo.tm_sec > 59) {                               // Increment seconds, check for overflow
-        rtc_timeinfo.tm_sec = 0;                                    // Reset seconds
-        if (++rtc_timeinfo.tm_min > 59) {                           // Increment minutes, check for overflow
-            rtc_timeinfo.tm_min = 0;                                // Reset minutes
-            if (++rtc_timeinfo.tm_hour > 23) {                      // Increment hours, check for overflow
-                rtc_timeinfo.tm_hour = 0;                           // Reset hours
-                ++rtc_timeinfo.tm_yday;                             // Increment day of year
-                if(++rtc_timeinfo.tm_wday > 6)                     // Increment day of week, check for overflow
-                    rtc_timeinfo.tm_wday = 0;                       // Reset day of week
-                                                        // Increment day of month, check for overflow
-                if (++rtc_timeinfo.tm_mday >
-                    days_in_month(rtc_timeinfo.tm_mon, rtc_timeinfo.tm_year + 1900)) {
-                    rtc_timeinfo.tm_mday = 1;                       // Reset day of month
-                    if(++rtc_timeinfo.tm_mon > 11) {                // Increment month, check for overflow
-                        rtc_timeinfo.tm_mon = 0;                    // Reset month
-                        rtc_timeinfo.tm_yday = 0;                   // Reset day of year
-                        ++rtc_timeinfo.tm_year;                     // Increment year
-                    }                                               // - year
-                }                                                   // - month
-            }                                                       // - day
-        }                                                           // - hour
-    }
-    if (sw_rtc_count_en) {
-        count_down--;
-        if (!count_down) {
-            if(rtc_alarm_handler != NULL){
-            rtc_alarm_handler();
-            }
-            rtc_disable_alarm();;
-                sw_rtc_count_en = 0;
-            }
-        }
+	if (++rtc_timeinfo.tm_sec > 59) {                               // Increment seconds, check for overflow
+		rtc_timeinfo.tm_sec = 0;                                    // Reset seconds
+		if (++rtc_timeinfo.tm_min > 59) {                           // Increment minutes, check for overflow
+			rtc_timeinfo.tm_min = 0;                                // Reset minutes
+			if (++rtc_timeinfo.tm_hour > 23) {                      // Increment hours, check for overflow
+				rtc_timeinfo.tm_hour = 0;                           // Reset hours
+				++rtc_timeinfo.tm_yday;                             // Increment day of year
+				if (++rtc_timeinfo.tm_wday > 6) {                  // Increment day of week, check for overflow
+					rtc_timeinfo.tm_wday = 0;    // Reset day of week
+				}
+				// Increment day of month, check for overflow
+				if (++rtc_timeinfo.tm_mday >
+					days_in_month(rtc_timeinfo.tm_mon, rtc_timeinfo.tm_year + 1900)) {
+					rtc_timeinfo.tm_mday = 1;                       // Reset day of month
+					if (++rtc_timeinfo.tm_mon > 11) {               // Increment month, check for overflow
+						rtc_timeinfo.tm_mon = 0;                    // Reset month
+						rtc_timeinfo.tm_yday = 0;                   // Reset day of year
+						++rtc_timeinfo.tm_year;                     // Increment year
+					}                                               // - year
+				}                                                   // - month
+			}                                                       // - day
+		}                                                           // - hour
+	}
+	if (sw_rtc_count_en) {
+		count_down--;
+		if (!count_down) {
+			if (rtc_alarm_handler != NULL) {
+				rtc_alarm_handler();
+			}
+			rtc_disable_alarm();;
+			sw_rtc_count_en = 0;
+		}
+	}
 }
 
 void rtc_init(void)
 {
-    // Initial a periodical timer
-    gtimer_init(&sw_rtc, SW_RTC_TIMER_ID);
-    // Tick every 1 sec
-    gtimer_start_periodical(&sw_rtc, 1000000, (void*)sw_rtc_tick_handler, (uint32_t)&sw_rtc);
-    sw_rtc_en = 1;
+	// Initial a periodical timer
+	gtimer_init(&sw_rtc, SW_RTC_TIMER_ID);
+	// Tick every 1 sec
+	gtimer_start_periodical(&sw_rtc, 1000000, (void *)sw_rtc_tick_handler, (uint32_t)&sw_rtc);
+	sw_rtc_en = 1;
 }
 
 void rtc_free(void)
 {
-    sw_rtc_en = 0;
-    gtimer_stop(&sw_rtc);
-    gtimer_deinit(&sw_rtc);
+	sw_rtc_en = 0;
+	gtimer_stop(&sw_rtc);
+	gtimer_deinit(&sw_rtc);
 }
 
 int rtc_isenabled(void)
 {
-    return(sw_rtc_en);
+	return (sw_rtc_en);
 }
 
 time_t rtc_read(void)
 {
-    time_t t;
+	time_t t;
 
-    // Convert to timestamp
-    t = mktime(&rtc_timeinfo);
+	/** Convert to timestamp
+	*   If the periodic gtimer is reaching 1000000 and is going to assert interrupt,
+	*   the interrupt callback is first unregistered and then mktime on rtc_timeinfo is performed.
+	*   This prevents the rtc_timeinfo being updated while being read.
+	*   The interrupt callback is registered after the mktime on rtc_timeinfo.
+	*/
+	if (gtimer_read_us(&sw_rtc) > 999000) {
+		hal_timer_unreg_toirq((phal_timer_adapter_t)&sw_rtc.timer_adp);
+		t = mktime(&rtc_timeinfo);
+		hal_timer_reg_toirq((phal_timer_adapter_t)&sw_rtc.timer_adp, (timer_callback_t) sw_rtc_tick_handler, &sw_rtc);
+	} else {
+		t = mktime(&rtc_timeinfo);
+	}
 
-    return t;
+	return t;
 }
 
 void rtc_write(time_t t)
 {
-    // Convert the time in to a tm
-    struct tm *timeinfo = localtime(&t);
+	// Convert the time in to a tm
+	struct tm *timeinfo = localtime(&t);
 
-    if (timeinfo == NULL) {
-        // Error
-        return;
-    }
+	if (timeinfo == NULL) {
+		// Error
+		return;
+	}
 
-    gtimer_stop(&sw_rtc);
+	gtimer_stop(&sw_rtc);
 
-    // Set the RTC
-    rtc_timeinfo.tm_sec = timeinfo->tm_sec;
-    rtc_timeinfo.tm_min = timeinfo->tm_min;
-    rtc_timeinfo.tm_hour = timeinfo->tm_hour;
-    rtc_timeinfo.tm_mday = timeinfo->tm_mday;
-    rtc_timeinfo.tm_wday = timeinfo->tm_wday;
-    rtc_timeinfo.tm_yday = timeinfo->tm_yday;
-    rtc_timeinfo.tm_mon = timeinfo->tm_mon;
-    rtc_timeinfo.tm_year = timeinfo->tm_year;
+	// Set the RTC
+	rtc_timeinfo.tm_sec = timeinfo->tm_sec;
+	rtc_timeinfo.tm_min = timeinfo->tm_min;
+	rtc_timeinfo.tm_hour = timeinfo->tm_hour;
+	rtc_timeinfo.tm_mday = timeinfo->tm_mday;
+	rtc_timeinfo.tm_wday = timeinfo->tm_wday;
+	rtc_timeinfo.tm_yday = timeinfo->tm_yday;
+	rtc_timeinfo.tm_mon = timeinfo->tm_mon;
+	rtc_timeinfo.tm_year = timeinfo->tm_year;
 
-    gtimer_start(&sw_rtc);
+	gtimer_start(&sw_rtc);
 }
 
 /**
@@ -176,19 +188,34 @@ void rtc_write(time_t t)
   */
 u32 rtc_set_alarm(alarm_t *alrm, alarm_irq_handler alarmHandler)
 {
-    uint32_t alarm_time_s = 0;
-    time_t current_t = rtc_read();
-    struct tm *alarm_timeinfo = localtime(&current_t);
+	uint32_t alarm_time_s = 0;
+	time_t current_t = rtc_read();
+	struct tm *alarm_timeinfo = localtime(&current_t);
+	//struct tm *timeinfo;
 
-    alarm_time_s = (alrm->yday - alarm_timeinfo->tm_yday) * (24 * 60 * 60);
-    alarm_time_s = alarm_time_s + (alrm->hour) * (60 * 60) + (alrm->min) * (60) + (alrm->sec);
-    alarm_time_s = alarm_time_s - ((alarm_timeinfo->tm_hour) * (60 * 60) + (alarm_timeinfo->tm_min) * (60) + (alarm_timeinfo->tm_sec));
+	if (alrm->year == (alarm_timeinfo->tm_year + 1900)) {
+		alarm_time_s = (alrm->yday - alarm_timeinfo->tm_yday) * (24 * 60 * 60);
+		alarm_time_s = alarm_time_s + (alrm->hour) * (60 * 60) + (alrm->min) * (60) + (alrm->sec);
+		alarm_time_s = alarm_time_s - ((alarm_timeinfo->tm_hour) * (60 * 60) + (alarm_timeinfo->tm_min) * (60) + (alarm_timeinfo->tm_sec));
+	} else {
+		// Add the difference of the current time to end of the year
+		int day = (is_leap_year(alarm_timeinfo->tm_year + 1900)) ? 366 : 365;
+		alarm_time_s = (day - alarm_timeinfo->tm_yday) * (24 * 60 * 60);
+		alarm_time_s = alarm_time_s - ((alarm_timeinfo->tm_hour) * (60 * 60) + (alarm_timeinfo->tm_min) * (60) + (alarm_timeinfo->tm_sec));
+		// Add seconds for each gap year
+		for (int i = 0; i < alrm->year - alarm_timeinfo->tm_year - 1901; i++) {
+			alarm_time_s = (is_leap_year(alarm_timeinfo->tm_year)) ? (alarm_time_s + 31622400) : (alarm_time_s + 31536000);
+		}
+		// Add the difference left at the target year
+		alarm_time_s = alarm_time_s + (alrm->yday) * (24 * 60 * 60);
+		alarm_time_s = alarm_time_s + (alrm->hour) * (60 * 60) + (alrm->min) * (60) + (alrm->sec);
+	}
 
-    count_down = alarm_time_s;
-    sw_rtc_count_en = 1;
-    rtc_alarm_handler = alarmHandler;
+	count_down = alarm_time_s;
+	sw_rtc_count_en = 1;
+	rtc_alarm_handler = alarmHandler;
 
-    return _TRUE;
+	return _TRUE;
 }
 
 /**
@@ -198,7 +225,7 @@ u32 rtc_set_alarm(alarm_t *alrm, alarm_irq_handler alarmHandler)
   */
 void rtc_disable_alarm(void)
 {
-    rtc_alarm_handler = NULL;
+	rtc_alarm_handler = NULL;
 }
 
 #endif  // endof "#if DEVICE_RTC"

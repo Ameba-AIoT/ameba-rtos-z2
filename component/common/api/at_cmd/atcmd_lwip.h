@@ -46,7 +46,7 @@
 
 #define ATCMD_LWIP_TASK_PRIORITY        (tskIDLE_PRIORITY + 1)
 
-#if ATCMD_VER == ATVER_2 
+#if ATCMD_VER == ATVER_2
 
 #ifndef ATCMD_SUPPORT_SSL
 #define ATCMD_SUPPORT_SSL 0
@@ -63,8 +63,7 @@
 #define RECV_SELECT_TIMEOUT_SEC		(0)
 #define RECV_SELECT_TIMEOUT_USEC		(20000) //20ms
 
-typedef struct ns
-{
+typedef struct ns {
 	int con_id;
 	int sockfd;
 	s8_t role;
@@ -74,8 +73,8 @@ typedef struct ns
 	u32_t local_addr;
 	u16_t local_port;
 	xTaskHandle handletask;
-	struct ns* next;
-	struct ns* nextseed;
+	struct ns *next;
+	struct ns *nextseed;
 #if (ATCMD_VER == ATVER_2) && ATCMD_SUPPORT_SSL
 	void *context;
 	void *ssl_conf;
@@ -91,13 +90,14 @@ extern volatile int atcmd_lwip_tt_lasttickcnt;
 extern int atcmd_lwip_is_tt_mode(void);
 extern void atcmd_lwip_set_tt_mode(int enable);
 int atcmd_lwip_send_data(node *curnode, u8 *data, u16 data_sz, struct sockaddr_in cli_addr);
-int atcmd_lwip_receive_data(node *curnode, u8 *buffer, u16 buffer_size, int *recv_size, 
-	u8_t *udp_clientaddr, u16_t *udp_clientport);
-node* create_node(int mode, s8_t role);
+int atcmd_lwip_receive_data(node *curnode, u8 *buffer, u16 buffer_size, int *recv_size,
+							u8_t *udp_clientaddr, u16_t *udp_clientport);
+node *create_node(int mode, s8_t role);
 void init_node_pool(void);
+int check_node_pool(void);
 void delete_node(node *n);
-int hang_node(node* insert_node);
-int hang_seednode(node* main_node ,node* insert_node);
+int hang_node(node *insert_node);
+int hang_seednode(node *main_node, node *insert_node);
 node *seek_node(int con_id);
 node *tryget_node(int n);
 void atcmd_lwip_set_rx_buffer(unsigned char *buf, int bufsize);

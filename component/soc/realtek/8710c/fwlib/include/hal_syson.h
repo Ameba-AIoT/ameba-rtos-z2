@@ -117,7 +117,7 @@ void hal_syson_init (hal_syson_adapter_t *psyson_adp);
 
 #if !defined(CONFIG_BUILD_NONSECURE)
 
-/** 
+/**
  *  @brief To Set the RAM code start function table address for fast booting.
  *
  *  @param[in] pstart_tbl The RAM code start function table address.

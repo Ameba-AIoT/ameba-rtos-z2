@@ -99,7 +99,7 @@ if not exist Debug\Exe\firmware_is.bin (
 ::)
 
 :: generate compressed LZMA bin file
-%tooldir%\LZMA_GenCompressedFW.exe %cfgdir%\Exe\firmware_is.bin
+::%tooldir%\LZMA_GenCompressedFW.exe %cfgdir%\Exe\firmware_is.bin
 ::if not exist Debug\Exe\firmware_is_lzma.bin (
 ::	echo LZMA compressed FW not generated
 ::	echo firmware_is_lzma.bin isn't generated > postbuild_is_error.txt
@@ -145,15 +145,16 @@ if not exist Debug\Exe\application_is.dbg.out (
 :: disassembly, very long time, turn on if needed
 %iartooldir%\bin\ielfdumparm.exe --code Debug\Exe\application_is.dbg.out Debug\Exe\application_is.asm
 
-set IAR_VER_83x=V8.3
-call set REPLACED_IAR_VER=%%IAR_VER:%IAR_VER_83x%=%%
-if not "%IAR_VER%"=="%REPLACED_IAR_VER%" (
-	%tooldir%\objcopy.exe -I elf32-little -j "BTTRACE rw" -Obinary Debug\Exe\application_is.dbg.out Debug\Exe\APP.trace
-	echo %IAR_VER_83x%
-) else (
-	%tooldir%\objcopy.exe -I elf32-little -j "BTTRACE" -Obinary Debug\Exe\application_is.dbg.out Debug\Exe\APP.trace
-	echo %IAR_VER%
-)
+REM set IAR_VER_83x=V8.3
+REM call set REPLACED_IAR_VER=%%IAR_VER:%IAR_VER_83x%=%%
+REM if not "%IAR_VER%"=="%REPLACED_IAR_VER%" (
+	REM %tooldir%\objcopy.exe -I elf32-little -j "BTTRACE rw" -Obinary Debug\Exe\application_is.dbg.out Debug\Exe\APP.trace
+	REM echo %IAR_VER_83x%
+REM ) else (
+	REM %tooldir%\objcopy.exe -I elf32-little -j "BTTRACE" -Obinary Debug\Exe\application_is.dbg.out Debug\Exe\APP.trace
+	REM echo %IAR_VER%
+REM )
+%tooldir%\objcopy-bt.exe -I elf32-little -j "BTTRACE*" -Obinary Debug\Exe\application_is.dbg.out Debug\Exe\APP.trace
 ::pause
 
 exit 0 /b

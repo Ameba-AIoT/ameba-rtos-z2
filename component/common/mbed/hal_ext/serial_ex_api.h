@@ -1,7 +1,7 @@
 /** mbed Microcontroller Library
   ******************************************************************************
   * @file    serial_ex_api.h
-  * @author 
+  * @author
   * @version V1.0.0
   * @brief   This file provides mbed API for UART.
   ******************************************************************************
@@ -12,11 +12,11 @@
   *
   * This module is a confidential and proprietary property of RealTek and
   * possession or use of this module requires written permission of RealTek.
-  ****************************************************************************** 
+  ******************************************************************************
   */
 #ifndef MBED_SERIAL_EX_API_H
 #define MBED_SERIAL_EX_API_H
- 
+
 #include "device.h"
 
 #ifdef __cplusplus
@@ -37,10 +37,10 @@ extern "C" {
 * @brief Define RX FIFO Level: RX interrupt trigger, RTS de-assert trigger
 */
 typedef enum {
-    FifoLv1Byte=0,    /*!< 1-byte */
-    FifoLvQuarter=1,  /*!< 4-byte/8-byte(for 8195B/8710C) */
-    FifoLvHalf=2,     /*!< 8-byte/16-byte(for 8195B/8710C) */
-    FifoLvFull=3      /*!< 14-byte/30-bytes(for 8195B/8710C) */
+	FifoLv1Byte = 0,  /*!< 1-byte */
+	FifoLvQuarter = 1, /*!< 4-byte/8-byte(for 8195B/8710C) */
+	FifoLvHalf = 2,   /*!< 8-byte/16-byte(for 8195B/8710C) */
+	FifoLvFull = 3    /*!< 14-byte/30-bytes(for 8195B/8710C) */
 } SerialFifoLevel;
 
 /**
@@ -140,16 +140,17 @@ int32_t serial_recv_stream_dma(serial_t *obj, char *prxbuf, uint32_t len);
 int32_t serial_send_stream_dma(serial_t *obj, char *ptxbuf, uint32_t len);
 
 /**
-  * @brief  stop the sream or steam_dma RX.
+  * @brief  stop the stream or stream_dma TX.
   * @param  obj: uart object define in application software.
-  * @retval : number of bytes sent when dma interrupted
+  * @retval : number of bytes sent before stop
   */
 int32_t serial_send_stream_abort(serial_t *obj);
 
 /**
-  * @brief  stop the sream or steam_dma TX.
+  * @brief  stop the stream or stream_dma RX.
+  *         This API can be used to retrieve remaining data in the uart buffer when receive stream timeout.
   * @param  obj: uart object define in application software.
-  * @retval : number of bytes received when dma interrupted
+  * @retval : number of bytes received before stop
   */
 int32_t serial_recv_stream_abort(serial_t *obj);
 
@@ -187,7 +188,7 @@ int32_t serial_recv_stream_timeout(serial_t *obj, char *prxbuf, uint32_t len, ui
   * @param  timeout_ms: polling time before timeout.
   * @param  force_cs: forcing context switch function.
   * @retval : the byte count received before timeout, or error(<0)
-  * @note this function is asynchronous API.
+  * @note this function is asynchronous API. Some parameters have changed for AmebaD.
   */
 int32_t serial_recv_stream_dma_timeout(serial_t *obj, char *prxbuf, uint32_t len, uint32_t timeout_ms,	void *force_cs);
 

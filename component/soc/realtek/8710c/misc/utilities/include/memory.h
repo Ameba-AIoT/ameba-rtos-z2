@@ -32,7 +32,7 @@
 #include "platform_conf.h"
 #include "utility.h"
 
-/** 
+/**
  * @addtogroup util_memory Memory
  * @ingroup 8710c_util
  * @{
@@ -46,8 +46,8 @@
 #endif
 
 int _memcmp(const void *av, const void *bv, size_t len);
-void *_memcpy( void *s1, const void *s2, size_t n );
-void *_memmove (void *destaddr, const void *sourceaddr, unsigned length);
+void *_memcpy(void *s1, const void *s2, size_t n);
+void *_memmove(void *destaddr, const void *sourceaddr, unsigned length);
 void *_memset(void *dst0, int val, size_t length);
 int _memcmp_s(const void *av, const void *bv, size_t len);
 
@@ -64,21 +64,21 @@ int _memcmp_s(const void *av, const void *bv, size_t len);
 */
 __STATIC_INLINE int rt_memcmp(const void *av, const void *bv, size_t len)
 {
-    return utility_stubs.memcmp(av, bv, len);
+	return utility_stubs.memcmp(av, bv, len);
 }
 
 /**
   \brief   Memeory copys
-  \details Copy a given size of memory block from the specific 
+  \details Copy a given size of memory block from the specific
            source address to the given destination address.
   \param[in]   s1   The destination address.
   \param[in]   s2   The source address.
   \param[in]   n    The size, in byte, of the memory to copy.
   \return   A poiner to the desination memory address.
 */
-__STATIC_INLINE void *rt_memcpy( void *s1, const void *s2, size_t n )
+__STATIC_INLINE void *rt_memcpy(void *s1, const void *s2, size_t n)
 {
-    return utility_stubs.memcpy(s1, s2, n);
+	return utility_stubs.memcpy(s1, s2, n);
 }
 
 /**
@@ -86,7 +86,7 @@ __STATIC_INLINE void *rt_memcpy( void *s1, const void *s2, size_t n )
   \details Copies n bytes from memory area sourceaddr to memory
            area destaddr. The memory areas may overlap: copying
            takes place as though the bytes in sourceaddr are first
-           copied into a temporary array that does not overlap 
+           copied into a temporary array that does not overlap
            sourceaddr or destaddr, and the bytes are then copied from the
            temporary array to destaddr.
            source address to the given destination address.
@@ -95,9 +95,9 @@ __STATIC_INLINE void *rt_memcpy( void *s1, const void *s2, size_t n )
   \param[in]   length    The length, in byte, of the memory movement.
   \return   A poiner to the desination memory address.
 */
-__STATIC_INLINE void *rt_memmove (void *destaddr, const void *sourceaddr, unsigned length)
+__STATIC_INLINE void *rt_memmove(void *destaddr, const void *sourceaddr, unsigned length)
 {
-    return utility_stubs.memmove (destaddr, sourceaddr, length);
+	return utility_stubs.memmove(destaddr, sourceaddr, length);
 }
 
 /**
@@ -111,7 +111,7 @@ __STATIC_INLINE void *rt_memmove (void *destaddr, const void *sourceaddr, unsign
 */
 __STATIC_INLINE void *rt_memset(void *dst0, int val, size_t length)
 {
-    return utility_stubs.memset(dst0, val,length);
+	return utility_stubs.memset(dst0, val, length);
 }
 
 #if (CHIP_VER >= CHIP_B_CUT)
@@ -127,7 +127,7 @@ __STATIC_INLINE void *rt_memset(void *dst0, int val, size_t length)
 */
 __STATIC_INLINE int rt_memcmp_s(const void *av, const void *bv, size_t len)
 {
-    return utility_stubs.memcmp_s(av, bv, len);
+	return utility_stubs.memcmp_s(av, bv, len);
 }
 
 #endif

@@ -1000,7 +1000,7 @@ void hal_sdio_dev_deinit (void)
 void hal_sdio_dev_send_c2h_iomsg (uint32_t c2h_msg)
 {
     SDIO_DEV_Type *sdio_dev = SDIO_DEV;
-	sdio_dev_c2h_msg_t c2h_msg_tmp;
+	sdio_dev_c2h_msg_t c2h_msg_tmp = {0};
 
     if (g_sdio_adp == NULL) {
         // SDIO device adapter didn't initialed

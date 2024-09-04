@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file     stdio_port.h
  * @brief    The header file of the UART STDIO functions.
- *           
+ *
  * @version  V1.00
  * @date     2016-09-22
  *
@@ -39,7 +39,7 @@ extern "C"
   \brief  Type of UART STDIO functions.
  */
 typedef void (*stdio_putc_t)(void *apapter, const char);
-typedef int (*stdio_getc_t) (void *adapter, char *);
+typedef int (*stdio_getc_t)(void *adapter, char *);
 typedef int (*printf_putc_t)(void *arg, const char);
 
 
@@ -47,27 +47,27 @@ typedef int (*printf_putc_t)(void *arg, const char);
   \brief  Type of the UART STDIO adapter.
  */
 typedef struct _stdio_port {
-    void *adapter;
-    stdio_putc_t putc;
-    stdio_getc_t getc;
+	void *adapter;
+	stdio_putc_t putc;
+	stdio_getc_t getc;
 } stdio_port_t, *pstdio_port_t;
 
 /**
   \brief  Type of the UART STDIO adapter.
  */
 typedef struct _stdio_buf_s {
-    char *pbuf;
-    char *pbuf_lim;
+	char *pbuf;
+	char *pbuf_lim;
 } stdio_buf_t, *pstdio_buf_t;
 
 #if defined(ROM_REGION)
 
-void _stdio_port_init (void *adapter, stdio_putc_t putc, stdio_getc_t getc);
-void _stdio_port_deinit (void);
+void _stdio_port_init(void *adapter, stdio_putc_t putc, stdio_getc_t getc);
+void _stdio_port_deinit(void);
 int _stdio_port_putc(char c);
 int _stdio_port_sputc(void *arg, char c);
 int _stdio_port_bufputc(void *buf, char c);
-int _stdio_port_getc (char *data);
+int _stdio_port_getc(char *data);
 
 #endif  // end of "#if defined(ROM_REGION)"
 

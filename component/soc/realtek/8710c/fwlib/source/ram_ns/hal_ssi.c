@@ -449,6 +449,62 @@ hal_status_t hal_ssi_dma_recv(phal_ssi_adaptor_t phal_ssi_adaptor, u8  *prx_data
     return HAL_OK;
 }
 
+/** \brief Description of hal_ssi_stop_recv_rtl8710c_ram
+ *
+ *    hal_ssi_stop_recv_rtl8710c_ram is used to terminate data receiving for the SPI device.
+ *
+ *   \param phal_ssi_adaptor_t phal_ssi_adaptor:      The pointer of SPI adaptor.
+ *
+ *   \return hal_status_t.
+ */
+hal_status_t hal_ssi_stop_recv_rtl8710c_ram(phal_ssi_adaptor_t phal_ssi_adaptor)
+{
+    SSI0_Type *spi_dev = (SSI0_Type *) phal_ssi_adaptor->spi_dev;
+    phal_gdma_adaptor_t phal_gdma_adaptor;
+    u32 received_cnt = 0;
+    u8 dma_mode = 0;
+
+    phal_gdma_adaptor = (phal_gdma_adaptor_t) phal_ssi_adaptor->prx_gdma_adaptor;
+    phal_ssi_adaptor->interrupt_mask &= ~(BIT_IMR_RXFIM| BIT_IMR_RXOIM| BIT_IMR_RXUIM);
+    spi_dev->imr = phal_ssi_adaptor->interrupt_mask;
+
+    if(0 != phal_gdma_adaptor->have_chnl){
+        if (hal_gdma_query_chnl_en(phal_gdma_adaptor)){
+            dma_mode = 1;
+            hal_gdma_clean_chnl_isr(phal_gdma_adaptor);
+            hal_gdma_abort(phal_gdma_adaptor);
+            received_cnt = phal_gdma_adaptor->abort_recv_byte;
+            phal_ssi_adaptor->rx_length-= received_cnt;
+            phal_ssi_adaptor->rx_data = (u8 *)(phal_ssi_adaptor->rx_data) + received_cnt;
+
+            /*Sync Memory & Cache after DMA abortion*/
+            if (phal_ssi_adaptor->dcache_invalidate_by_addr != NULL) {
+                phal_ssi_adaptor->dcache_invalidate_by_addr((uint32_t *) phal_ssi_adaptor->cache_invalidate_addr, (int32_t) received_cnt);
+            }
+        }
+    }
+
+    while (hal_ssi_get_rxfifo_level(phal_ssi_adaptor) != 0) {
+        if ((phal_ssi_adaptor->data_frame_size) == DfsSixteenBits) {
+            // 16~9 bits mode
+            *((u16 *)(phal_ssi_adaptor->rx_data)) = (u16) (spi_dev->dr);
+            phal_ssi_adaptor->rx_data = (void *)(((u16 *)phal_ssi_adaptor->rx_data) + 1);
+
+            if (dma_mode) {
+                phal_ssi_adaptor->rx_length--;
+            }
+        } else {
+            // 8~4 bits mode
+            *((u8 *)(phal_ssi_adaptor->rx_data)) = (u8) (spi_dev->dr);
+            phal_ssi_adaptor->rx_data = (void *)(((u8 *)phal_ssi_adaptor->rx_data) + 1);
+        }
+
+        phal_ssi_adaptor->rx_length--;
+    }
+
+    return HAL_OK;
+}
+
 /** *@} */ /* End of group hs_hal_ssi_ram_func */
 
 /** *@} */ /* End of group hs_hal_ssi */

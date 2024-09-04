@@ -15,6 +15,10 @@ For MbedTLS:
 [..\bedtls\config_rsa.h]
 	#define MBEDTLS_CERTS_C
 	#define MBEDTLS_SSL_SRV_C
+For Matter MbedTLS:
+[component\common\application\matter\common\mbedtls\mbedtls_config.h]
+	#define MBEDTLS_CERTS_C
+	#define MBEDTLS_SSL_SRV_C
 
 [platform_opts.h]
 	#define CONFIG_EXAMPLE_SSL_SERVER	1

@@ -303,6 +303,7 @@ __STATIC_INLINE hal_status_t hal_uart_int_recv (phal_uart_adapter_t puart_adapte
 
 /**
  *  @brief To abort an on going UART RX transfer.
+ *         It can be used to retrieve remaining data in the uart buffer when receive stream timeout.
  *
  *  @param[in]  puart_adapter The UART adapter.
  *
@@ -756,7 +757,7 @@ hal_status_t hal_uart_dma_recv (phal_uart_adapter_t puart_adapter, uint8_t *prx_
 hal_status_t hal_uart_dma_send (phal_uart_adapter_t puart_adapter, uint8_t *ptx_buf, uint32_t len);
 void hal_uart_deinit_ram (phal_uart_adapter_t puart_adapter);
 void hal_uart_unreg_irq_ram (phal_uart_adapter_t puart_adapter);
-void hal_uart_exit_critical_ram ();
+void hal_uart_exit_critical_ram (void);
 
 /** @} */ /* End of group hs_hal_uart */
 

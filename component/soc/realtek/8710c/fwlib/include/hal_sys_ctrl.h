@@ -34,6 +34,7 @@
 #define SYS_CTRL_SET_CORE_PWR_STBL_TIME         (10)        // unit: ms
 #define SYS_CTRL_SET_CORE_PWR_RECOVER_STBL_TIME (1) 
 #define SYS_CTRL_CORE_PWR_EFUSE_PG_BOOST_LEVL   (0x2)
+#define SYS_CTRL_CORE_PWR_EFUSE_PG_BOOST_LEVL_CMF   (0x4)
 
 #define SYS_DATA_FLASH_BASE                 (0x1000)
 #define SYS_DATA_OFFSET_FORCE_OLD_IMG       (SYS_DATA_FLASH_BASE + 0x08)
@@ -219,9 +220,9 @@ void hal_syson_wakeup_uart_func_reset(void);
 
 /** 
  *  @brief To get chip version.
- *
+ *  @details Please add mutex protection when using this API.
  *  @returns The chip version:
- *           0: A-Cut; 1: B-Cut
+ *           0: A-Cut; 1: B-Cut, 2: C-Cut, 3: D-Cut, 4: E-Cut, 5: F-Cut, 6:G-Cut
  */
 uint8_t hal_get_chip_ver (void);
 
@@ -235,7 +236,7 @@ uint8_t hal_get_chip_ver (void);
  */
 flash_port_sel_t hal_get_flash_port_cfg (void);
 
-uint8_t hal_sys_ctrl_core_pwr_get_sts();
+uint8_t hal_sys_ctrl_core_pwr_get_sts(void);
 void hal_sys_ctrl_core_pwr_set(uint8_t pwr_sts, uint32_t stbl_time);
 void hal_sys_ctrl_core_pwr_boost(uint8_t pwr_sts, uint8_t boost_levl, uint32_t stbl_time);
 void hal_sys_ctrl_core_pwr_efuse_pg_set(uint8_t pwr_sts);

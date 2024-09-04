@@ -10,7 +10,7 @@
   * This module is a confidential and proprietary property of RealTek and possession or use of this module requires written permission of RealTek.
   *
   * Copyright(c) 2016, Realtek Semiconductor Corporation. All rights reserved.
-  ****************************************************************************** 
+  ******************************************************************************
   */
 #ifndef _HTTPD_H_
 #define _HTTPD_H_
@@ -23,6 +23,7 @@
 
 #include "platform_stdlib.h"
 #include "platform_opts.h"
+#include "osdep_service.h"
 
 #define HTTPD_SECURE_NONE        0   /*!< Running with HTTP server */
 #define HTTPD_SECURE_TLS         1   /*!< Running with HTTPS server */
@@ -34,15 +35,6 @@
 #define HTTPD_DEBUG_OFF          0   /*!< Disable httpd debug log */
 #define HTTPD_DEBUG_ON           1   /*!< Enable httpd debug log */
 #define HTTPD_DEBUG_VERBOSE      2   /*!< Enable httpd verbose debug log */
-
-#define HTTPD_TLS_POLARSSL       0    /*!< Use PolarSSL for TLS when HTTPS */
-#define HTTPD_TLS_MBEDTLS        1    /*!< Use mbedTLS for TLS when HTTPS */
-
-#if CONFIG_USE_POLARSSL
-#define HTTPD_USE_TLS            HTTPD_TLS_POLARSSL
-#elif CONFIG_USE_MBEDTLS
-#define HTTPD_USE_TLS            HTTPD_TLS_MBEDTLS
-#endif
 
 /**
   * @brief  The structure is the context used for HTTP request header parsing.
@@ -75,6 +67,7 @@ struct httpd_conn {
 	void *tls;                       /*!< Context for TLS connection */
 	uint8_t *response_header;        /*!< Pointer to transmission buffer of HTTP response header */
 	uint32_t last_req_time;          /*!< Last request time in system ticks */
+	struct task_struct task;         /*!< Connection task context */
 };
 
 /**
@@ -124,6 +117,13 @@ void httpd_clear_page_callbacks(void);
  * @return    None
  */
 void httpd_setup_debug(uint8_t debug);
+
+/**
+ * @brief     This function is used to setup httpd server priority.
+ * @param[in] priority: the default priority is defined to 1
+ * @return    None
+ */
+void httpd_setup_priority(uint8_t priority);
 
 /**
  * @brief     This function is used to setup connection idle timeout for server.

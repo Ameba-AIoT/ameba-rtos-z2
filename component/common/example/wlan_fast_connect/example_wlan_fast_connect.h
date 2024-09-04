@@ -34,7 +34,7 @@ struct wlan_fast_reconnect {
 #if ATCMD_VER == ATVER_2
 	uint32_t    enable;
 #endif
-};	
+};
 
 struct wlan_fast_reconnect_prior {
 	unsigned char psk_essid[32 + 4];
@@ -57,7 +57,7 @@ typedef int (*write_reconnect_ptr)(uint8_t *data, uint32_t len);
 
 
 //Variable
-extern unsigned char psk_essid[NET_IF_NUM][NDIS_802_11_LENGTH_SSID+4];
+extern unsigned char psk_essid[NET_IF_NUM][NDIS_802_11_LENGTH_SSID + 4];
 extern unsigned char psk_passphrase[NET_IF_NUM][IW_PASSPHRASE_MAX_SIZE + 1];
 extern unsigned char wpa_global_PSK[NET_IF_NUM][A_SHA_DIGEST_LEN * 2];
 extern unsigned char psk_passphrase64[IW_WPA2_PASSPHRASE_MAX_SIZE + 1];
@@ -65,7 +65,7 @@ extern unsigned char psk_passphrase64[IW_WPA2_PASSPHRASE_MAX_SIZE + 1];
 //Function
 extern wlan_init_done_ptr p_wlan_init_done_callback;
 extern write_reconnect_ptr p_write_reconnect_ptr;
- 
+
 void example_wlan_fast_connect(void);
 
 #endif //#ifndef __EXAMPLE_FAST_RECONNECTION_H__

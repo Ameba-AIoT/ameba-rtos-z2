@@ -110,7 +110,7 @@ hal_status_t hal_misc_jtag_pin_ctrl (BOOL en)
             ret = hal_pinmux_register(*(pin+i), PID_JTAG);
             if (ret == HAL_OK) {
                 // also pull-high the pin
-                hal_gpio_pull_ctrl(*(pin+i), Pin_PullUp);                
+                hal_gpio_pull_ctrl(*(pin+i), Pin_PullUp);
             } else {
                 DBG_MISC_ERR("JTAG pin 0x%x reg err\r\n", *(pin+i));
                 pin = (uint8_t *)&jtag_pins;
@@ -126,7 +126,7 @@ hal_status_t hal_misc_jtag_pin_ctrl (BOOL en)
             ret = hal_pinmux_unregister(*(pin+i), PID_JTAG);
             if (ret == HAL_OK) {
                 // also pull-high the pin
-                hal_gpio_pull_ctrl(*(pin+i), Pin_PullNone);                
+                hal_gpio_pull_ctrl(*(pin+i), Pin_PullNone);
             }
         }
     }

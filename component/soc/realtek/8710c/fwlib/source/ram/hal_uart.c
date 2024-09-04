@@ -543,7 +543,7 @@ void hal_uart_unreg_irq_ram (phal_uart_adapter_t puart_adapter)
  *
  *  @returns void
  */   
-void hal_uart_exit_critical_ram ()
+void hal_uart_exit_critical_ram (void)
 {
     uint8_t i;
     

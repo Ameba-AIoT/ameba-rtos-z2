@@ -148,6 +148,7 @@ __STATIC_INLINE void SCB_EnableDCache (void)
   #endif
 }
 
+#if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
 /**
   \brief   Enable D-Cache
   \details Turns on D-Cache
@@ -184,6 +185,7 @@ __STATIC_INLINE void SCB_NS_EnableDCache (void)
     __ISB();
   #endif
 }
+#endif
 
 
 /**
@@ -193,9 +195,15 @@ __STATIC_INLINE void SCB_NS_EnableDCache (void)
 __STATIC_INLINE void SCB_DisableDCache (void)
 {
   #if defined (__DCACHE_PRESENT) && (__DCACHE_PRESENT == 1U)
+  #if __cplusplus >= 201703L //C++ 17 and above
+    uint32_t ccsidr;
+    uint32_t sets;
+    uint32_t ways;
+  #else
     register uint32_t ccsidr;
     register uint32_t sets;
     register uint32_t ways;
+  #endif
 
     SCB->CSSELR = 0U; /*(0U << 1U) | 0U;*/  /* Level 1 data cache */
     __DSB();

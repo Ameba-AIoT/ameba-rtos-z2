@@ -3,16 +3,6 @@
 #include <platform/platform_stdlib.h>
 #include "osdep_service.h"
 
-
-#define WSCLIENT_TLS_POLARSSL       0    /*!< Use PolarSSL for TLS when WSCLIENT */
-#define WSCLIENT_TLS_MBEDTLS        1    /*!< Use mbedTLS for TLS when WSCLIENT */
-
-#if CONFIG_USE_POLARSSL
-#define WSCLIENT_USE_TLS            WSCLIENT_TLS_POLARSSL
-#elif CONFIG_USE_MBEDTLS
-#define WSCLIENT_USE_TLS            WSCLIENT_TLS_MBEDTLS
-#endif
-
 /****************Define the debug message level*********************/
 #define DEBUG_WSCLIENT    1
 
@@ -30,14 +20,14 @@
 /*******************************************************************/
 
 /****************Define the structures used*************************/
-typedef enum{ 
-	CLOSING, 
-	CLOSED, 
-	CONNECTING, 
-	OPEN 
+typedef enum {
+	CLOSING,
+	CLOSED,
+	CONNECTING,
+	OPEN
 } readyStateValues;
 
-struct wsheader_type{
+struct wsheader_type {
 	unsigned header_size;
 	int fin;
 	int mask;
@@ -54,28 +44,28 @@ struct wsheader_type{
 	uint8_t masking_key[4];
 };
 
-struct rsv_bits_field{
+struct rsv_bits_field {
 	uint8_t RSV1 : 1;
 	uint8_t RSV2 : 1;
 	uint8_t RSV3 : 1;
 };
 
-typedef struct send_buf_t{
+typedef struct send_buf_t {
 	uint8_t *txbuf;
 	int tx_len;
 	int send_offset;
-}send_buf;
+} send_buf;
 
 struct _wsclient_context;
 
-struct ws_fun_ops{
+struct ws_fun_ops {
 	int (*hostname_connect)(struct _wsclient_context *wsclient);
 	void (*client_close)(struct _wsclient_context *wsclient);
 	int (*client_send)(struct _wsclient_context *wsclient, unsigned char *data, size_t data_len);
 	int (*client_read)(struct _wsclient_context *wsclient, unsigned char *data, size_t data_len);
 };
 
-typedef struct _wsclient_context{
+typedef struct _wsclient_context {
 	char *host;
 	char *path;
 	char *origin;
@@ -106,16 +96,16 @@ typedef struct _wsclient_context{
 	uint8_t *receivedData;
 	struct ws_fun_ops fun_ops;
 	_mutex queue_mutex;
-}wsclient_context;
+} wsclient_context;
 /*******************************************************************/
 
 /****************General functions used by wsclient*****************/
 void ws_get_random_bytes(void *buf, size_t len);
-void* ws_malloc(unsigned int size);
+void *ws_malloc(unsigned int size);
 void ws_free(void *buf);
 int ws_client_handshake(wsclient_context *wsclient);
 int ws_check_handshake(wsclient_context *wsclient);
-int ws_sendData(uint8_t type, size_t message_size, uint8_t* message, int useMask, wsclient_context *wsclient);
+int ws_sendData(uint8_t type, size_t message_size, uint8_t *message, int useMask, wsclient_context *wsclient);
 /*******************************************************************/
 
 /*************Functions used by wsclient without SSL****************/
@@ -131,9 +121,9 @@ int wss_hostname_connect(wsclient_context *wsclient);
 int wss_client_read(wsclient_context *wsclient, unsigned char *data, size_t data_len);
 int wss_client_send(wsclient_context *wsclient, unsigned char *data, size_t data_len);
 void wss_client_close(wsclient_context *wsclient);
-void *wss_tls_connect(int *sock , char *host, int port);
+void *wss_tls_connect(int *sock, char *host, int port);
 int wss_tls_handshake(void *tls_in);
-void wss_tls_close(void *tls_in,int *sock);
+void wss_tls_close(void *tls_in, int *sock);
 int wss_tls_write(void *tls_in, char *request, int request_len);
 int wss_tls_read(void *tls_in, char *buffer, int buf_len);
 /*******************************************************************/

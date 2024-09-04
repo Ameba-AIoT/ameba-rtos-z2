@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file     shell_stub.c
  * @brief    This shell stub functions. Re-direct to ROM code functions.
- * 
+ *
  * @version  V1.00
  * @date     2016-07-15
  *
@@ -29,7 +29,7 @@
 
 #include "shell.h"
 
-/** 
+/**
  * @addtogroup util_shell Shell Command Interface
  * @{
  */
@@ -70,7 +70,7 @@ const char prompt_str[] = "$8710c>";
  */
 BOOL shell_init(shell_reader_t reader, shell_writer_t writer, void *adapter)
 {
-    return cmd_shell_stubs.shell_init (&shell_cmd_hdl, reader, writer, adapter);
+	return cmd_shell_stubs.shell_init(&shell_cmd_hdl, reader, writer, adapter);
 }
 
 /**
@@ -78,7 +78,7 @@ BOOL shell_init(shell_reader_t reader, shell_writer_t writer, void *adapter)
  *        for the shell command to read/write a character from/to the terminal.
  *        The function to read/write characters is implemented by the StdIO Port.
  *        So the StdIO Port should be initialed before callinf this function.
- *        The StdIO Port initialization is out of the function of shell 
+ *        The StdIO Port initialization is out of the function of shell
  *        command module.
  *
  * @return  Returns TRUE if the shell was succesfully initialized, returns FALSE
@@ -86,7 +86,7 @@ BOOL shell_init(shell_reader_t reader, shell_writer_t writer, void *adapter)
  */
 BOOL shell_init_with_stdio_port(void)
 {
-    return cmd_shell_stubs.shell_init_with_stdio_port (&shell_cmd_hdl);
+	return cmd_shell_stubs.shell_init_with_stdio_port(&shell_cmd_hdl);
 }
 
 /**
@@ -103,14 +103,14 @@ BOOL shell_init_with_stdio_port(void)
  */
 BOOL shell_set_cmd_buf(char *buf, unsigned int buf_size)
 {
-    return cmd_shell_stubs.shell_set_cmd_buf (&shell_cmd_hdl, buf, buf_size);
+	return cmd_shell_stubs.shell_set_cmd_buf(&shell_cmd_hdl, buf, buf_size);
 }
 
 /**
  * @brief To assign a buffer for the command history.
  *
  * @details This buffer is used to store commands ever entered. So we can re-call a command
- *          from the history buffer. This is a ring buffer. Once the buffer is full, the new 
+ *          from the history buffer. This is a ring buffer. Once the buffer is full, the new
  *          added command will overwrite the oldest command.
  *
  * @param[in]   buf         The given buffer.
@@ -122,7 +122,7 @@ BOOL shell_set_cmd_buf(char *buf, unsigned int buf_size)
  */
 BOOL shell_set_hist_buf(char *buf, unsigned int buf_size)
 {
-    return cmd_shell_stubs.shell_set_hist_buf (&shell_cmd_hdl, buf, buf_size);
+	return cmd_shell_stubs.shell_set_hist_buf(&shell_cmd_hdl, buf, buf_size);
 }
 
 /**
@@ -134,7 +134,7 @@ BOOL shell_set_hist_buf(char *buf, unsigned int buf_size)
  */
 void shell_set_prompt(const char *prompt)
 {
-    cmd_shell_stubs.shell_set_prompt (&shell_cmd_hdl, prompt);
+	cmd_shell_stubs.shell_set_prompt(&shell_cmd_hdl, prompt);
 }
 
 /**
@@ -142,19 +142,19 @@ void shell_set_prompt(const char *prompt)
  *
  * @details When a command string is entered, we will search the match command from this table
  *          and execute the callback function if a matched command is found.
- * 
+ *
  * @param[in]   cmd_table   The start pointer of the prefixed command table.
  *
  */
 void shell_set_cmd_table(const shell_command_entry_t *cmd_table)
 {
-    cmd_shell_stubs.shell_set_cmd_table (&shell_cmd_hdl, cmd_table);
+	cmd_shell_stubs.shell_set_cmd_table(&shell_cmd_hdl, cmd_table);
 }
 
 /**
  * @brief Hooks a registrable command entry buffer to the shell command. A new command entry can be
  *        add to this command list at run time.
- * 
+ *
  * @param[in]   cmd_list    The buffer for the registerable of command entry list.
  *
  * @param[in]   list_size   The command list size, which means the maximum number of commands we can add to this list.
@@ -162,13 +162,13 @@ void shell_set_cmd_table(const shell_command_entry_t *cmd_table)
  */
 void shell_set_cmd_list(shell_command_entry_t *cmd_list, unsigned int list_size)
 {
-    cmd_shell_stubs.shell_set_cmd_list(&shell_cmd_hdl, cmd_list, list_size);
+	cmd_shell_stubs.shell_set_cmd_list(&shell_cmd_hdl, cmd_list, list_size);
 }
 
 /**
  * @brief Register a command entry on the registerable command list.
  *
- * @details Registers a command on the registerable command list. The command string and the 
+ * @details Registers a command on the registerable command list. The command string and the
  *          corresponding callback function should be provided.
  *
  * @param[in]   program     The callback function for the new register command.
@@ -182,7 +182,7 @@ void shell_set_cmd_list(shell_command_entry_t *cmd_list, unsigned int list_size)
  */
 BOOL shell_register(shell_program_t program, const char *cmd_string, const char *help_string)
 {
-    return cmd_shell_stubs.shell_register(&shell_cmd_hdl, program, cmd_string, help_string);
+	return cmd_shell_stubs.shell_register(&shell_cmd_hdl, program, cmd_string, help_string);
 }
 
 /**
@@ -192,7 +192,7 @@ BOOL shell_register(shell_program_t program, const char *cmd_string, const char 
  */
 void shell_unregister_all(void)
 {
-    cmd_shell_stubs.shell_unregister_all(&shell_cmd_hdl);
+	cmd_shell_stubs.shell_unregister_all(&shell_cmd_hdl);
 }
 
 /**
@@ -201,7 +201,7 @@ void shell_unregister_all(void)
  * @details This function implements the main functionality of the shell command line interface.
  *          This function should be called frequently so it can handle the input from the terminal
  *          data stream.
- * 
+ *
  * @param[in]   pshell_cmd  The command shell entity.
  *
  * @return  -1: if the shell command entity is not initialed.
@@ -210,12 +210,12 @@ void shell_unregister_all(void)
  */
 s32 shell_task(void)
 {
-    return cmd_shell_stubs.shell_task(&shell_cmd_hdl);
+	return cmd_shell_stubs.shell_task(&shell_cmd_hdl);
 }
 
 s32 shell_parse_one_cmd(void)
 {
-    return cmd_shell_stubs.shell_parse_one_cmd(&shell_cmd_hdl);
+	return cmd_shell_stubs.shell_parse_one_cmd(&shell_cmd_hdl);
 }
 
 /**
@@ -227,23 +227,23 @@ s32 shell_parse_one_cmd(void)
  *
  * @return  void
  */
-void shell_cmd_init (void)
+void shell_cmd_init(void)
 {
-    // assign the buffer for input command
-    shell_set_cmd_buf(shell_cmd_buffer, SHELL_CMD_BUF_SIZE);
-    
-    // assign the buffer for command history
-    shell_set_hist_buf(shell_cmd_hist, SHELL_CMD_HIST_SIZE);
-    
-    // hook the putc & getc functions
-    shell_init_with_stdio_port ();
-    shell_cmd_hdl.case_conv_buf = shell_case_conv_buf;
-    shell_set_cmd_table (cmd_shell_stubs.rom_cmd_table);
-    shell_set_prompt (prompt_str);
+	// assign the buffer for input command
+	shell_set_cmd_buf(shell_cmd_buffer, SHELL_CMD_BUF_SIZE);
 
-    // Add a buffer for dynamical shell command register
-    shell_set_cmd_list(shell_cmd_list, SHELL_CMD_LIST_SIZE);    
-    shell_unregister_all ();
+	// assign the buffer for command history
+	shell_set_hist_buf(shell_cmd_hist, SHELL_CMD_HIST_SIZE);
+
+	// hook the putc & getc functions
+	shell_init_with_stdio_port();
+	shell_cmd_hdl.case_conv_buf = shell_case_conv_buf;
+	shell_set_cmd_table(cmd_shell_stubs.rom_cmd_table);
+	shell_set_prompt(prompt_str);
+
+	// Add a buffer for dynamical shell command register
+	shell_set_cmd_list(shell_cmd_list, SHELL_CMD_LIST_SIZE);
+	shell_unregister_all();
 }
 
 #if 0
@@ -251,57 +251,57 @@ void shell_cmd_init (void)
 
 BOOL __attribute__((cmse_nonsecure_entry)) shell_init(shell_reader_t reader, shell_writer_t writer, void *adapter)
 {
-    return shell_init(reader, writer, adapter);
+	return shell_init(reader, writer, adapter);
 }
 
 BOOL __attribute__((cmse_nonsecure_entry)) shell_init_with_stdio_port(void)
 {
-    return shell_init_with_stdio_port();
+	return shell_init_with_stdio_port();
 }
 
 BOOL __attribute__((cmse_nonsecure_entry)) shell_set_cmd_buf(char *buf, unsigned int buf_size)
 {
-    return shell_set_cmd_buf(buf, buf_size);
+	return shell_set_cmd_buf(buf, buf_size);
 }
 
 BOOL __attribute__((cmse_nonsecure_entry)) shell_set_hist_buf(char *buf, unsigned int buf_size)
 {
-    return shell_set_hist_buf(buf, buf_size);
+	return shell_set_hist_buf(buf, buf_size);
 }
 
 void __attribute__((cmse_nonsecure_entry)) shell_set_prompt_ns(const char *prompt)
 {
-    shell_set_prompt(prompt);
+	shell_set_prompt(prompt);
 }
 
 void __attribute__((cmse_nonsecure_entry)) shell_set_cmd_table(const shell_command_entry_t *cmd_table)
 {
-    shell_set_cmd_table(cmd_table);
+	shell_set_cmd_table(cmd_table);
 }
 
 void __attribute__((cmse_nonsecure_entry)) shell_set_cmd_list_ns(shell_command_entry_t *cmd_list, unsigned int list_size)
 {
-    shell_set_cmd_list(cmd_list, list_size);
+	shell_set_cmd_list(cmd_list, list_size);
 }
 
 BOOL __attribute__((cmse_nonsecure_entry)) shell_register_ns(shell_program_t program, const char *cmd_string, const char *help_string)
 {
-    return shell_register(program, cmd_string, help_string);
+	return shell_register(program, cmd_string, help_string);
 }
 
 void __attribute__((cmse_nonsecure_entry)) shell_unregister_all_ns(void)
 {
-    shell_unregister_all();
+	shell_unregister_all();
 }
 
-s32 __attribute__((cmse_nonsecure_entry)) shell_task_ns(void) 
+s32 __attribute__((cmse_nonsecure_entry)) shell_task_ns(void)
 {
-    return shell_task();
+	return shell_task();
 }
 
-void __attribute__((cmse_nonsecure_entry)) shell_cmd_init_ns(void) 
+void __attribute__((cmse_nonsecure_entry)) shell_cmd_init_ns(void)
 {
-    shell_cmd_init();
+	shell_cmd_init();
 }
 #endif
 

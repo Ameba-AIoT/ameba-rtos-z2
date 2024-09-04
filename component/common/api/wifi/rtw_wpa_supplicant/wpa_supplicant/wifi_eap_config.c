@@ -11,6 +11,21 @@
 #include "wifi/wifi_conf.h"
 #include <platform/platform_stdlib.h>
 
+#if CONFIG_MBEDTLS_VERSION3 == 1
+#include "mbedtls/build_info.h"
+#include "ssl_misc.h"
+#define MBEDTLS_SSL_MAX_CONTENT_LEN  MBEDTLS_SSL_IN_CONTENT_LEN
+#else
+#if !defined(MBEDTLS_CONFIG_FILE)
+#include <mbedtls/config.h>
+#else
+#include MBEDTLS_CONFIG_FILE
+#endif
+#include <mbedtls/ssl_internal.h>
+#endif
+#include <mbedtls/platform.h>
+#include <mbedtls/ssl.h>
+
 #define WLAN0_NAME "wlan0"
 #ifndef ENABLE
 #define ENABLE	(1)
@@ -18,6 +33,8 @@
 #ifndef DISABLE
 #define	DISABLE (0)
 #endif
+
+#define STACKSIZE	1024
 
 u8 eap_phase = 0;
 u8 eap_method = 0;
@@ -28,10 +45,35 @@ char *eap_identity = NULL;
 char *eap_password = NULL;
 // if set eap_ca_cert and defined(EAP_SSL_VERIFY_SERVER), client will verify server's cert
 const unsigned char *eap_ca_cert = NULL;
+int eap_ca_cert_len = 0;
 // if set eap_client_cert, eap_client_key, and defined(EAP_SSL_VERIFY_CLIENT), client will send its cert to server
 const unsigned char *eap_client_cert = NULL;
 const unsigned char *eap_client_key = NULL;
+int eap_client_cert_len = 0;
+int eap_client_key_len = 0;
 char *eap_client_key_pwd = NULL;
+
+int max_buf_bio_size = (MBEDTLS_SSL_MAX_CONTENT_LEN                \
+						+ MBEDTLS_SSL_COMPRESSION_ADD               \
+						+ 29 /* counter + header + IV */    \
+						+ MBEDTLS_SSL_MAC_ADD                       \
+						+ MBEDTLS_SSL_PADDING_ADD                   \
+						);    //modify by Relatek,  original define is MBEDTLS_SSL_BUFFER_LEN
+
+struct eap_tls {
+	void *ssl;
+	void *conf;
+	void *fd;
+};
+
+#if (defined(ENABLE_EAP_SSL_VERIFY_CLIENT) && ENABLE_EAP_SSL_VERIFY_CLIENT)
+static mbedtls_x509_crt *_cli_crt = NULL;
+static mbedtls_pk_context *_clikey_rsa = NULL;
+#endif
+
+#if (defined(ENABLE_EAP_SSL_VERIFY_SERVER) && ENABLE_EAP_SSL_VERIFY_SERVER)
+static mbedtls_x509_crt *_ca_crt = NULL;
+#endif
 
 void set_eap_phase(unsigned char is_trigger_eap);
 int get_eap_phase(void);
@@ -40,28 +82,32 @@ int set_eap_peap_method(void);
 int set_eap_tls_method(void);
 int set_eap_ttls_method(void);
 
-void eap_eapol_recvd_hdl(char *buf, int buf_len, int flags, void* handler_user_data);
-void eap_eapol_start_hdl(char *buf, int buf_len, int flags, void* handler_user_data);
+void eap_eapol_recvd_hdl(char *buf, int buf_len, int flags, void *handler_user_data);
+void eap_eapol_start_hdl(char *buf, int buf_len, int flags, void *handler_user_data);
 int connect_by_open_system(char *target_ssid);
 
 #if !defined(CONFIG_MBED_ENABLED)
 int eap_start(char *method);
 #endif
 
-void set_eap_phase(unsigned char is_trigger_eap){
+void set_eap_phase(unsigned char is_trigger_eap)
+{
 	eap_phase = is_trigger_eap;
 }
 
-int get_eap_phase(void){
+int get_eap_phase(void)
+{
 	return eap_phase;
 }
 
-int get_eap_method(void){
+int get_eap_method(void)
+{
 	return eap_method;
 }
 
 #if !defined(CONFIG_MBED_ENABLED)
-void reset_config(void){
+void reset_config(void)
+{
 	eap_target_ssid = NULL;
 	eap_identity = NULL;
 	eap_password = NULL;
@@ -71,41 +117,43 @@ void reset_config(void){
 	eap_client_key_pwd = NULL;
 }
 
-void judge_station_disconnect(void) 
+void judge_station_disconnect(void)
 {
 	int mode = 0;
 	unsigned char ssid[33];
 
 	wext_get_mode(WLAN0_NAME, &mode);
 
-	switch(mode) {
+	switch (mode) {
 	case IW_MODE_MASTER:	//In AP mode
 		wifi_off();
 		vTaskDelay(20);
 		wifi_on(RTW_MODE_STA);
 		break;
 	case IW_MODE_INFRA:		//In STA mode
-		if(wext_get_ssid(WLAN0_NAME, ssid) > 0)
+		if (wext_get_ssid(WLAN0_NAME, ssid) > 0) {
 			wifi_disconnect();
-	}	
+		}
+	}
 }
 extern void eap_peer_unregister_methods(void);
 extern void eap_sm_deinit(void);
-void eap_disconnected_hdl(char *buf, int buf_len, int flags, void* handler_user_data){
+void eap_disconnected_hdl(char *buf, int buf_len, int flags, void *handler_user_data)
+{
 	/* To avoid gcc warnings */
-	( void ) buf;
-	( void ) buf_len;
-	( void ) flags;
-	( void ) handler_user_data;
-	
+	(void) buf;
+	(void) buf_len;
+	(void) flags;
+	(void) handler_user_data;
+
 //	printf("disconnected\n");
 #if (RTL8192E_SUPPORT == 0)//devin_li rtl8192es_temp_mask	
 	wifi_unreg_event_handler(WIFI_EVENT_EAPOL_RECVD, eap_eapol_recvd_hdl);
-	wifi_unreg_event_handler(WIFI_EVENT_DISCONNECT, eap_disconnected_hdl);	
+	wifi_unreg_event_handler(WIFI_EVENT_DISCONNECT, eap_disconnected_hdl);
 	eap_peer_unregister_methods();
 	eap_sm_deinit();
 	//reset_config();
-#endif	
+#endif
 }
 
 /*
@@ -150,7 +198,7 @@ void eap_config(void){
 "Yi9ae6ibKhtUjyBQ87HFAkA2Bb3z7NUx+AA2g2HZocFZFShBxylACyQkl8FAFZtf\r\n" \
 "osudmKdFQHyAWuBMex4tpz/OLTqJ1ecL1JQeC7OvlpEX\r\n" \
 "-----END RSA PRIVATE KEY-----\r\n";
-	
+
 	eap_ca_cert = \
 "-----BEGIN CERTIFICATE-----\r\n" \
 "MIIEpzCCA4+gAwIBAgIJAPvZaozpdfjkMA0GCSqGSIb3DQEBCwUAMIGTMQswCQYD\r\n" \
@@ -185,14 +233,14 @@ void eap_config(void){
 int eap_start(char *method)
 {
 	/* To avoid gcc warnings */
-	( void ) method;
+	(void) method;
 #ifdef CONFIG_ENABLE_EAP
 	int ret = -1;
 
 	//unsigned long tick1 = xTaskGetTickCount();
 	//unsigned long tick2;
-	
-	if(rltk_wlan_running(WLAN1_IDX)){
+
+	if (rltk_wlan_running(WLAN1_IDX)) {
 		printf("\n\rNot support con-current mode!\n\r");
 		return -1;
 	}
@@ -200,24 +248,24 @@ int eap_start(char *method)
 	judge_station_disconnect();
 
 #if CONFIG_ENABLE_PEAP
-	if(strcmp(method,"peap") == 0){
+	if (strcmp(method, "peap") == 0) {
 		ret = set_eap_peap_method();
 	}
 #endif
 
 #if CONFIG_ENABLE_TLS
-	if(strcmp(method,"tls") == 0){
+	if (strcmp(method, "tls") == 0) {
 		ret = set_eap_tls_method();
 	}
 #endif
 
 #if CONFIG_ENABLE_TTLS
-	if(strcmp(method,"ttls") == 0){
+	if (strcmp(method, "ttls") == 0) {
 		ret = set_eap_ttls_method();
 	}
 #endif
 
-	if(ret == -1){
+	if (ret == -1) {
 		printf("\r\neap method %s not supported\r\n", method);
 		return -1;
 	}
@@ -232,14 +280,15 @@ int eap_start(char *method)
 	wifi_reg_event_handler(WIFI_EVENT_EAPOL_START, eap_eapol_start_hdl, NULL);
 	wifi_reg_event_handler(WIFI_EVENT_EAPOL_RECVD, eap_eapol_recvd_hdl, NULL);
 
-	
+
 
 	ret = connect_by_open_system(eap_target_ssid);
 
 #if CONFIG_LWIP_LAYER
-		/* Start DHCPClient */
-	if(ret == 0)
+	/* Start DHCPClient */
+	if (ret == 0) {
 		LwIP_DHCP(0, DHCP_START);
+	}
 #endif
 
 	wifi_unreg_event_handler(WIFI_EVENT_EAPOL_START, eap_eapol_start_hdl);
@@ -249,9 +298,9 @@ int eap_start(char *method)
 	//wifi_unreg_event_handler(WIFI_EVENT_EAPOL_RECVD, eap_eapol_recvd_hdl);
 
 	set_eap_phase(DISABLE);
-	
+
 	// eap failed, disconnect
-	if(ret != 0){
+	if (ret != 0) {
 		judge_station_disconnect();
 		eap_disconnected_hdl(NULL, 0, 0, NULL);
 		rtw_msleep_os(200);	//wait handler done
@@ -263,7 +312,7 @@ int eap_start(char *method)
 
 	//tick2 = xTaskGetTickCount();
 	//printf("\r\nConnected after %dms.\n", (tick2-tick1));
-	
+
 	return ret;
 #else
 	return -1;
@@ -273,19 +322,19 @@ int eap_start(char *method)
 int connect_by_open_system(char *target_ssid)
 {
 	int retry_count = 0, ret;
-	
+
 	if (target_ssid != NULL) {
 		while (1) {
 			rtw_msleep_os(500);	//wait scan complete.
 			ret = wifi_connect(target_ssid,
-							RTW_SECURITY_OPEN,
-							NULL,
-							strlen(target_ssid),
-							0,
-							0,
-							NULL);
+							   RTW_SECURITY_OPEN,
+							   NULL,
+							   strlen(target_ssid),
+							   0,
+							   0,
+							   NULL);
 			if (ret == RTW_SUCCESS) {
-			  	//printf("\r\n[EAP]Associate with AP success\n");
+				//printf("\r\n[EAP]Associate with AP success\n");
 				break;
 			}
 			if (retry_count == 0) {
@@ -308,7 +357,11 @@ int connect_by_open_system(char *target_ssid)
 
 void eap_autoreconnect_thread(void *method)
 {
-	eap_start((char*)method);
+#if defined(configENABLE_TRUSTZONE) && (configENABLE_TRUSTZONE == 1) && defined(CONFIG_SSL_CLIENT_PRIVATE_IN_TZ) && (CONFIG_SSL_CLIENT_PRIVATE_IN_TZ == 1)
+	extern void rtw_create_secure_context(u32 secure_stack_size);
+	rtw_create_secure_context(STACKSIZE * 4);
+#endif
+	eap_start((char *)method);
 	vTaskDelete(NULL);
 }
 #endif
@@ -316,208 +369,31 @@ void eap_autoreconnect_thread(void *method)
 void eap_autoreconnect_hdl(u8 method_id)
 {
 	/* To avoid gcc warnings */
-	( void ) method_id;	
-#ifdef CONFIG_ENABLE_EAP	
+	(void) method_id;
+#ifdef CONFIG_ENABLE_EAP
 	char *method;
-	switch(method_id){
-		case 25: // EAP_TYPE_PEAP
-			method = "peap";
-			break;
-		case 13: // EAP_TYPE_TLS
-			method = "tls";
-			break;
-		case 21: // EAP_TYPE_TTLS
-			method = "ttls";
-			break;
-		default:
-			printf("invalid eap method\n");
-			return;
+	switch (method_id) {
+	case 25: // EAP_TYPE_PEAP
+		method = "peap";
+		break;
+	case 13: // EAP_TYPE_TLS
+		method = "tls";
+		break;
+	case 21: // EAP_TYPE_TTLS
+		method = "ttls";
+		break;
+	default:
+		printf("invalid eap method\n");
+		return;
 	}
-	if(xTaskCreate(eap_autoreconnect_thread, ((const char*)"eap_autoreconnect_thread"), 1024, (void*) method, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+	if (xTaskCreate(eap_autoreconnect_thread, ((const char *)"eap_autoreconnect_thread"), STACKSIZE, (void *) method, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate failed\n", __FUNCTION__);
-#endif
-}
-
-//#if CONFIG_MBED_ENABLED
-// copy from ssl_client_ext.c
-#if CONFIG_USE_POLARSSL
-
-#include <polarssl/ssl.h>
-#include <polarssl/memory.h>
-
-int max_buf_bio_size = SSL_BUFFER_LEN;
-
-#if ENABLE_EAP_SSL_VERIFY_CLIENT
-static x509_crt* _cli_crt = NULL;
-static pk_context* _clikey_rsa = NULL;
-#endif
-
-#if ENABLE_EAP_SSL_VERIFY_SERVER
-static x509_crt* _ca_crt = NULL;
-
-static int eap_verify(void *data, x509_crt *crt, int depth, int *flags) 
-{
-
-	//char buf[1024];
-	((void) data);
-
-	printf("\nVerify requested for (Depth %d):\n", depth);
-	//x509_crt_info(buf, sizeof(buf) - 1, "", crt);
-	//printf("%s", buf);
-
-	if(((*flags) & BADCERT_EXPIRED) != 0)
-		printf("server certificate has expired\n");
-
-	if(((*flags) & BADCERT_REVOKED) != 0)
-		printf("  ! server certificate has been revoked\n");
-
-	if(((*flags) & BADCERT_CN_MISMATCH) != 0)
-		printf("  ! CN mismatch\n");
-
-	if(((*flags) & BADCERT_NOT_TRUSTED) != 0)
-		printf("  ! self-signed or not signed by a trusted CA\n");
-
-	if(((*flags) & BADCRL_NOT_TRUSTED) != 0)
-		printf("  ! CRL not trusted\n");
-
-	if(((*flags) & BADCRL_EXPIRED) != 0)
-		printf("  ! CRL expired\n");
-
-	if(((*flags) & BADCERT_OTHER) != 0)
-		printf("  ! other (unknown) flag\n");
-
-	if((*flags) == 0)
-		printf("  Certificate verified without error flags\n");
-
-	return(0);
-}
-#endif
-
-int eap_cert_init(void)
-{
-#if ENABLE_EAP_SSL_VERIFY_CLIENT
-	if(eap_client_cert != NULL && eap_client_key != NULL){
-		_cli_crt = polarssl_malloc(sizeof(x509_crt));
-	
-		if(_cli_crt)
-			x509_crt_init(_cli_crt);
-		else
-			return -1;
-
-		_clikey_rsa = polarssl_malloc(sizeof(pk_context));
-	
-		if(_clikey_rsa)
-			pk_init(_clikey_rsa);
-		else
-			return -1;
-	}
-#endif
-#if ENABLE_EAP_SSL_VERIFY_SERVER
-	if(eap_ca_cert != NULL){
-		_ca_crt = polarssl_malloc(sizeof(x509_crt));
-	
-		if(_ca_crt)
-			x509_crt_init(_ca_crt);
-		else
-			return -1;
-	}
-#endif
-	return 0;
-}
-
-void eap_client_cert_free(void)
-{
-#if ENABLE_EAP_SSL_VERIFY_CLIENT
-	if(eap_client_cert != NULL && eap_client_key != NULL){
-		if(_cli_crt) {
-			x509_crt_free(_cli_crt);
-			polarssl_free(_cli_crt);
-			_cli_crt = NULL;
-		}
-
-		if(_clikey_rsa) {
-			pk_free(_clikey_rsa);
-			polarssl_free(_clikey_rsa);
-			_clikey_rsa = NULL;
-		}
-	}
-#endif	
-}
-
-void eap_server_cert_free(void)
-{
-#if ENABLE_EAP_SSL_VERIFY_SERVER
-	if(eap_ca_cert != NULL){
-		if(_ca_crt) {
-			x509_crt_free(_ca_crt);
-			polarssl_free(_ca_crt);
-			_ca_crt = NULL;
-		}
 	}
 #endif
 }
-
-int eap_cert_setup(ssl_context *ssl)
-{
-#if ENABLE_EAP_SSL_VERIFY_CLIENT
-	if(eap_client_cert != NULL && eap_client_key != NULL){
-		if(x509_crt_parse(_cli_crt, eap_client_cert, strlen(eap_client_cert)) != 0)
-			return -1;
-	
-		if(pk_parse_key(_clikey_rsa, eap_client_key, strlen(eap_client_key), eap_client_key_pwd, strlen(eap_client_key_pwd)) != 0)
-			return -1;
-
-		ssl_set_own_cert(ssl, _cli_crt, _clikey_rsa);
-	}
-#endif
-#if ENABLE_EAP_SSL_VERIFY_SERVER
-	if(eap_ca_cert != NULL){
-		if(x509_crt_parse(_ca_crt, eap_ca_cert, strlen(eap_ca_cert)) != 0)
-			return -1;
-		ssl_set_ca_chain(ssl, _ca_crt, NULL, NULL);
-		ssl_set_authmode(ssl, SSL_VERIFY_REQUIRED);
-		ssl_set_verify(ssl, eap_verify, NULL);
-	}
-#endif
-	return 0;
-}
-
-#elif CONFIG_USE_MBEDTLS
-
-#if CONFIG_MBEDTLS_VERSION3 == 1 
-#include "mbedtls/build_info.h"
-#include "ssl_misc.h"
-#define MBEDTLS_SSL_MAX_CONTENT_LEN  MBEDTLS_SSL_IN_CONTENT_LEN
-#else
-#include <mbedtls/config.h>
-#include <mbedtls/ssl_internal.h>
-#endif
-#include <mbedtls/platform.h>
-#include <mbedtls/ssl.h>
-
-int max_buf_bio_size = ( MBEDTLS_SSL_MAX_CONTENT_LEN                \
-                        + MBEDTLS_SSL_COMPRESSION_ADD               \
-                        + 29 /* counter + header + IV */    \
-                        + MBEDTLS_SSL_MAC_ADD                       \
-                        + MBEDTLS_SSL_PADDING_ADD                   \
-                        );    //modify by Relatek,  original define is MBEDTLS_SSL_BUFFER_LEN
-
-
-struct eap_tls{
-	void *ssl;
-	void *conf;
-	void *fd;
-};
-
-#if (defined(ENABLE_EAP_SSL_VERIFY_CLIENT) && ENABLE_EAP_SSL_VERIFY_CLIENT)
-static mbedtls_x509_crt* _cli_crt = NULL;
-static mbedtls_pk_context* _clikey_rsa = NULL;
-#endif
 
 #if (defined(ENABLE_EAP_SSL_VERIFY_SERVER) && ENABLE_EAP_SSL_VERIFY_SERVER)
-static mbedtls_x509_crt* _ca_crt = NULL;
-
-static int eap_verify(void *data, mbedtls_x509_crt *crt, int depth, uint32_t *flags) 
+static int eap_verify(void *data, mbedtls_x509_crt *crt, int depth, uint32_t *flags)
 {
 
 	//char buf[1024];
@@ -527,61 +403,78 @@ static int eap_verify(void *data, mbedtls_x509_crt *crt, int depth, uint32_t *fl
 	//mbedtls_x509_crt_info(buf, sizeof(buf) - 1, "", crt);
 	//printf("%s", buf);
 
-	if(((*flags) & MBEDTLS_X509_BADCERT_EXPIRED) != 0)
+	if (((*flags) & MBEDTLS_X509_BADCERT_EXPIRED) != 0) {
 		printf("server certificate has expired\n");
+	}
 
-	if(((*flags) & MBEDTLS_X509_BADCERT_REVOKED) != 0)
+	if (((*flags) & MBEDTLS_X509_BADCERT_REVOKED) != 0) {
 		printf("  ! server certificate has been revoked\n");
+	}
 
-	if(((*flags) & MBEDTLS_X509_BADCERT_CN_MISMATCH) != 0)
+	if (((*flags) & MBEDTLS_X509_BADCERT_CN_MISMATCH) != 0) {
 		printf("  ! CN mismatch\n");
+	}
 
-	if(((*flags) & MBEDTLS_X509_BADCERT_NOT_TRUSTED) != 0)
+	if (((*flags) & MBEDTLS_X509_BADCERT_NOT_TRUSTED) != 0) {
 		printf("  ! self-signed or not signed by a trusted CA\n");
+	}
 
-	if(((*flags) & MBEDTLS_X509_BADCRL_NOT_TRUSTED) != 0)
+	if (((*flags) & MBEDTLS_X509_BADCRL_NOT_TRUSTED) != 0) {
 		printf("  ! CRL not trusted\n");
+	}
 
-	if(((*flags) & MBEDTLS_X509_BADCRL_EXPIRED) != 0)
+	if (((*flags) & MBEDTLS_X509_BADCRL_EXPIRED) != 0) {
 		printf("  ! CRL expired\n");
+	}
 
-	if(((*flags) & MBEDTLS_X509_BADCERT_OTHER) != 0)
+	if (((*flags) & MBEDTLS_X509_BADCERT_OTHER) != 0) {
 		printf("  ! other (unknown) flag\n");
+	}
 
-	if((*flags) == 0)
+	if ((*flags) == 0) {
 		printf("  Certificate verified without error flags\n");
+	}
 
-	return(0);
+	return (0);
 }
 #endif
 
 int eap_cert_init(void)
 {
 #if (defined(ENABLE_EAP_SSL_VERIFY_CLIENT) && ENABLE_EAP_SSL_VERIFY_CLIENT)
-	if(eap_client_cert != NULL && eap_client_key != NULL){
+	if ((eap_client_cert != NULL)
+#if !defined(configENABLE_TRUSTZONE) || (configENABLE_TRUSTZONE == 0) || !defined(CONFIG_SSL_CLIENT_PRIVATE_IN_TZ) || (CONFIG_SSL_CLIENT_PRIVATE_IN_TZ == 0)
+		&& (eap_client_key != NULL)
+#endif
+	   ) {
 		_cli_crt = mbedtls_calloc(1, sizeof(mbedtls_x509_crt));
-	
-		if(_cli_crt)
-			mbedtls_x509_crt_init(_cli_crt);
-		else
-			return -1;
 
-		_clikey_rsa = mbedtls_calloc(1, sizeof(mbedtls_pk_context));
-	
-		if(_clikey_rsa)
-			mbedtls_pk_init(_clikey_rsa);
-		else
+		if (_cli_crt) {
+			mbedtls_x509_crt_init(_cli_crt);
+		} else {
 			return -1;
+		}
+
+#if !defined(configENABLE_TRUSTZONE) || (configENABLE_TRUSTZONE == 0) || !defined(CONFIG_SSL_CLIENT_PRIVATE_IN_TZ) || (CONFIG_SSL_CLIENT_PRIVATE_IN_TZ == 0)
+		_clikey_rsa = mbedtls_calloc(1, sizeof(mbedtls_pk_context));
+
+		if (_clikey_rsa) {
+			mbedtls_pk_init(_clikey_rsa);
+		} else {
+			return -1;
+		}
+#endif
 	}
 #endif
 #if (defined(ENABLE_EAP_SSL_VERIFY_SERVER) && ENABLE_EAP_SSL_VERIFY_SERVER)
-	if(eap_ca_cert != NULL){
+	if (eap_ca_cert != NULL) {
 		_ca_crt = mbedtls_calloc(1, sizeof(mbedtls_x509_crt));
-	
-		if(_ca_crt)
+
+		if (_ca_crt) {
 			mbedtls_x509_crt_init(_ca_crt);
-		else
+		} else {
 			return -1;
+		}
 	}
 #endif
 	return 0;
@@ -590,16 +483,25 @@ int eap_cert_init(void)
 void eap_client_cert_free(void)
 {
 #if (defined(ENABLE_EAP_SSL_VERIFY_CLIENT) && ENABLE_EAP_SSL_VERIFY_CLIENT)
-	if(eap_client_cert != NULL && eap_client_key != NULL){
-		if(_cli_crt) {
+	if ((eap_client_cert != NULL)
+#if !defined(configENABLE_TRUSTZONE) || (configENABLE_TRUSTZONE == 0) || !defined(CONFIG_SSL_CLIENT_PRIVATE_IN_TZ) || (CONFIG_SSL_CLIENT_PRIVATE_IN_TZ == 0)
+		&& (eap_client_key != NULL)
+#endif
+	   ) {
+		if (_cli_crt) {
 			mbedtls_x509_crt_free(_cli_crt);
 			mbedtls_free(_cli_crt);
 			_cli_crt = NULL;
 		}
 
-		if(_clikey_rsa) {
+		if (_clikey_rsa) {
+#if defined(configENABLE_TRUSTZONE) && (configENABLE_TRUSTZONE == 1) && defined(CONFIG_SSL_CLIENT_PRIVATE_IN_TZ) && (CONFIG_SSL_CLIENT_PRIVATE_IN_TZ == 1)
+			extern void NS_ENTRY secure_mbedtls_pk_free(mbedtls_pk_context * pk);
+			secure_mbedtls_pk_free(_clikey_rsa);
+#else
 			mbedtls_pk_free(_clikey_rsa);
 			mbedtls_free(_clikey_rsa);
+#endif
 			_clikey_rsa = NULL;
 		}
 	}
@@ -609,8 +511,8 @@ void eap_client_cert_free(void)
 void eap_server_cert_free(void)
 {
 #if (defined(ENABLE_EAP_SSL_VERIFY_SERVER) && ENABLE_EAP_SSL_VERIFY_SERVER)
-	if(eap_ca_cert != NULL){
-		if(_ca_crt) {
+	if (eap_ca_cert != NULL) {
+		if (_ca_crt) {
 			mbedtls_x509_crt_free(_ca_crt);
 			mbedtls_free(_ca_crt);
 			_ca_crt = NULL;
@@ -622,34 +524,50 @@ void eap_server_cert_free(void)
 int eap_cert_setup(struct eap_tls *tls_context)
 {
 	/* To avoid gcc warnings */
-	( void ) tls_context;
+	(void) tls_context;
 #if (defined(ENABLE_EAP_SSL_VERIFY_CLIENT) && ENABLE_EAP_SSL_VERIFY_CLIENT)
-	if(eap_client_cert != NULL && eap_client_key != NULL){
-		if(mbedtls_x509_crt_parse(_cli_crt, eap_client_cert, strlen(eap_client_cert)+1) != 0)
+	if ((eap_client_cert != NULL)
+#if !defined(configENABLE_TRUSTZONE) || (configENABLE_TRUSTZONE == 0) || !defined(CONFIG_SSL_CLIENT_PRIVATE_IN_TZ) || (CONFIG_SSL_CLIENT_PRIVATE_IN_TZ == 0)
+		&& (eap_client_key != NULL)
+#endif
+	   ) {
+		if (mbedtls_x509_crt_parse(_cli_crt, eap_client_cert, eap_client_cert_len) != 0) {
 			return -1;
-		if(eap_client_key_pwd){
-#if CONFIG_MBEDTLS_VERSION3 == 1
-			if(mbedtls_pk_parse_key(_clikey_rsa, eap_client_key, strlen(eap_client_key)+1, eap_client_key_pwd, strlen(eap_client_key_pwd)+1, rtw_get_random_bytes_f_rng, 1) != 0)
+		}
+
+#if defined(configENABLE_TRUSTZONE) && (configENABLE_TRUSTZONE == 1) && defined(CONFIG_SSL_CLIENT_PRIVATE_IN_TZ) && (CONFIG_SSL_CLIENT_PRIVATE_IN_TZ == 1)
+		extern mbedtls_pk_context *NS_ENTRY secure_mbedtls_pk_parse_key(void);
+		_clikey_rsa = secure_mbedtls_pk_parse_key();
+		if (_clikey_rsa == NULL) {
+			return -1;
+		}
 #else
-			if(mbedtls_pk_parse_key(_clikey_rsa, eap_client_key, strlen(eap_client_key)+1, eap_client_key_pwd, strlen(eap_client_key_pwd)+1) != 0)
+		if (eap_client_key_pwd) {
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER>=0x03010000)
+			if (mbedtls_pk_parse_key(_clikey_rsa, eap_client_key, eap_client_key_len, eap_client_key_pwd, strlen(eap_client_key_pwd), rtw_get_random_bytes_f_rng,
+									 (void *)1) != 0)
+#else
+			if (mbedtls_pk_parse_key(_clikey_rsa, eap_client_key, eap_client_key_len, eap_client_key_pwd, strlen(eap_client_key_pwd)) != 0)
 #endif
 				return -1;
-		}else{
-#if CONFIG_MBEDTLS_VERSION3 == 1
-			if(mbedtls_pk_parse_key(_clikey_rsa, eap_client_key, strlen(eap_client_key)+1, eap_client_key_pwd, 1, rtw_get_random_bytes_f_rng, 1) != 0)
+		} else {
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER>=0x03010000)
+			if (mbedtls_pk_parse_key(_clikey_rsa, eap_client_key, eap_client_key_len, eap_client_key_pwd, 0, rtw_get_random_bytes_f_rng, (void *)1) != 0)
 #else
-			if(mbedtls_pk_parse_key(_clikey_rsa, eap_client_key, strlen(eap_client_key)+1, eap_client_key_pwd, 1) != 0)
+			if (mbedtls_pk_parse_key(_clikey_rsa, eap_client_key, eap_client_key_len, eap_client_key_pwd, 0) != 0)
 #endif
 				return -1;
 		}
+#endif
 
 		mbedtls_ssl_conf_own_cert(tls_context->conf, _cli_crt, _clikey_rsa);
 	}
 #endif
 #if (defined(ENABLE_EAP_SSL_VERIFY_SERVER) && ENABLE_EAP_SSL_VERIFY_SERVER)
-	if(eap_ca_cert != NULL){
-		if(mbedtls_x509_crt_parse(_ca_crt, eap_ca_cert, strlen(eap_ca_cert)+1) != 0)
+	if (eap_ca_cert != NULL) {
+		if (mbedtls_x509_crt_parse(_ca_crt, eap_ca_cert, eap_ca_cert_len) != 0) {
 			return -1;
+		}
 		mbedtls_ssl_conf_ca_chain(tls_context->conf, _ca_crt, NULL);
 		mbedtls_ssl_conf_authmode(tls_context->conf, MBEDTLS_SSL_VERIFY_REQUIRED);
 		mbedtls_ssl_conf_verify(tls_context->conf, eap_verify, NULL);
@@ -658,5 +576,3 @@ int eap_cert_setup(struct eap_tls *tls_context)
 	return 0;
 }
 
-#endif /*CONFIG_USE_MBEDTLS*/
-//#endif

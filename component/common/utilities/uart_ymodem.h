@@ -58,43 +58,42 @@
 // 1 block size byte + 2 block number bytes + 1024 data body + 2 crc bytes
 #define RCV_BUF_SIZE ((1)+(2)+(1024)+(2))
 /******************************** data struct **********************************/
-typedef struct _uart_ymodem_t
-{
+typedef struct _uart_ymodem_t {
 	serial_t sobj;
 	flash_t  flash;
 
 	/* Used for UART RX */
 	u8 uart_rcv_buf[RCV_BUF_SIZE];
 	u8 uart_irq_buf[RCV_BUF_SIZE];
-	//_Sema uart_rx_sema;	
+	//_Sema uart_rx_sema;
 	_sema uart_rx_sema;
 	u32 image_address;
-	
+
 	u32 tick_last_update;
 	u32 tick_current;
 	u32 uart_recv_index;
 	u32 uart_recv_buf_index;
 	/* uart ymodem related*/
 	u32 modemtype;
-    u32 crc_mode;
-    u32 nxt_num;	//next block num
-    u32 cur_num;	//current block num
-    u32 len;
-    u32 rec_err;	//blcok data recv status
-    u32 filelen;	//Ymodem file length
-    u8 *buf;		//data buf
-    u8 *filename;	//file name
-}uart_ymodem_t;
+	u32 crc_mode;
+	u32 nxt_num;	//next block num
+	u32 cur_num;	//current block num
+	u32 len;
+	u32 rec_err;	//blcok data recv status
+	u32 filelen;	//Ymodem file length
+	u8 *buf;		//data buf
+	u8 *filename;	//file name
+} uart_ymodem_t;
 
 
 #ifdef __cplusplus
-    extern "C"{
+extern "C" {
 #endif
-    
+
 extern int uart_ymodem(void);
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 #endif

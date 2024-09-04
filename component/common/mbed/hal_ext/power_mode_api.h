@@ -1,23 +1,34 @@
-/*******************************************************************************
-* Copyright (c) 2014, Realtek Semiconductor Corp.
-* All rights reserved.
-*
-* This module is a confidential and proprietary property of RealTek and
-* possession or use of this module requires written permission of RealTek.
-*******************************************************************************/
+/** mbed Microcontroller Library
+ ******************************************************************************
+ * @file    power_mode_api.h
+ * @author
+ * @version V1.0.0
+ * @brief   This file provides following mbed POWER MODE API
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2014, Realtek Semiconductor Corp.
+ * All rights reserved.
+ *
+ * This module is a confidential and proprietary property of RealTek and
+ * possession or use of this module requires written permission of RealTek.
+ *******************************************************************************
+ */
+
 #ifndef MBED_EXT_POWER_MODE_API_EXT_H
 #define MBED_EXT_POWER_MODE_API_EXT_H
 #if (defined(CONFIG_PLATFORM_8195BHP) && (CONFIG_PLATFORM_8195BHP == 1))  ||  (defined(CONFIG_PLATFORM_8195BLP) && (CONFIG_PLATFORM_8195BLP == 1))  ||  (defined(CONFIG_PLATFORM_8710C) && (CONFIG_PLATFORM_8710C == 1))
-///@name AmebaPro Only 
+///@name AmebaPro/AmebaZ2 Only
 ///@{
 #include "device.h"
 
-#if defined (CONFIG_PLATFORM_8195B)
 /** @addtogroup power mode POWER MODE
  *  @ingroup    hal
  *  @brief      power mode functions
  *  @{
  */
+
+#if defined (CONFIG_PLATFORM_8195B)
 
 #if defined (CONFIG_PLATFORM_8195BLP)
 //SLP
@@ -74,13 +85,13 @@
 ///@{
 
 enum {
-    AON_128K = CLK_128K,    // AON CLK 128kHz
-    AON_100K = CLK_100K,    // AON CLK 100kHz
+	AON_128K = CLK_128K,    // AON CLK 128kHz
+	AON_100K = CLK_100K,    // AON CLK 100kHz
 };
 
-/** 
+/**
  *  @brief The function for ls sleep mode.
- *         
+ *
  *  @param[in]  Option, To slect AON Timer,GPIO...etc
  *                - bit[4]: the UART Wake up event.
  *                - bit[3]: the PWM Wake up event.
@@ -93,13 +104,13 @@ enum {
  *
  *  @returns void
  */
-void SleepCG (u16 Option, u32 SDuration, u8 Clock, u8 GpioOption);
+void SleepCG(u16 Option, u32 SDuration, u8 Clock, u8 GpioOption);
 
 #if defined (CONFIG_PLATFORM_8195BHP)
 
-/** 
+/**
  *  @brief The function for hs power gated.
- *         
+ *
  *  @param[in]  Option, To slect HS Timer and GPIO
  *                - bit[2]: the GPIO Wake up event.
  *                - bit[1]: the GTimer Wake up event.
@@ -109,14 +120,14 @@ void SleepCG (u16 Option, u32 SDuration, u8 Clock, u8 GpioOption);
  *
  *  @returns void
  */
-void SleepPG (u16 Option, u32 SDuration, u8 Memsel, u8 GpioOption);
+void SleepPG(u16 Option, u32 SDuration, u8 Memsel, u8 GpioOption);
 
 #endif
 #if defined (CONFIG_PLATFORM_8195BLP)
 
-/** 
+/**
  *  @brief The function for ls standby mode.
- *         
+ *
  *  @param[in]  Option, To slect AON Timer,GPIO...etc
  *                - bit[4]: the UART Wake up event.
  *                - bit[3]: the PWM Wake up event.
@@ -129,7 +140,7 @@ void SleepPG (u16 Option, u32 SDuration, u8 Memsel, u8 GpioOption);
  *
  *  @returns void
  */
-void Standby (u16 Option, u32 SDuration, u8 Memsel, u8 GpioOption);
+void Standby(u16 Option, u32 SDuration, u8 Memsel, u8 GpioOption);
 
 /**
   * @brief The stubs functions table to exports POWER MODE HAL functions in ROM.
@@ -137,9 +148,9 @@ void Standby (u16 Option, u32 SDuration, u8 Memsel, u8 GpioOption);
 
 //extern const hal_power_mode_func_stubs_t hal_power_mode_stubs;
 
-/** 
+/**
  *  @brief The function for ls deep sleep mode.
- *         
+ *
  *  @param[in]  Option, To slect AON Timer,GPIO,ADP and RTC.
  *                - bit[3]: the ADP Wake up event.
  *                - bit[2]: the GPIO A13 Rising Wake up event.
@@ -151,11 +162,11 @@ void Standby (u16 Option, u32 SDuration, u8 Memsel, u8 GpioOption);
  *
  *  @returns void
  */
-void DeepSleep (u8  Option, u32 SDuration, u8 Memsel, u8 Clock);
+void DeepSleep(u8  Option, u32 SDuration, u8 Memsel, u8 Clock);
 
-/** 
+/**
  *  @brief The function for ls deep sleep mode.
- *         
+ *
  *  @param[in] Option The RTC wake up event.
  *                - bit[3]: Wake up per day.
  *                - bit[2]: Wake up per hour.
@@ -165,15 +176,12 @@ void DeepSleep (u8  Option, u32 SDuration, u8 Memsel, u8 Clock);
  *
  *  @returns void
  */
-void DeepSleep_RTC (u8 Option, u8 Memsel);
+void DeepSleep_RTC(u8 Option, u8 Memsel);
 
 ///@}
 
-/*\@}*/
-
 #endif
 #endif
-///@}
 
 #if defined(CONFIG_PLATFORM_8710C)
 
@@ -195,13 +203,13 @@ void DeepSleep_RTC (u8 Option, u8 Memsel);
 #define DSTBY_GPIO      BIT2
 
 enum {
-    AON_250K = 0,   // AON CLK 250kHz
-    AON_4M = 1,     // AON CLK 4MHz
+	AON_250K = 0,   // AON CLK 250kHz
+	AON_4M = 1,     // AON CLK 4MHz
 };
 
-/** 
+/**
  *  @brief The function for ls deep sleep mode.
- *         
+ *
  *  @param[in]  Option, To slect AON Timer and GPIO.
  *                - bit[1]: the GPIO as a Wake up event.
  *                - bit[0]: the LP Timer Wake up event.
@@ -210,11 +218,11 @@ enum {
  *
  *  @returns void
  */
-void DeepSleep (u8  Option, u32 SDuration, u8 Clock);
+void DeepSleep(u8  Option, u32 SDuration, u8 Clock);
 
-/** 
+/**
  *  @brief The function for sleep mode.
- *         
+ *
  *  @param[in]  Option, To slect  GTimer, GPIO and PWM...etc
  *                - bit[4]: the UART Wake up event.
  *                - bit[3]: the PWM Wake up event.
@@ -227,11 +235,11 @@ void DeepSleep (u8  Option, u32 SDuration, u8 Clock);
  *
  *  @returns void
  */
-void SleepCG (u16 Option, u32 SDuration, u8 Clock, u8 GpioOption);
+void SleepCG(u16 Option, u32 SDuration, u8 Clock, u8 GpioOption);
 
-/** 
+/**
  *  @brief The function for Standby mode.
- *         
+ *
  *  @param[in]  Option, To slect GTimer, GPIO and PWM...etc
  *                - bit[4]: the UART Wake up event.
  *                - bit[3]: the PWM Wake up event.
@@ -244,9 +252,12 @@ void SleepCG (u16 Option, u32 SDuration, u8 Clock, u8 GpioOption);
  *
  *  @returns void
  */
-void Standby (u16 Option, u32 SDuration, u8 Clock, u8 GpioOption);
+void Standby(u16 Option, u32 SDuration, u8 Clock, u8 GpioOption);
 
 #endif
+
+/*\@}*/
+///@}
 
 #endif  // end of "#if (defined(CONFIG_PLATFORM_8195BHP) && (CONFIG_PLATFORM_8195BHP == 1))  ||  (defined(CONFIG_PLATFORM_8195BLP) && (CONFIG_PLATFORM_8195BLP == 1))  ||  (defined(CONFIG_PLATFORM_8710C) && (CONFIG_PLATFORM_8710C == 1))"
 

@@ -399,7 +399,7 @@ static int net_would_block( const mbedtls_net_context *ctx )
     /*
      * Never return 'WOULD BLOCK' on a non-blocking socket
      */
-    if( ( fcntl( ctx->fd, F_GETFL ) & O_NONBLOCK ) != O_NONBLOCK )
+    if( ( fcntl( ctx->fd, F_GETFL, 0 ) & O_NONBLOCK ) != O_NONBLOCK )
         return( 0 );
 
     switch( errno )
@@ -640,6 +640,9 @@ int mbedtls_net_recv( void *ctx, unsigned char *buf, size_t len )
 
         if( errno == EINTR )
             return( MBEDTLS_ERR_SSL_WANT_READ );
+#ifdef EAGAIN
+        if( (errno == 0) || (errno == EAGAIN) ) return( MBEDTLS_ERR_SSL_WANT_READ );
+#endif
 #endif
 #endif
         return( MBEDTLS_ERR_NET_RECV_FAILED );

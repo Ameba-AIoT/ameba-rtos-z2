@@ -35,59 +35,59 @@
 
 /* for GNU C++ */
 #if defined(__GNUC__)
-void* __dso_handle = 0;
+void *__dso_handle = 0;
 #endif
 
 #if !defined(PLATFORM_OHOS) && defined(CONFIG_CMSIS_FREERTOS_EN) && (CONFIG_CMSIS_FREERTOS_EN != 0)
 /**************************************************
- * FreeRTOS memory management functions's wrapper to replace 
+ * FreeRTOS memory management functions's wrapper to replace
  * malloc/free/realloc of GCC Lib.
  **************************************************/
 //#include "FreeRTOS.h"
 // pvPortReAlloc currently not defined in portalbe.h
-extern void* pvPortReAlloc( void *pv,  size_t xWantedSize );
-extern void *pvPortMalloc( size_t xWantedSize );
+extern void *pvPortReAlloc(void *pv,  size_t xWantedSize);
+extern void *pvPortMalloc(size_t xWantedSize);
 extern void *pvPortCalloc(size_t xWantedCnt, size_t xWantedSize);
-extern void vPortFree( void *pv );
+extern void vPortFree(void *pv);
 
-void* __wrap_malloc( size_t size )
+void *__wrap_malloc(size_t size)
 {
-    return pvPortMalloc(size);
+	return pvPortMalloc(size);
 }
 
 void *__wrap__malloc_r(void *reent, size_t size)
 {
-    return pvPortMalloc(size);
+	return pvPortMalloc(size);
 }
 
-void* __wrap_realloc( void *p, size_t size )
+void *__wrap_realloc(void *p, size_t size)
 {
-    return (void*)pvPortReAlloc(p, size);
+	return (void *)pvPortReAlloc(p, size);
 }
 
-void* __wrap__realloc_r( void *reent, void *p, size_t size )
+void *__wrap__realloc_r(void *reent, void *p, size_t size)
 {
-    return (void*)pvPortReAlloc(p, size);
+	return (void *)pvPortReAlloc(p, size);
 }
 
-void* __wrap_calloc( size_t cnt, size_t size )
+void *__wrap_calloc(size_t cnt, size_t size)
 {
-    return (void*)pvPortCalloc(cnt, size);
+	return (void *)pvPortCalloc(cnt, size);
 }
 
-void* __wrap__calloc_r( void *reent, size_t cnt, size_t size )
+void *__wrap__calloc_r(void *reent, size_t cnt, size_t size)
 {
-    return (void*)pvPortCalloc(cnt, size);
+	return (void *)pvPortCalloc(cnt, size);
 }
 
-void __wrap_free( void *p )
+void __wrap_free(void *p)
 {
-    vPortFree(p);
+	vPortFree(p);
 }
 
-void __wrap__free_r( void *reent, void *p )
+void __wrap__free_r(void *reent, void *p)
 {
-    vPortFree(p);
+	vPortFree(p);
 }
 #endif  //  #if defined(CONFIG_CMSIS_FREERTOS_EN) && (CONFIG_CMSIS_FREERTOS_EN != 0)
 
@@ -95,75 +95,78 @@ void __wrap__free_r( void *reent, void *p )
  * string and memory api wrap for compiler
  *
  **************************************************/
-int check_format(const char * fmt,...){
-  
-    const char* fmt1;
-    fmt1 = fmt;
+int check_format(const char *fmt, ...)
+{
 
-    for(; *fmt1 != '\0'; ++fmt1) {
-        if(*fmt1 == '"') {
-            do {
-                fmt1 ++;
-            } while(*fmt1 != '"' && *fmt1 !='\0');
-			if(*fmt1 == '\0')
+	const char *fmt1;
+	fmt1 = fmt;
+
+	for (; *fmt1 != '\0'; ++fmt1) {
+		if (*fmt1 == '"') {
+			do {
+				fmt1 ++;
+			} while (*fmt1 != '"' && *fmt1 != '\0');
+			if (*fmt1 == '\0') {
 				return 1;
-            fmt1 ++;
-        }
-        
-        if(*fmt1 != '%')
-            continue;
-        else
-            fmt1 ++;
-        
-        while(isdigit(*fmt1)){
-            fmt1 ++;
-        }
-        
-        switch (*fmt1) {
-                  case '0':      
-                  case '1':
-                  case '2':
-                  case '3':
-                  case '4':
-                  case '5':
-                  case '6':
-                  case '7':
-                  case '8':
-                  case '9':
-                  case '.':
-                  case '%':
-                  case 'c':                
-                  case 's':
-                  case '-':
-                  case '+':
-                  case ' ':  
-                  case '#':
-                  case 'l':
-                  case 'h':
-                  case 'z':  
-                  case 'j':
-                  case 't':
-                  case 'i':
-                  case 'd':
-                  case 'u':
-                  case 'P':
-                  case 'p':
-                  case 'X':
-                  case 'x':
-                  case 'n':
-                  case 'F':
-                  case 'f':
-                  case 'A':
-                  case 'a': 
-                      continue;
-                  default:
-                      goto exit;
-                
-        }
-    }
-        return 1;
+			}
+			fmt1 ++;
+		}
+
+		if (*fmt1 != '%') {
+			continue;
+		} else {
+			fmt1 ++;
+		}
+
+		while (isdigit(*fmt1)) {
+			fmt1 ++;
+		}
+
+		switch (*fmt1) {
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		case '.':
+		case '%':
+		case 'c':
+		case 's':
+		case '-':
+		case '+':
+		case ' ':
+		case '#':
+		case 'l':
+		case 'h':
+		case 'z':
+		case 'j':
+		case 't':
+		case 'i':
+		case 'd':
+		case 'u':
+		case 'P':
+		case 'p':
+		case 'X':
+		case 'x':
+		case 'n':
+		case 'F':
+		case 'f':
+		case 'A':
+		case 'a':
+			continue;
+		default:
+			goto exit;
+
+		}
+	}
+	return 1;
 exit:
-        return 0;
+	return 0;
 }
 
 #if defined(CONFIG_PLATFORM_8195BHP) || defined(CONFIG_PLATFORM_8195BLP) || defined(CONFIG_PLATFORM_8710C)
@@ -175,31 +178,31 @@ int ms_doprint = 0;
 #else
 int ms_doprint = 1;
 #endif
-int __wrap_printf(const char * fmt,...)
+int __wrap_printf(const char *fmt, ...)
 {
 #ifdef PLATFORM_MSMART
-    if(ms_doprint == 0) {
-      return 0;
-    }
+	if (ms_doprint == 0) {
+		return 0;
+	}
 #endif
-    int count = 0;
-    const char* fmt1;
+	int count = 0;
+	const char *fmt1;
 
-    fmt1 = fmt;
-    if(check_format(fmt1)){
-        va_list list;
-        va_start(list, fmt);
+	fmt1 = fmt;
+	if (check_format(fmt1)) {
+		va_list list;
+		va_start(list, fmt);
 #if defined(CONFIG_BUILD_SECURE)
-        count = stdio_printf_stubs.printf_corel(stdio_printf_stubs.stdio_port_sputc, (void*)NULL, fmt, list);
+		count = stdio_printf_stubs.printf_corel(stdio_printf_stubs.stdio_port_sputc, (void *)NULL, fmt, list);
 #else
-        count = stdio_printf_stubs.printf_core(stdio_printf_stubs.stdio_port_sputc, (void*)NULL, fmt, list);
+		count = stdio_printf_stubs.printf_core(stdio_printf_stubs.stdio_port_sputc, (void *)NULL, fmt, list);
 #endif
-        va_end(list);
-    } else {
-        dbg_printf("\n%s",fmt1);
-        dbg_printf("format not support!\n");
-    }
-    return count;
+		va_end(list);
+	} else {
+		dbg_printf("\n%s", fmt1);
+		dbg_printf("format not support!\n");
+	}
+	return count;
 }
 
 int __wrap_puts(const char *str)
@@ -207,12 +210,12 @@ int __wrap_puts(const char *str)
 	return __wrap_printf("%s\n", str);
 }
 
-int __wrap_putc(char character, void* file)
+int __wrap_putc(char character, void *file)
 {
 #ifdef PLATFORM_MSMART
-    if(ms_doprint == 0) {
-      return 0;
-    }
+	if (ms_doprint == 0) {
+		return 0;
+	}
 #endif
 	/* must handle file argument */
 	stdio_printf_stubs.stdio_port_putc(character);
@@ -222,18 +225,20 @@ int __wrap_putc(char character, void* file)
 int __wrap_putchar(char character)
 {
 #ifdef PLATFORM_MSMART
-    if(ms_doprint == 0) {
-      return 0;
-    }
+	if (ms_doprint == 0) {
+		return 0;
+	}
 #endif
 	stdio_printf_stubs.stdio_port_putc(character);
 	return 0;
 }
 
 #if defined(__ICCARM__)
-int __write (int fd, char *buf, int count) {
+int __write(int fd, char *buf, int count)
+{
 #else
-int _write (int fd, char *buf, int count) {
+int _write(int fd, char *buf, int count)
+{
 #endif
 	int written = 0;
 
@@ -249,113 +254,113 @@ int _write (int fd, char *buf, int count) {
 int __wrap_vprintf(const char *fmt, va_list args)
 {
 #ifdef PLATFORM_MSMART
-    if(ms_doprint == 0) {
-      return 0;
-    }
+	if (ms_doprint == 0) {
+		return 0;
+	}
 #endif
-    int count = 0;
-    const char* fmt1;
+	int count = 0;
+	const char *fmt1;
 
-    fmt1 = fmt;
+	fmt1 = fmt;
 
-    if(check_format(fmt1)){
+	if (check_format(fmt1)) {
 #if defined(CONFIG_BUILD_SECURE)
-        count = stdio_printf_stubs.printf_corel(stdio_printf_stubs.stdio_port_sputc, (void*)NULL, fmt, args);
+		count = stdio_printf_stubs.printf_corel(stdio_printf_stubs.stdio_port_sputc, (void *)NULL, fmt, args);
 #else
-        count = stdio_printf_stubs.printf_core(stdio_printf_stubs.stdio_port_sputc, (void*)NULL, fmt, args);
+		count = stdio_printf_stubs.printf_core(stdio_printf_stubs.stdio_port_sputc, (void *)NULL, fmt, args);
 #endif
-    } else {
-        dbg_printf("\n%s",fmt1);
-        dbg_printf("format not support!\n");
-    }
-    return count;
+	} else {
+		dbg_printf("\n%s", fmt1);
+		dbg_printf("format not support!\n");
+	}
+	return count;
 }
 
-int __wrap_sprintf(char *buf, const char * fmt,...)
+int __wrap_sprintf(char *buf, const char *fmt, ...)
 {
-    int count = 0;
-    const char* fmt1;
+	int count = 0;
+	const char *fmt1;
 
-    fmt1 = fmt;
-    if(check_format(fmt1)){
-        va_list list;
-        stdio_buf_t pnt_buf;
+	fmt1 = fmt;
+	if (check_format(fmt1)) {
+		va_list list;
+		stdio_buf_t pnt_buf;
 
-        pnt_buf.pbuf = buf;
-        pnt_buf.pbuf_lim = 0;
+		pnt_buf.pbuf = buf;
+		pnt_buf.pbuf_lim = 0;
 
-        va_start(list, fmt);
+		va_start(list, fmt);
 #if defined(CONFIG_BUILD_SECURE)
-        count = stdio_printf_stubs.printf_corel(stdio_printf_stubs.stdio_port_bufputc, (void *)&pnt_buf, fmt, list);
+		count = stdio_printf_stubs.printf_corel(stdio_printf_stubs.stdio_port_bufputc, (void *)&pnt_buf, fmt, list);
 #else
-        count = stdio_printf_stubs.printf_core(stdio_printf_stubs.stdio_port_bufputc, (void *)&pnt_buf, fmt, list);
+		count = stdio_printf_stubs.printf_core(stdio_printf_stubs.stdio_port_bufputc, (void *)&pnt_buf, fmt, list);
 #endif
-        *(pnt_buf.pbuf) = 0;
-        va_end(list);
-        (void)list;
-    } else {
-        dbg_printf("\n%s",fmt1);
-        dbg_printf("format not support!\n");
-    }
-    return count;
+		*(pnt_buf.pbuf) = 0;
+		va_end(list);
+		(void)list;
+	} else {
+		dbg_printf("\n%s", fmt1);
+		dbg_printf("format not support!\n");
+	}
+	return count;
 
 }
 
-int __wrap_snprintf(char *buf, size_t size, const char *fmt,...)
+int __wrap_snprintf(char *buf, size_t size, const char *fmt, ...)
 {
-    int count=0;
-    const char* fmt1;
+	int count = 0;
+	const char *fmt1;
 
-    fmt1 = fmt;
+	fmt1 = fmt;
 
-    if (check_format(fmt1)) {
-        va_list list;
-        stdio_buf_t pnt_buf;
+	if (check_format(fmt1)) {
+		va_list list;
+		stdio_buf_t pnt_buf;
 
-        pnt_buf.pbuf = buf;
-        pnt_buf.pbuf_lim = buf + size - 1;  // reserve 1 byte for 'end of string'
+		pnt_buf.pbuf = buf;
+		pnt_buf.pbuf_lim = buf + size - 1;  // reserve 1 byte for 'end of string'
 
-        va_start(list,fmt);
+		va_start(list, fmt);
 #if defined(CONFIG_BUILD_SECURE)
-        count = stdio_printf_stubs.printf_corel(stdio_printf_stubs.stdio_port_bufputc,(void *)&pnt_buf, fmt, list);
+		count = stdio_printf_stubs.printf_corel(stdio_printf_stubs.stdio_port_bufputc, (void *)&pnt_buf, fmt, list);
 #else
-        count = stdio_printf_stubs.printf_core(stdio_printf_stubs.stdio_port_bufputc,(void *)&pnt_buf, fmt, list);
+		count = stdio_printf_stubs.printf_core(stdio_printf_stubs.stdio_port_bufputc, (void *)&pnt_buf, fmt, list);
 #endif
-        *(pnt_buf.pbuf) = 0;
-        va_end(list);
-        (void)list;
-    } else {
-        dbg_printf("\n%s",fmt1);
-        dbg_printf("format not support!\n");
-    }
+		*(pnt_buf.pbuf) = 0;
+		va_end(list);
+		(void)list;
+	} else {
+		dbg_printf("\n%s", fmt1);
+		dbg_printf("format not support!\n");
+	}
 
-    return count;
+	return count;
 }
 
 int __wrap_vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 {
-    int count =0;
-    const char* fmt1;
+	int count = 0;
+	const char *fmt1;
 
-    fmt1 = fmt;
+	fmt1 = fmt;
 
-    if (check_format(fmt1)) {
-        stdio_buf_t pnt_buf;
+	if (check_format(fmt1)) {
+		stdio_buf_t pnt_buf;
 
-        pnt_buf.pbuf = buf;
-        pnt_buf.pbuf_lim = buf + size - 1;  // reserve 1 byte for 'end of string'
+		pnt_buf.pbuf = buf;
+		pnt_buf.pbuf_lim = buf + size - 1;  // reserve 1 byte for 'end of string'
 #if defined(CONFIG_BUILD_SECURE)
-        count = stdio_printf_stubs.printf_corel(stdio_printf_stubs.stdio_port_bufputc,(void *)&pnt_buf, fmt, args);
+		count = stdio_printf_stubs.printf_corel(stdio_printf_stubs.stdio_port_bufputc, (void *)&pnt_buf, fmt, args);
 #else
-        count = stdio_printf_stubs.printf_core(stdio_printf_stubs.stdio_port_bufputc,(void *)&pnt_buf, fmt, args);
+		count = stdio_printf_stubs.printf_core(stdio_printf_stubs.stdio_port_bufputc, (void *)&pnt_buf, fmt, args);
 #endif
-        *(pnt_buf.pbuf) = 0;
-    } else {
-        dbg_printf("\n%s",fmt1);
-        dbg_printf("format not support!\n");
-    }
+		*(pnt_buf.pbuf) = 0;
+	} else {
+		dbg_printf("\n%s", fmt1);
+		dbg_printf("format not support!\n");
+	}
 
-    return count;
+	return count;
 
 }
 
@@ -365,32 +370,33 @@ int __wrap_vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 
 #if defined(MEM_WR_CHECK)
 #if defined(__ICCARM__)
-#pragma section = "SRAM_OBJECT" 
+#pragma section = "SRAM_OBJECT"
 
-void const * robase = __section_begin("SRAM_OBJECT");
-void const * rolimit = __section_end("SRAM_OBJECT");
+void const *robase = __section_begin("SRAM_OBJECT");
+void const *rolimit = __section_end("SRAM_OBJECT");
 #else
 #error "Implement GCC Support"
 #endif
-int check_address(uint32_t addr){
+int check_address(uint32_t addr)
+{
 	uint32_t valid_addr[2][2] = {{0x10000000, 0x1003FA00}, {0x60000000, 0x603F0000}};
 	uint32_t except_addr[1][2] = {{(uint32_t)robase, (uint32_t)rolimit}};
-	
+
 	int valid = 0;
-	for(int i=0;i<2;i++){
-		if((addr >= valid_addr[i][0])&&(addr < valid_addr[i][1])){
+	for (int i = 0; i < 2; i++) {
+		if ((addr >= valid_addr[i][0]) && (addr < valid_addr[i][1])) {
 			valid = 1;
 			break;
 		}
 	}
-	
-	if(valid==1){
-		for(int i=0;i<1;i++){
-			if((addr >= except_addr[i][0])&&(addr < except_addr[i][1])){
+
+	if (valid == 1) {
+		for (int i = 0; i < 1; i++) {
+			if ((addr >= except_addr[i][0]) && (addr < except_addr[i][1])) {
 				valid = 0;
 				break;
 			}
-		}		
+		}
 	}
 	return valid;
 }
@@ -410,16 +416,16 @@ int __wrap_memcmp(const void *av, const void *bv, size_t len)
 	return rt_memcmp(av, bv, len);
 }
 
-void *__wrap_memcpy( void *s1, const void *s2, size_t n )
+void *__wrap_memcpy(void *s1, const void *s2, size_t n)
 {
 	WR_CHECK(s1);
 	return rt_memcpy(s1, s2, n);
 }
 
-void *__wrap_memmove (void *destaddr, const void *sourceaddr, unsigned length)
+void *__wrap_memmove(void *destaddr, const void *sourceaddr, unsigned length)
 {
 	WR_CHECK(destaddr);
-	return rt_memmove (destaddr, sourceaddr, length);
+	return rt_memmove(destaddr, sourceaddr, length);
 }
 
 void *__wrap_memset(void *dst0, int val, size_t length)
@@ -571,29 +577,32 @@ int __wrap_atoi(const char *num)
 #else
 	int c;
 	long total;
-	int sign; 
+	int sign;
 	char *nptr = (char *)num;
 
 	/* skip whitespace */
-	while ( isspace((int)(unsigned char)*nptr) )
+	while (isspace((int)(unsigned char)*nptr)) {
 		++nptr;
+	}
 
-	c = (int)(unsigned char)*nptr++;
+	c = (int)(unsigned char) * nptr++;
 	sign = c;
-	if (c == '-' || c == '+')
-		c = (int)(unsigned char)*nptr++;
+	if (c == '-' || c == '+') {
+		c = (int)(unsigned char) * nptr++;
+	}
 
 	total = 0;
 	while (isdigit(c)) {
 		total = 10 * total + (c - '0');
-		c = (int)(unsigned char)*nptr++;
+		c = (int)(unsigned char) * nptr++;
 	}
 
-	if (sign == '-')
+	if (sign == '-') {
 		return -total;
-	else
+	} else {
 		return total;
-#endif	
+	}
+#endif
 }
 
 unsigned int __wrap_atoui(const char *num)
@@ -626,16 +635,16 @@ double __wrap_atof(const char *str)
 void __wrap_abort(void)
 {
 	__wrap_printf("\n\rabort execution\n\r");
-	while(1);
+	while (1);
 }
 
 #if defined(__GNUC__)
 #include <errno.h>
 
 static int gnu_errno;
-volatile int * __aeabi_errno_addr (void)
+volatile int *__aeabi_errno_addr(void)
 {
-    return &gnu_errno;
+	return &gnu_errno;
 }
 #endif
 
@@ -700,265 +709,253 @@ static const int _DAYS_BEFORE_MONTH[12] =
 #include "time64.h"
 #include <platform_stdlib.h>
 
-#if defined (__ICCARM__)
+#if defined (__ICCARM__) || (__GNUC__ > 9)
 extern long long  _Tzoff();
 
-typedef struct __tzrule_struct
-{
-  char ch;
-  int m;
-  int n;
-  int d;
-  int s;
-  time_t change;
-  long offset; /* Match type of _timezone. */
+typedef struct __tzrule_struct {
+	char ch;
+	int m;
+	int n;
+	int d;
+	int s;
+	time_t change;
+	long offset; /* Match type of _timezone. */
 } __tzrule_type;
 
-typedef struct __tzinfo_struct
-{
-  int __tznorth;
-  int __tzyear;
-  __tzrule_type __tzrule[2];
+typedef struct __tzinfo_struct {
+	int __tznorth;
+	int __tzyear;
+	__tzrule_type __tzrule[2];
 } __tzinfo_type;
 
 /* Shared timezone information for libc/time functions.  */
 static __tzinfo_type tzinfo = {1, 0,
-{ {'J', 0, 0, 0, 0, (time_t)0, 0L },
-  {'J', 0, 0, 0, 0, (time_t)0, 0L } 
-  } 
+	{	{'J', 0, 0, 0, 0, (time_t)0, 0L },
+		{'J', 0, 0, 0, 0, (time_t)0, 0L }
+	}
 };
 
 __tzinfo_type *
-  __gettzinfo (void)
-  {
-    return &tzinfo;
-  }
+__gettzinfo(void)
+{
+	return &tzinfo;
+}
 
 #endif
 
 #if defined(__GNUC__)
-extern int __tzcalc_limits (int);
+extern int __tzcalc_limits(int);
 #endif
 
 struct tm *
-gmtime64_r (const time_t *__restrict tim_p,
-	struct tm *__restrict res)
+gmtime64_r(const time_t *__restrict tim_p,
+		   struct tm *__restrict res)
 {
-  long days, rem;
-  const time_t lcltime = *tim_p;
-  int era, weekday, year;
-  unsigned erayear, yearday, month, day;
-  unsigned long eraday;
+	long days, rem;
+	const time_t lcltime = *tim_p;
+	int era, weekday, year;
+	unsigned erayear, yearday, month, day;
+	unsigned long eraday;
 
-  days = lcltime / SECSPERDAY + EPOCH_ADJUSTMENT_DAYS;
-  rem = lcltime % SECSPERDAY;
-  if (rem < 0)
-    {
-      rem += SECSPERDAY;
-      --days;
-    }
+	days = lcltime / SECSPERDAY + EPOCH_ADJUSTMENT_DAYS;
+	rem = lcltime % SECSPERDAY;
+	if (rem < 0) {
+		rem += SECSPERDAY;
+		--days;
+	}
 
-  /* compute hour, min, and sec */
-  res->tm_hour = (int) (rem / SECSPERHOUR);
-  rem %= SECSPERHOUR;
-  res->tm_min = (int) (rem / SECSPERMIN);
-  res->tm_sec = (int) (rem % SECSPERMIN);
+	/* compute hour, min, and sec */
+	res->tm_hour = (int)(rem / SECSPERHOUR);
+	rem %= SECSPERHOUR;
+	res->tm_min = (int)(rem / SECSPERMIN);
+	res->tm_sec = (int)(rem % SECSPERMIN);
 
-  /* compute day of week */
-  if ((weekday = ((ADJUSTED_EPOCH_WDAY + days) % DAYSPERWEEK)) < 0)
-    weekday += DAYSPERWEEK;
-  res->tm_wday = weekday;
+	/* compute day of week */
+	if ((weekday = ((ADJUSTED_EPOCH_WDAY + days) % DAYSPERWEEK)) < 0) {
+		weekday += DAYSPERWEEK;
+	}
+	res->tm_wday = weekday;
 
-  /* compute year, month, day & day of year */
-  /* for description of this algorithm see
-   * http://howardhinnant.github.io/date_algorithms.html#civil_from_days */
-  era = (days >= 0 ? days : days - (DAYS_PER_ERA - 1)) / DAYS_PER_ERA;
-  eraday = days - era * DAYS_PER_ERA;	/* [0, 146096] */
-  erayear = (eraday - eraday / (DAYS_PER_4_YEARS - 1) + eraday / DAYS_PER_CENTURY -
-      eraday / (DAYS_PER_ERA - 1)) / 365;	/* [0, 399] */
-  yearday = eraday - (DAYS_PER_YEAR * erayear + erayear / 4 - erayear / 100);	/* [0, 365] */
-  month = (5 * yearday + 2) / 153;	/* [0, 11] */
-  day = yearday - (153 * month + 2) / 5 + 1;	/* [1, 31] */
-  month += month < 10 ? 2 : -10;
-  year = ADJUSTED_EPOCH_YEAR + erayear + era * YEARS_PER_ERA + (month <= 1);
+	/* compute year, month, day & day of year */
+	/* for description of this algorithm see
+	 * http://howardhinnant.github.io/date_algorithms.html#civil_from_days */
+	era = (days >= 0 ? days : days - (DAYS_PER_ERA - 1)) / DAYS_PER_ERA;
+	eraday = days - era * DAYS_PER_ERA;	/* [0, 146096] */
+	erayear = (eraday - eraday / (DAYS_PER_4_YEARS - 1) + eraday / DAYS_PER_CENTURY -
+			   eraday / (DAYS_PER_ERA - 1)) / 365;	/* [0, 399] */
+	yearday = eraday - (DAYS_PER_YEAR * erayear + erayear / 4 - erayear / 100);	/* [0, 365] */
+	month = (5 * yearday + 2) / 153;	/* [0, 11] */
+	day = yearday - (153 * month + 2) / 5 + 1;	/* [1, 31] */
+	month += month < 10 ? 2 : -10;
+	year = ADJUSTED_EPOCH_YEAR + erayear + era * YEARS_PER_ERA + (month <= 1);
 
-  res->tm_yday = yearday >= DAYS_PER_YEAR - DAYS_IN_JANUARY - DAYS_IN_FEBRUARY ?
-      yearday - (DAYS_PER_YEAR - DAYS_IN_JANUARY - DAYS_IN_FEBRUARY) :
-      yearday + DAYS_IN_JANUARY + DAYS_IN_FEBRUARY + isleap(erayear);
-  res->tm_year = year - YEAR_BASE;
-  res->tm_mon = month;
-  res->tm_mday = day;
+	res->tm_yday = yearday >= DAYS_PER_YEAR - DAYS_IN_JANUARY - DAYS_IN_FEBRUARY ?
+				   yearday - (DAYS_PER_YEAR - DAYS_IN_JANUARY - DAYS_IN_FEBRUARY) :
+				   yearday + DAYS_IN_JANUARY + DAYS_IN_FEBRUARY + isleap(erayear);
+	res->tm_year = year - YEAR_BASE;
+	res->tm_mon = month;
+	res->tm_mday = day;
 
-  res->tm_isdst = 0;
+	res->tm_isdst = 0;
 
-  return (res);
+	return (res);
 }
 
-struct tm * __wrap_localtime (const time_t * tim_p)
+struct tm *__wrap_localtime(const time_t *tim_p)
 {
 #if defined (__GNUC__)
-  struct _reent *reent = _REENT;
+	struct _reent *reent = _REENT;
 
-  _REENT_CHECK_TM(reent);
-  return gmtime64_r (tim_p, (struct tm *)_REENT_TM(reent));
+	_REENT_CHECK_TM(reent);
+	return gmtime64_r(tim_p, (struct tm *)_REENT_TM(reent));
 
 #elif defined (__ICCARM__) //because IAR does not have _reent structure
-  __ATTRIBUTES struct tm * __iar_Ttotm64(struct tm *, __time64_t, int);
-  struct tm* tm = __iar_Ttotm64(0, *tim_p + (__time64_t) _Tzoff(), -1);  
-  return gmtime64_r (tim_p, tm);
+	__ATTRIBUTES struct tm *__iar_Ttotm64(struct tm *, __time64_t, int);
+	struct tm *tm = __iar_Ttotm64(0, *tim_p + (__time64_t) _Tzoff(), -1);
+	return gmtime64_r(tim_p, tm);
 #endif
 }
 
 static void
-validate_structure (struct tm *tim_p)
+validate_structure(struct tm *tim_p)
 {
-  div_t res;
-  int days_in_feb = 28;
+	div_t res;
+	int days_in_feb = 28;
 
-  /* calculate time & date to account for out of range values */
-  if (tim_p->tm_sec < 0 || tim_p->tm_sec > 59)
-    {
-      res = div (tim_p->tm_sec, 60);
-      tim_p->tm_min += res.quot;
-      if ((tim_p->tm_sec = res.rem) < 0)
-	{
-	  tim_p->tm_sec += 60;
-	  --tim_p->tm_min;
+	/* calculate time & date to account for out of range values */
+	if (tim_p->tm_sec < 0 || tim_p->tm_sec > 59) {
+		res = div(tim_p->tm_sec, 60);
+		tim_p->tm_min += res.quot;
+		if ((tim_p->tm_sec = res.rem) < 0) {
+			tim_p->tm_sec += 60;
+			--tim_p->tm_min;
+		}
 	}
-    }
 
-  if (tim_p->tm_min < 0 || tim_p->tm_min > 59)
-    {
-      res = div (tim_p->tm_min, 60);
-      tim_p->tm_hour += res.quot;
-      if ((tim_p->tm_min = res.rem) < 0)
-	{
-	  tim_p->tm_min += 60;
-	  --tim_p->tm_hour;
-        }
-    }
-
-  if (tim_p->tm_hour < 0 || tim_p->tm_hour > 23)
-    {
-      res = div (tim_p->tm_hour, 24);
-      tim_p->tm_mday += res.quot;
-      if ((tim_p->tm_hour = res.rem) < 0)
-	{
-	  tim_p->tm_hour += 24;
-	  --tim_p->tm_mday;
-        }
-    }
-
-  if (tim_p->tm_mon < 0 || tim_p->tm_mon > 11)
-    {
-      res = div (tim_p->tm_mon, 12);
-      tim_p->tm_year += res.quot;
-      if ((tim_p->tm_mon = res.rem) < 0)
-        {
-	  tim_p->tm_mon += 12;
-	  --tim_p->tm_year;
-        }
-    }
-
-  if (_DAYS_IN_YEAR (tim_p->tm_year) == 366)
-    days_in_feb = 29;
-
-  if (tim_p->tm_mday <= 0)
-    {
-      while (tim_p->tm_mday <= 0)
-	{
-	  if (--tim_p->tm_mon == -1)
-	    {
-	      tim_p->tm_year--;
-	      tim_p->tm_mon = 11;
-	      days_in_feb =
-		((_DAYS_IN_YEAR (tim_p->tm_year) == 366) ?
-		 29 : 28);
-	    }
-    if (tim_p->tm_mon != -1) // to pass coverity test
-	    tim_p->tm_mday += _DAYS_IN_MONTH (tim_p->tm_mon);
+	if (tim_p->tm_min < 0 || tim_p->tm_min > 59) {
+		res = div(tim_p->tm_min, 60);
+		tim_p->tm_hour += res.quot;
+		if ((tim_p->tm_min = res.rem) < 0) {
+			tim_p->tm_min += 60;
+			--tim_p->tm_hour;
+		}
 	}
-    }
-  else
-    {
-      while (tim_p->tm_mday > _DAYS_IN_MONTH (tim_p->tm_mon))
-	{
-	  tim_p->tm_mday -= _DAYS_IN_MONTH (tim_p->tm_mon);
-	  if (++tim_p->tm_mon == 12)
-	    {
-	      tim_p->tm_year++;
-	      tim_p->tm_mon = 0;
-	      days_in_feb =
-		((_DAYS_IN_YEAR (tim_p->tm_year) == 366) ?
-		 29 : 28);
-	    }
+
+	if (tim_p->tm_hour < 0 || tim_p->tm_hour > 23) {
+		res = div(tim_p->tm_hour, 24);
+		tim_p->tm_mday += res.quot;
+		if ((tim_p->tm_hour = res.rem) < 0) {
+			tim_p->tm_hour += 24;
+			--tim_p->tm_mday;
+		}
 	}
-    }
+
+	if (tim_p->tm_mon < 0 || tim_p->tm_mon > 11) {
+		res = div(tim_p->tm_mon, 12);
+		tim_p->tm_year += res.quot;
+		if ((tim_p->tm_mon = res.rem) < 0) {
+			tim_p->tm_mon += 12;
+			--tim_p->tm_year;
+		}
+	}
+
+	if (_DAYS_IN_YEAR(tim_p->tm_year) == 366) {
+		days_in_feb = 29;
+	}
+
+	if (tim_p->tm_mday <= 0) {
+		while (tim_p->tm_mday <= 0) {
+			if (--tim_p->tm_mon == -1) {
+				tim_p->tm_year--;
+				tim_p->tm_mon = 11;
+				days_in_feb =
+					((_DAYS_IN_YEAR(tim_p->tm_year) == 366) ?
+					 29 : 28);
+			}
+			if (tim_p->tm_mon != -1) { // to pass coverity test
+				tim_p->tm_mday += _DAYS_IN_MONTH(tim_p->tm_mon);
+			}
+		}
+	} else {
+		while (tim_p->tm_mday > _DAYS_IN_MONTH(tim_p->tm_mon)) {
+			tim_p->tm_mday -= _DAYS_IN_MONTH(tim_p->tm_mon);
+			if (++tim_p->tm_mon == 12) {
+				tim_p->tm_year++;
+				tim_p->tm_mon = 0;
+				days_in_feb =
+					((_DAYS_IN_YEAR(tim_p->tm_year) == 366) ?
+					 29 : 28);
+			}
+		}
+	}
 }
 
-time_t __wrap_mktime (struct tm *tim_p)
+time_t __wrap_mktime(struct tm *tim_p)
 {
-  time_t tim = 0;
-  long days = 0;
-  int year, isdst=0;
-  __tzinfo_type *tz = __gettzinfo ();
+	time_t tim = 0;
+	long days = 0;
+	int year, isdst = 0;
+	__tzinfo_type *tz = __gettzinfo();
 
-  /* validate structure */
-  validate_structure (tim_p);
+	/* validate structure */
+	validate_structure(tim_p);
 
-  /* compute hours, minutes, seconds */
-  tim += tim_p->tm_sec + (tim_p->tm_min * _SEC_IN_MINUTE) +
-    (tim_p->tm_hour * _SEC_IN_HOUR);
+	/* compute hours, minutes, seconds */
+	tim += tim_p->tm_sec + (tim_p->tm_min * _SEC_IN_MINUTE) +
+		   (tim_p->tm_hour * _SEC_IN_HOUR);
 
-  /* compute days in year */
-  days += tim_p->tm_mday - 1;
-  days += _DAYS_BEFORE_MONTH[tim_p->tm_mon];
-  if (tim_p->tm_mon > 1 && _DAYS_IN_YEAR (tim_p->tm_year) == 366)
-    days++;
+	/* compute days in year */
+	days += tim_p->tm_mday - 1;
+	days += _DAYS_BEFORE_MONTH[tim_p->tm_mon];
+	if (tim_p->tm_mon > 1 && _DAYS_IN_YEAR(tim_p->tm_year) == 366) {
+		days++;
+	}
 
-  /* compute day of the year */
-  tim_p->tm_yday = days;
+	/* compute day of the year */
+	tim_p->tm_yday = days;
 
-  if (tim_p->tm_year > 10000 || tim_p->tm_year < -10000)
-      return (time_t) -1;
+	if (tim_p->tm_year > 10000 || tim_p->tm_year < -10000) {
+		return (time_t) -1;
+	}
 
-  /* compute days in other years */
-  if ((year = tim_p->tm_year) > 70)
-    {
-      for (year = 70; year < tim_p->tm_year; year++)
-	days += _DAYS_IN_YEAR (year);
-    }
-  else if (year < 70)
-    {
-      for (year = 69; year > tim_p->tm_year; year--)
-	days -= _DAYS_IN_YEAR (year);
-      days -= _DAYS_IN_YEAR (year);
-    }
+	/* compute days in other years */
+	if ((year = tim_p->tm_year) > 70) {
+		for (year = 70; year < tim_p->tm_year; year++) {
+			days += _DAYS_IN_YEAR(year);
+		}
+	} else if (year < 70) {
+		for (year = 69; year > tim_p->tm_year; year--) {
+			days -= _DAYS_IN_YEAR(year);
+		}
+		days -= _DAYS_IN_YEAR(year);
+	}
 
-  /* compute total seconds */
-  tim += (time_t)days * _SEC_IN_DAY;
+	/* compute total seconds */
+	tim += (time_t)days * _SEC_IN_DAY;
 
-  /* add appropriate offset to put time in gmt format */
-  if (isdst == 1)
-    tim += (time_t) tz->__tzrule[1].offset;
-  else /* otherwise assume std time */
-    tim += (time_t) tz->__tzrule[0].offset;
+	/* add appropriate offset to put time in gmt format */
+	if (isdst == 1) {
+		tim += (time_t) tz->__tzrule[1].offset;
+	} else { /* otherwise assume std time */
+		tim += (time_t) tz->__tzrule[0].offset;
+	}
 
-  /* reset isdst flag to what we have calculated */
-  tim_p->tm_isdst = isdst;
+	/* reset isdst flag to what we have calculated */
+	tim_p->tm_isdst = isdst;
 
-  /* compute day of the week */
-  if ((tim_p->tm_wday = (days + 4) % 7) < 0)
-    tim_p->tm_wday += 7;
+	/* compute day of the week */
+	if ((tim_p->tm_wday = (days + 4) % 7) < 0) {
+		tim_p->tm_wday += 7;
+	}
 
-  return tim;
+	return tim;
 }
 
-char * __wrap_ctime (long long *t)
+char *__wrap_ctime(long long *t)
 {
-  /* The C Standard macrsays ctime (t) is equivalent to asctime (localtime (t)).
-     In particular, ctime and asctime must yield the same pointer.  */
-  return asctime (__wrap_localtime (t));
+	/* The C Standard macrsays ctime (t) is equivalent to asctime (localtime (t)).
+	   In particular, ctime and asctime must yield the same pointer.  */
+	return asctime(__wrap_localtime(t));
 }
 
 #endif // #if defined(CONFIG_PLATFORM_8195BHP) || defined(CONFIG_PLATFORM_8195BLP) || defined(CONFIG_PLATFORM_8710C)
@@ -968,45 +965,42 @@ char * __wrap_ctime (long long *t)
 #include <stdlib.h>
 #include <string.h>
 
-void* __wrap_malloc( size_t size )
+void *__wrap_malloc(size_t size)
 {
-    return LOS_MemAlloc(m_aucSysMem0, size);
+	return LOS_MemAlloc(m_aucSysMem0, size);
 }
 
 void *__wrap__malloc_r(void *reent, size_t size)
 {
-    return malloc(size);
+	return malloc(size);
 }
 
-void* __wrap_realloc( void *p, size_t size )
+void *__wrap_realloc(void *p, size_t size)
 {
-    return LOS_MemRealloc(m_aucSysMem0, p, size);
+	return LOS_MemRealloc(m_aucSysMem0, p, size);
 }
 
-void* __wrap_calloc( size_t cnt, size_t size )
+void *__wrap_calloc(size_t cnt, size_t size)
 {
-    size *= cnt;
-    void *ret = malloc(size);
-    if (ret)
-    {
-        memset(ret, 0, size);
-    }
-    return ret;
+	size *= cnt;
+	void *ret = malloc(size);
+	if (ret) {
+		memset(ret, 0, size);
+	}
+	return ret;
 }
 
-void* __wrap__calloc_r( void *reent, size_t cnt, size_t size )
+void *__wrap__calloc_r(void *reent, size_t cnt, size_t size)
 {
-    return calloc(cnt, size);
+	return calloc(cnt, size);
 }
 
-void __wrap_free( void *p )
+void __wrap_free(void *p)
 {
-    if (p)
-    {
-      if (LOS_MemFree(m_aucSysMem0, p) != LOS_OK)
-      {
-        printf("[BUG] free: LOS_MemFree fail\n");
-      }
-    }
+	if (p) {
+		if (LOS_MemFree(m_aucSysMem0, p) != LOS_OK) {
+			printf("[BUG] free: LOS_MemFree fail\n");
+		}
+	}
 }
-#endif  
+#endif

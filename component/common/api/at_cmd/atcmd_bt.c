@@ -93,6 +93,12 @@ extern void *bt_mesh_device_multiple_profile_io_queue_handle;
 #include "breeze_hal_ble.h"
 #endif
 
+#if defined(CONFIG_BT_THROUGHPUT_TEST) && CONFIG_BT_THROUGHPUT_TEST
+#include "ble_throughput_app_flags.h"
+extern void *ble_throughput_evt_queue_handle;
+extern void *ble_throughput_io_queue_handle;
+#endif
+
 uint8_t bt_cmd_type = 0x00;
 
 void set_bt_cmd_type(uint8_t cmd_type)
@@ -199,7 +205,8 @@ uint8_t bt_command_type(uint16_t command_type)
 	(defined(CONFIG_BT_MESH_SCATTERNET) && CONFIG_BT_MESH_SCATTERNET) || \
 	(defined(CONFIG_BT_MESH_DEVICE_MATTER) && CONFIG_BT_MESH_DEVICE_MATTER) || \
 	(defined(CONFIG_BT_MESH_DEVICE_CONFIG) && CONFIG_BT_MESH_DEVICE_CONFIG) || \
-	(defined(CONFIG_BT_MESH_PROVISIONER_OTA_CLIENT) && CONFIG_BT_MESH_PROVISIONER_OTA_CLIENT))
+	(defined(CONFIG_BT_MESH_PROVISIONER_OTA_CLIENT) && CONFIG_BT_MESH_PROVISIONER_OTA_CLIENT)|| \
+	(defined(CONFIG_BT_THROUGHPUT_TEST) && CONFIG_BT_THROUGHPUT_TEST))
 char bt_at_cmd_buf[256] = {0};
 void bt_at_cmd_send_msg(uint16_t subtype, void *arg)
 {
@@ -301,6 +308,15 @@ void bt_at_cmd_send_msg(uint16_t subtype, void *arg)
 		}
 	}
 #endif
+#endif
+#if (defined(CONFIG_BT_THROUGHPUT_TEST) && CONFIG_BT_THROUGHPUT_TEST)
+	if (ble_throughput_evt_queue_handle != NULL && ble_throughput_io_queue_handle != NULL) {
+		if (os_msg_send(ble_throughput_io_queue_handle, &io_msg, 0) == false) {
+			AT_PRINTK("bt at cmd send msg fail: subtype 0x%x", io_msg.subtype);
+		} else if (os_msg_send(ble_throughput_evt_queue_handle, &event, 0) == false) {
+			AT_PRINTK("bt at cmd send event fail: subtype 0x%x", io_msg.subtype);
+		}
+	}
 #endif
 }
 #endif
@@ -1805,14 +1821,9 @@ exit:
 	(defined(CONFIG_BT_MESH_DEVICE_MULTIPLE_PROFILE) && CONFIG_BT_MESH_DEVICE_MULTIPLE_PROFILE) || \
 	(defined(CONFIG_EXAMPLE_BT_MESH_DEMO) && CONFIG_EXAMPLE_BT_MESH_DEMO))
 #include "mesh_config.h"
+#include "mesh_api.h"
 extern void app_send_uart_msg(uint8_t data);
 extern void bt_mesh_param_user_cmd(unsigned int argc, char **argv);
-#if (defined(CONFIG_BT_MESH_PROVISIONER) && CONFIG_BT_MESH_PROVISIONER || \
-	defined(CONFIG_BT_MESH_PROVISIONER_MULTIPLE_PROFILE) && CONFIG_BT_MESH_PROVISIONER_MULTIPLE_PROFILE)
-#if defined(MESH_DFU) && MESH_DFU
-extern void bt_mesh_dfu_param_user_cmd(unsigned int argc, char **argv);
-#endif
-#endif
 static void bt_mesh_set_cmd(unsigned int argc, char *argv[])
 {
 	unsigned int i = 0, j = 0;
@@ -1873,18 +1884,7 @@ void fATBM(void *arg)
 		AT_PRINTK("[ATBM]:Provisioner Cmd \n");
 	} else if (strcmp(argv[1], "dev") == 0) {
 		AT_PRINTK("[ATBM]:Device Cmd \n");
-	}
-#if (defined(CONFIG_BT_MESH_PROVISIONER) && CONFIG_BT_MESH_PROVISIONER || \
-	defined(CONFIG_BT_MESH_PROVISIONER_MULTIPLE_PROFILE) && CONFIG_BT_MESH_PROVISIONER_MULTIPLE_PROFILE)
-#if defined(MESH_DFU) && MESH_DFU
-	else if (strcmp(argv[1], "mesh_ota") == 0) {
-		AT_PRINTK("[ATBM]:Mesh Dfu Start Cmd \n");
-		bt_mesh_dfu_param_user_cmd((argc - 1), &argv[1]);
-		goto exit;
-	}
-#endif
-#endif
-	else {
+	} else {
 		AT_PRINTK("[ATBM]:It must be dev or pro, please use ATBM=? to help \n");
 		goto exit;
 	}
@@ -2196,6 +2196,73 @@ void fATBV(void *arg)
 	AT_PRINTK("[ATBV] btgap_buildnum = %d", bt_version.btgap_buildnum);
 }
 
+
+#if defined(CONFIG_BT_THROUGHPUT_TEST) && CONFIG_BT_THROUGHPUT_TEST
+extern int ble_throughput_app_init(void);
+extern void ble_throughput_app_deinit(void);
+void fATB1(void *arg)
+{
+	int argc = 0;
+	int param = 0;
+	char *argv[MAX_ARGC] = {0};
+	if (!arg) {
+		goto exit;
+	}
+	argc = parse_param(arg, argv);
+	if (argc < 2) {
+		goto exit;
+	}
+	param = atoi(argv[1]);
+	if (param == 1) {
+		AT_PRINTK("[ATB1]:_AT_BLE_THROUGHPUT_TEST_[ON]\n\r");
+		ble_throughput_app_init();
+	} else if (param == 0) {
+		AT_PRINTK("[ATB1]:_AT_BLE_THROUGHPUT_TEST_[OFF]\n\r");
+		ble_throughput_app_deinit();
+	} else {
+		goto exit;
+	}
+	return;
+exit:
+	AT_PRINTK("[ATB1] Start BLE Throughput Test: ATB1=1");
+	AT_PRINTK("[ATB1] Stop BLE Throughput Test: ATB1=0");
+}
+
+void fATB2(void *arg)
+{
+	int argc = 0;
+	char *argv[MAX_ARGC] = {0};
+	//char buf[256] = {0};
+	memset(bt_at_cmd_buf, 0, 256);
+	if (arg) {
+		strcpy(bt_at_cmd_buf, arg);
+		argc = parse_param(bt_at_cmd_buf, argv);
+	} else {
+		goto exit;
+	}
+
+	if ((argc != 2) && (argc != 3) && (argc != 8) && (argc != 9)) {
+		AT_PRINTK("[AT_PRINTK] ERROR: input parameter error!\n\r");
+		goto exit;
+	}
+	bt_at_cmd_send_msg(BT_ATCMD_TP_TEST, bt_at_cmd_buf);
+	return;
+
+exit:
+	AT_PRINTK("[ATB2] Prepare for throughput test and Select Testcase");
+	AT_PRINTK("[ATB2] ATB2=ROLE,test_role");
+	AT_PRINTK("[ATB2] ATB2=REMBD,xXX,xXX,xXX,xXX,xXX,xXX");
+	AT_PRINTK("[ATB2] ATB2=TEST,testcase,[interval],[latency],[len],[mode],[count],[data_check]");
+	AT_PRINTK("[ATB2] ATB2=TEST,testcase ");
+	AT_PRINTK("[ATB2] ATB2=RESULT ");
+	AT_PRINTK("[ATB2] eg:ATB2=ROLE,0");
+	AT_PRINTK("[ATB2] eg:ATB2=REMBD,x00,x11,x22,x33,x44,x55");
+	AT_PRINTK("[ATB2] eg:ATB2=TEST,206,6,0,20,0,4000,0");
+	AT_PRINTK("[ATB2] eg:ATB2=TEST,206");
+}
+
+#endif
+
 log_item_t at_bt_items[ ] = {
 #if ((defined(CONFIG_BT_CENTRAL) && CONFIG_BT_CENTRAL) || \
 	(defined(CONFIG_BT_MESH_CENTRAL) && CONFIG_BT_MESH_CENTRAL) || \
@@ -2298,6 +2365,10 @@ log_item_t at_bt_items[ ] = {
 #endif
 #endif
 	{"ATBV", fATBV, {NULL, NULL}}, // Get BT stack version
+#if defined(CONFIG_BT_THROUGHPUT_TEST) && CONFIG_BT_THROUGHPUT_TEST
+	{"ATB1", fATB1, {NULL, NULL}}, // Start/stop BLE throughput test
+	{"ATB2", fATB2, {NULL, NULL}}, // Prepare for throughput test and Select Testcase
+#endif
 };
 
 void at_bt_init(void)

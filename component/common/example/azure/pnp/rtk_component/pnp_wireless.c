@@ -79,10 +79,10 @@ static az_span const telemetry_wifi_info_sta_interface_gw_name = AZ_SPAN_LITERAL
 static az_span const telemetry_wifi_info_sta_interface_msk_name = AZ_SPAN_LITERAL_FROM_STR("msk");
 
 #if CONFIG_LWIP_LAYER
-extern struct netif xnetif[NET_IF_NUM]; 
+extern struct netif xnetif[NET_IF_NUM];
 #endif
 static char command_property_scratch_buffer[64];
-static pnp_scan_info* scan_info_addr;
+static pnp_scan_info *scan_info_addr;
 static bool is_scan_done;
 
 static char wifi_info_ssid[33];
@@ -105,74 +105,72 @@ static char ping_info[50];
 static char ping_content[PNP_WIRELESS_MAX_PING_TIME][64];
 static char ping_result[75];
 
-static az_result append_bool_callback(az_json_writer* jw, void* value)
+static az_result append_bool_callback(az_json_writer *jw, void *value)
 {
-	return az_json_writer_append_bool(jw, *(bool*)value);
+	return az_json_writer_append_bool(jw, *(bool *)value);
 }
 
-static az_result append_string_callback(az_json_writer* jw, void* value)
+static az_result append_string_callback(az_json_writer *jw, void *value)
 {
-	return az_json_writer_append_string(jw, *(az_span*)value);
+	return az_json_writer_append_string(jw, *(az_span *)value);
 }
 
-static az_result append_int32_callback(az_json_writer* jw, void* value)
+static az_result append_int32_callback(az_json_writer *jw, void *value)
 {
-	return az_json_writer_append_int32(jw, *(int32_t*)value);
+	return az_json_writer_append_int32(jw, *(int32_t *)value);
 }
 
-static az_result append_json_token_callback(az_json_writer* jw, void* value)
+static az_result append_json_token_callback(az_json_writer *jw, void *value)
 {
-	char const* const log = "Failed to append json token callback";
+	char const *const log = "Failed to append json token callback";
 
-	az_json_token value_token = *(az_json_token*)value;
+	az_json_token value_token = *(az_json_token *)value;
 
 	int32_t value_as_int32;
 	bool value_as_bool;
 	int32_t string_length;
 
-	switch (value_token.kind)
-	{
-		case AZ_JSON_TOKEN_TRUE:
-		case AZ_JSON_TOKEN_FALSE:
-			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_boolean(&value_token, &value_as_bool), log);
-			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_bool(jw, value_as_bool), log);
-			break;
-		case AZ_JSON_TOKEN_NUMBER:
-			//Expect int32 here
-			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_int32(&value_token, &value_as_int32), log);
-			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_int32(jw, value_as_int32), log);
-			break;
-		case AZ_JSON_TOKEN_STRING:
-			IOT_SAMPLE_EXIT_IF_AZ_FAILED(
-				az_json_token_get_string(
-					&value_token,
-					command_property_scratch_buffer,
-					sizeof(command_property_scratch_buffer),
-					&string_length),
-				log);
-			IOT_SAMPLE_EXIT_IF_AZ_FAILED(
-				az_json_writer_append_string(jw, az_span_create((uint8_t*)command_property_scratch_buffer, string_length)),
-				log);
-			break;
-		default:
-			return AZ_ERROR_ITEM_NOT_FOUND;
+	switch (value_token.kind) {
+	case AZ_JSON_TOKEN_TRUE:
+	case AZ_JSON_TOKEN_FALSE:
+		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_boolean(&value_token, &value_as_bool), log);
+		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_bool(jw, value_as_bool), log);
+		break;
+	case AZ_JSON_TOKEN_NUMBER:
+		//Expect int32 here
+		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_int32(&value_token, &value_as_int32), log);
+		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_int32(jw, value_as_int32), log);
+		break;
+	case AZ_JSON_TOKEN_STRING:
+		IOT_SAMPLE_EXIT_IF_AZ_FAILED(
+			az_json_token_get_string(
+				&value_token,
+				command_property_scratch_buffer,
+				sizeof(command_property_scratch_buffer),
+				&string_length),
+			log);
+		IOT_SAMPLE_EXIT_IF_AZ_FAILED(
+			az_json_writer_append_string(jw, az_span_create((uint8_t *)command_property_scratch_buffer, string_length)),
+			log);
+		break;
+	default:
+		return AZ_ERROR_ITEM_NOT_FOUND;
 	}
 
 	return AZ_OK;
 }
 
 az_result pnp_wireless_init(
-    pnp_wireless_component* out_wireless_component,
-    az_span component_name)
+	pnp_wireless_component *out_wireless_component,
+	az_span component_name)
 {
-	if (out_wireless_component == NULL)
-	{
+	if (out_wireless_component == NULL) {
 		return AZ_ERROR_ARG;
 	}
-	
+
 	//initialize gpio_component
 	memset(out_wireless_component, 0, sizeof(pnp_wireless_component));
-	
+
 	out_wireless_component->component_name = component_name;
 	out_wireless_component->wireless_support = true;
 	out_wireless_component->specification = twin_reported_specification_property_value;
@@ -183,7 +181,8 @@ az_result pnp_wireless_init(
 }
 
 // Get STA mode information only
-static void get_wifi_information(pnp_wireless_component* wireless_component){
+static void get_wifi_information(pnp_wireless_component *wireless_component)
+{
 	int32_t i;
 
 	int32_t wifi_info_channel;
@@ -201,82 +200,84 @@ static void get_wifi_information(pnp_wireless_component* wireless_component){
 	u8 *gw = LwIP_GetGW(&xnetif[0]);
 	u8 *msk = LwIP_GetMASK(&xnetif[0]);
 #endif
-	u8 *ifname[2] = {(u8*)WLAN0_NAME,(u8*)WLAN1_NAME};
+	u8 *ifname[2] = {(u8 *)WLAN0_NAME, (u8 *)WLAN1_NAME};
 	rtw_wifi_setting_t setting;
-		
-	for(i=0;i<NET_IF_NUM;i++){
-		if(rltk_wlan_running(i)){
+
+	for (i = 0; i < NET_IF_NUM; i++) {
+		if (rltk_wlan_running(i)) {
 #if CONFIG_LWIP_LAYER
 			mac = LwIP_GetMAC(&xnetif[i]);
 			ip = LwIP_GetIP(&xnetif[i]);
 			gw = LwIP_GetGW(&xnetif[i]);
 			msk = LwIP_GetMASK(&xnetif[i]);
 #endif
-			wifi_get_setting((const char*)ifname[i],&setting);
-			
-			if(setting.mode != RTW_MODE_STA) continue;
-			
-			strcpy(wifi_info_ssid, (char*)setting.ssid);
+			wifi_get_setting((const char *)ifname[i], &setting);
+
+			if (setting.mode != RTW_MODE_STA) {
+				continue;
+			}
+
+			strcpy(wifi_info_ssid, (char *)setting.ssid);
 
 			wifi_info_channel = setting.channel;
 
-			switch(setting.security_type) {
-				case RTW_SECURITY_OPEN:
-					strcpy(wifi_info_security, "OPEN");
-					break;
-				case RTW_SECURITY_WEP_PSK:
-					strcpy(wifi_info_security, "WEP");
-					break;
-				case RTW_SECURITY_WPA_TKIP_PSK:
-					strcpy(wifi_info_security, "TKIP");
-					break;
-				case RTW_SECURITY_WPA2_AES_PSK:
-					strcpy(wifi_info_security, "AES");
-					break;
-				default:
-					strcpy(wifi_info_security, "UNKNOWN");
+			switch (setting.security_type) {
+			case RTW_SECURITY_OPEN:
+				strcpy(wifi_info_security, "OPEN");
+				break;
+			case RTW_SECURITY_WEP_PSK:
+				strcpy(wifi_info_security, "WEP");
+				break;
+			case RTW_SECURITY_WPA_TKIP_PSK:
+				strcpy(wifi_info_security, "TKIP");
+				break;
+			case RTW_SECURITY_WPA2_AES_PSK:
+				strcpy(wifi_info_security, "AES");
+				break;
+			default:
+				strcpy(wifi_info_security, "UNKNOWN");
 			}
-			
-			strcpy(wifi_info_password, (char*)setting.password);
+
+			strcpy(wifi_info_password, (char *)setting.password);
 #if CONFIG_LWIP_LAYER
 			sprintf(wifi_info_mac, "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 			sprintf(wifi_info_ip, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
 			sprintf(wifi_info_gw, "%d.%d.%d.%d", gw[0], gw[1], gw[2], gw[3]);
 			sprintf(wifi_info_msk, "%d.%d.%d.%d", msk[0], msk[1], msk[2], msk[3]);
 #endif
-			wireless_component->sta_mode_setting.ssid = az_span_create((uint8_t*)wifi_info_ssid, strlen(wifi_info_ssid));
+			wireless_component->sta_mode_setting.ssid = az_span_create((uint8_t *)wifi_info_ssid, strlen(wifi_info_ssid));
 			wireless_component->sta_mode_setting.channel = wifi_info_channel;
-			wireless_component->sta_mode_setting.security = az_span_create((uint8_t*)wifi_info_security, strlen(wifi_info_security));
-			wireless_component->sta_mode_setting.password = az_span_create((uint8_t*)wifi_info_password, strlen(wifi_info_password));
+			wireless_component->sta_mode_setting.security = az_span_create((uint8_t *)wifi_info_security, strlen(wifi_info_security));
+			wireless_component->sta_mode_setting.password = az_span_create((uint8_t *)wifi_info_password, strlen(wifi_info_password));
 
-			wireless_component->sta_interface.mac = az_span_create((uint8_t*)wifi_info_mac, strlen(wifi_info_mac));
-			wireless_component->sta_interface.ip = az_span_create((uint8_t*)wifi_info_ip, strlen(wifi_info_ip));
-			wireless_component->sta_interface.gw = az_span_create((uint8_t*)wifi_info_gw, strlen(wifi_info_gw));
-			wireless_component->sta_interface.msk = az_span_create((uint8_t*)wifi_info_msk, strlen(wifi_info_msk));
+			wireless_component->sta_interface.mac = az_span_create((uint8_t *)wifi_info_mac, strlen(wifi_info_mac));
+			wireless_component->sta_interface.ip = az_span_create((uint8_t *)wifi_info_ip, strlen(wifi_info_ip));
+			wireless_component->sta_interface.gw = az_span_create((uint8_t *)wifi_info_gw, strlen(wifi_info_gw));
+			wireless_component->sta_interface.msk = az_span_create((uint8_t *)wifi_info_msk, strlen(wifi_info_msk));
 		}
 	}
-		
+
 }
 
 void pnp_wireless_build_telemetry_message(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span* out_payload)
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span *out_payload)
 {
-	
-	char const* const log = "Failed to build telemetry message payload for wireless";
+
+	char const *const log = "Failed to build telemetry message payload for wireless";
 	az_json_writer jw;
-	
+
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_init(&jw, payload, NULL), log);
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_begin_object(&jw), log);
 
-	if(wireless_component->telemetry_enable_wifi_info){
+	if (wireless_component->telemetry_enable_wifi_info) {
 
 		get_wifi_information(wireless_component);
-		
+
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_property_name(&jw, telemetry_wifi_info_name), log);
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_begin_object(&jw), log);
-					
+
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_property_name(&jw, telemetry_wifi_info_sta_mode_setting_name), log);
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_begin_object(&jw), log);
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_property_name(&jw, telemetry_wifi_info_sta_mode_setting_ssid_name), log);
@@ -304,20 +305,19 @@ void pnp_wireless_build_telemetry_message(
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_end_object(&jw), log);
 	}
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_end_object(&jw), log);
-	
+
 	*out_payload = az_json_writer_get_bytes_used_in_destination(&jw);
 
 }
 
 
 void pnp_wireless_append_all_reported_property(
-    pnp_wireless_component* wireless_component,
-    az_json_writer* jw)
+	pnp_wireless_component *wireless_component,
+	az_json_writer *jw)
 {
-	char const* const log = "Failed to build reported property payload for wireless";
-	
-	if (az_span_size(wireless_component->component_name) != 0)
-	{
+	char const *const log = "Failed to build reported property payload for wireless";
+
+	if (az_span_size(wireless_component->component_name) != 0) {
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_property_name(jw, wireless_component->component_name), log);
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_begin_object(jw), log);
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_property_name(jw, component_specifier_name), log);
@@ -327,21 +327,19 @@ void pnp_wireless_append_all_reported_property(
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_bool(jw, wireless_component->wireless_support), log);
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_property_name(jw, twin_reported_specification_property_name), log);
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_string(jw, wireless_component->specification), log);
-	if (az_span_size(wireless_component->component_name) != 0)
-	{
+	if (az_span_size(wireless_component->component_name) != 0) {
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_end_object(jw), log);
 	}
-	
+
 }
 
 void pnp_wireless_build_reported_property(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span* out_payload,
-    az_span property_name)
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span *out_payload,
+	az_span property_name)
 {
-	if(az_span_is_content_equal(property_name, twin_reported_wireless_support_property_name))
-	{
+	if (az_span_is_content_equal(property_name, twin_reported_wireless_support_property_name)) {
 		pnp_build_reported_property(
 			payload,
 			wireless_component->component_name,
@@ -350,9 +348,7 @@ void pnp_wireless_build_reported_property(
 			&wireless_component->wireless_support,
 			out_payload);
 
-	}
-	else if(az_span_is_content_equal(property_name, twin_reported_specification_property_name))
-	{
+	} else if (az_span_is_content_equal(property_name, twin_reported_specification_property_name)) {
 		pnp_build_reported_property(
 			payload,
 			wireless_component->component_name,
@@ -361,28 +357,26 @@ void pnp_wireless_build_reported_property(
 			&wireless_component->specification,
 			out_payload);
 
-	}
-	else
-	{
+	} else {
 		IOT_SAMPLE_LOG_ERROR("Failed to build report property: %s.", az_span_ptr(property_name));
 	}
 }
 
 void pnp_wireless_build_error_reported_property_with_status(
-    az_span component_name,
-    az_span property_name,
-    az_json_reader* property_value,
-    az_iot_status status,
-    int32_t version,
-    az_span payload,
-    az_span* out_payload)
+	az_span component_name,
+	az_span property_name,
+	az_json_reader *property_value,
+	az_iot_status status,
+	int32_t version,
+	az_span payload,
+	az_span *out_payload)
 {
 	pnp_build_reported_property_with_status(
 		payload,
 		component_name,
 		property_name,
 		append_json_token_callback,
-		(void*)property_value,
+		(void *)property_value,
 		(int32_t)status,
 		version,
 		twin_response_failed,
@@ -391,53 +385,48 @@ void pnp_wireless_build_error_reported_property_with_status(
 
 
 bool pnp_wireless_process_property_update(
-    pnp_wireless_component* ref_wireless_component,
-    az_json_token const* property_name,
-    az_json_reader const* property_value,
-    int32_t version,
-    az_span payload,
-    az_span* out_payload)
+	pnp_wireless_component *ref_wireless_component,
+	az_json_token const *property_name,
+	az_json_reader const *property_value,
+	int32_t version,
+	az_span payload,
+	az_span *out_payload)
 {
-	char const* const log = "Failed to process property update";
+	char const *const log = "Failed to process property update";
 
-	if (az_json_token_is_text_equal(property_name, twin_desired_telemetry_enable_wifi_info_property_name))
-	{
+	if (az_json_token_is_text_equal(property_name, twin_desired_telemetry_enable_wifi_info_property_name)) {
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_boolean(&property_value->token, &ref_wireless_component->telemetry_enable_wifi_info), log);
 		IOT_SAMPLE_LOG_SUCCESS("Client updated desired wireless telemetry_enable_wifi_info variables locally.");
-    	IOT_SAMPLE_LOG("telemetry_enable_remain_heap: %s", ref_wireless_component->telemetry_enable_wifi_info?"true":"false");
+		IOT_SAMPLE_LOG("telemetry_enable_remain_heap: %s", ref_wireless_component->telemetry_enable_wifi_info ? "true" : "false");
 		// Build reported property message with status.
 		pnp_build_reported_property_with_status(
-		   payload,
-		   ref_wireless_component->component_name,
-		   property_name->slice,
-		   append_bool_callback,
-		   (void*)&ref_wireless_component->telemetry_enable_wifi_info,
-		   (int32_t)AZ_IOT_STATUS_OK,
-		   version,
-		   twin_response_success,
-		   out_payload);
-	
-	}
-	else if (az_json_token_is_text_equal(property_name, twin_desired_telemetry_interval_property_name))
-	{
-    	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_int32(&property_value->token, &ref_wireless_component->telemetry_interval), log);
+			payload,
+			ref_wireless_component->component_name,
+			property_name->slice,
+			append_bool_callback,
+			(void *)&ref_wireless_component->telemetry_enable_wifi_info,
+			(int32_t)AZ_IOT_STATUS_OK,
+			version,
+			twin_response_success,
+			out_payload);
+
+	} else if (az_json_token_is_text_equal(property_name, twin_desired_telemetry_interval_property_name)) {
+		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_int32(&property_value->token, &ref_wireless_component->telemetry_interval), log);
 		ref_wireless_component->telemetry_counter = 0;
 		IOT_SAMPLE_LOG_SUCCESS("Client updated desired wireless telemetry_interval variables locally.");
-    	IOT_SAMPLE_LOG("telemetry_interval: %d", ref_wireless_component->telemetry_interval);
+		IOT_SAMPLE_LOG("telemetry_interval: %d", ref_wireless_component->telemetry_interval);
 		// Build reported property message with status.
 		pnp_build_reported_property_with_status(
-		   payload,
-		   ref_wireless_component->component_name,
-		   property_name->slice,
-		   append_int32_callback,
-		   (void*)&ref_wireless_component->telemetry_interval,
-		   (int32_t)AZ_IOT_STATUS_OK,
-		   version,
-		   twin_response_success,
-		   out_payload);
-	}
-	else
-	{
+			payload,
+			ref_wireless_component->component_name,
+			property_name->slice,
+			append_int32_callback,
+			(void *)&ref_wireless_component->telemetry_interval,
+			(int32_t)AZ_IOT_STATUS_OK,
+			version,
+			twin_response_success,
+			out_payload);
+	} else {
 		return false;
 	}
 	return true;
@@ -445,32 +434,31 @@ bool pnp_wireless_process_property_update(
 }
 
 static void build_wifi_connect_command_response_payload(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span* out_payload)
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span *out_payload)
 {
 	// No response
 	(void) wireless_component;
 	(void) payload;
-	
+
 	*out_payload = command_empty_response_payload;
 }
 
 static void build_wifi_scan_command_response_payload(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span* out_payload)
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span *out_payload)
 {
 	int32_t i;
-	char const* const log = "Failed to build wifi scan command response payload";
+	char const *const log = "Failed to build wifi scan command response payload";
 
 	az_json_writer jw;
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_init(&jw, payload, NULL), log);
-	
+
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_begin_array(&jw), log);
-	for(i=0; i<PNP_WIRELESS_MAX_SCAN_AP;i++)
-	{
-		if(wireless_component->scan_info[i].idx == 0){
+	for (i = 0; i < PNP_WIRELESS_MAX_SCAN_AP; i++) {
+		if (wireless_component->scan_info[i].idx == 0) {
 			printf("no_other ap\n");
 			continue;
 		}
@@ -494,31 +482,31 @@ static void build_wifi_scan_command_response_payload(
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_end_object(&jw), log);
 	}
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_end_array(&jw), log);
-	
+
 	*out_payload = az_json_writer_get_bytes_used_in_destination(&jw);
 
 }
 
 static void build_ota_command_response_payload(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span* out_payload)
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span *out_payload)
 {
 	// No response
 	(void) wireless_component;
 	(void) payload;
-	
+
 	*out_payload = command_empty_response_payload;
 }
 
 static void build_ping_command_response_payload(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span* out_payload)
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span *out_payload)
 {
 
 	int32_t i;
-	char const* const log = "Failed to build ping command response payload";
+	char const *const log = "Failed to build ping command response payload";
 
 	az_json_writer jw;
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_init(&jw, payload, NULL), log);
@@ -528,20 +516,19 @@ static void build_ping_command_response_payload(
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_string(&jw, wireless_component->ping_info.info), log);
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_property_name(&jw, command_ping_content_name), log);
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_begin_array(&jw), log);
-	for(i=0; i<ping_seq;i++)
-	{
+	for (i = 0; i < ping_seq; i++) {
 		IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_string(&jw, wireless_component->ping_info.content[i]), log);
 	}
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_end_array(&jw), log);
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_property_name(&jw, command_ping_result_name), log);
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_string(&jw, wireless_component->ping_info.result), log);
 	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_writer_append_end_object(&jw), log);
-	
+
 	*out_payload = az_json_writer_get_bytes_used_in_destination(&jw);
 
 }
 
-static void pnp_wireless_wifi_connect_thread(void* param)
+static void pnp_wireless_wifi_connect_thread(void *param)
 {
 	unsigned long tick1, tick2, tick3;
 	int ret, mode;
@@ -549,123 +536,112 @@ static void pnp_wireless_wifi_connect_thread(void* param)
 
 	int32_t ssid_len = strlen(wifi_connect_ssid);
 	int32_t passphrase_len = strlen(wifi_connect_passphrase);
-	
+
 	IOT_SAMPLE_LOG_SUCCESS("Wifi Connect thread created");
 
 	iot_sample_sleep_for_seconds(5);
 
 	tick1 = xTaskGetTickCount();
-	
-	if(passphrase_len > 0)
-	{
+
+	if (passphrase_len > 0) {
 		security_type = RTW_SECURITY_WPA2_AES_PSK;
-	}
-	else
-	{
+	} else {
 		security_type = RTW_SECURITY_OPEN;
 	}
-	
+
 	//Check if in AP mode
 	wext_get_mode(WLAN0_NAME, &mode);
-	if(mode == IW_MODE_MASTER) {
+	if (mode == IW_MODE_MASTER) {
 #if CONFIG_LWIP_LAYER
 		dhcps_deinit();
 #endif
-				
+
 #if (defined(CONFIG_PLATFORM_8710C)||defined(CONFIG_PLATFORM_8721D)) && (defined(CONFIG_BT) && CONFIG_BT)
-		if (wifi_set_mode(RTW_MODE_STA) < 0){
+		if (wifi_set_mode(RTW_MODE_STA) < 0) {
 			IOT_SAMPLE_LOG_ERROR("Wifi on failed");
 			goto wifi_connect_error_exit;
 		}
-#else	
+#else
 		wifi_off();
 		vTaskDelay(20);
-		if (wifi_on(RTW_MODE_STA) < 0){
+		if (wifi_on(RTW_MODE_STA) < 0) {
 			IOT_SAMPLE_LOG_ERROR("Wifi on failed");
 			goto wifi_connect_error_exit;
 		}
 #endif
 	}
-	
-	IOT_SAMPLE_LOG("Joining BSS by SSID %s...", (char*)wifi_connect_ssid);
-	ret = wifi_connect((char*)wifi_connect_ssid, security_type, (char*)wifi_connect_passphrase, ssid_len, passphrase_len, -1, NULL);
-	
-	if(ret!= RTW_SUCCESS){
-		if(ret == RTW_INVALID_KEY)
-		{
+
+	IOT_SAMPLE_LOG("Joining BSS by SSID %s...", (char *)wifi_connect_ssid);
+	ret = wifi_connect((char *)wifi_connect_ssid, security_type, (char *)wifi_connect_passphrase, ssid_len, passphrase_len, -1, NULL);
+
+	if (ret != RTW_SUCCESS) {
+		if (ret == RTW_INVALID_KEY) {
 			IOT_SAMPLE_LOG_ERROR("Invalid Key");
 		}
 		IOT_SAMPLE_LOG_ERROR("Can't connect to AP");
 		goto wifi_connect_error_exit;
 	}
 	tick2 = xTaskGetTickCount();
-	IOT_SAMPLE_LOG("Connected after %dms.", (tick2-tick1));
+	IOT_SAMPLE_LOG("Connected after %dms.", (tick2 - tick1));
 #if CONFIG_LWIP_LAYER
 	/* Start DHCPClient */
 	LwIP_DHCP(0, DHCP_START);
 	tick3 = xTaskGetTickCount();
-	IOT_SAMPLE_LOG("Got IP after %dms", (tick3-tick1));
+	IOT_SAMPLE_LOG("Got IP after %dms", (tick3 - tick1));
 #endif
 
 	vTaskDelete(NULL);
 
-	wifi_connect_error_exit:
-		
+wifi_connect_error_exit:
+
 	//if wifi connect error, reboot system to reconnect to azure iot hub with original wifi ssid.
 	IOT_SAMPLE_LOG("wifi connect error, reboot system");
 	sys_reset();
-	
+
 	vTaskDelete(NULL);
 
 }
 
 
 static bool invoke_wifi_connect(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span response,
-    az_span* out_response)
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span response,
+	az_span *out_response)
 {
-	int32_t wifi_connect_ssid_len=0;
-	int32_t wifi_connect_passphrase_len=0;
+	int32_t wifi_connect_ssid_len = 0;
+	int32_t wifi_connect_passphrase_len = 0;
 	az_json_reader jr;
 
 	memset(wifi_connect_ssid, 0, sizeof(wifi_connect_ssid));
 	memset(wifi_connect_passphrase, 0, sizeof(wifi_connect_passphrase));
-	
-	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_reader_init(&jr, payload, NULL), "Failed to init json reader to parse wifi_connect payload");	
-	
-	while (az_result_succeeded(az_json_reader_next_token(&jr)) 
-		&& (jr.token.kind != AZ_JSON_TOKEN_END_OBJECT))
-	{
-		if (az_json_token_is_text_equal(&jr.token, command_wifi_connect_ssid_name))
-		{
+
+	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_reader_init(&jr, payload, NULL), "Failed to init json reader to parse wifi_connect payload");
+
+	while (az_result_succeeded(az_json_reader_next_token(&jr))
+		   && (jr.token.kind != AZ_JSON_TOKEN_END_OBJECT)) {
+		if (az_json_token_is_text_equal(&jr.token, command_wifi_connect_ssid_name)) {
 			_az_RETURN_IF_FAILED(az_json_reader_next_token(&jr));
-			if (jr.token.kind != AZ_JSON_TOKEN_STRING)
-			{
+			if (jr.token.kind != AZ_JSON_TOKEN_STRING) {
 				IOT_SAMPLE_LOG_ERROR("Invalid format of `ssid` field");
 				return false;
 			}
-			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_string(&jr.token, wifi_connect_ssid, sizeof(wifi_connect_ssid), &wifi_connect_ssid_len), "Failed to get for `ssid` field in payload");
-		}
-		else if (az_json_token_is_text_equal(&jr.token, command_wifi_connect_passphrase_name))
-		{
+			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_string(&jr.token, wifi_connect_ssid, sizeof(wifi_connect_ssid), &wifi_connect_ssid_len),
+										 "Failed to get for `ssid` field in payload");
+		} else if (az_json_token_is_text_equal(&jr.token, command_wifi_connect_passphrase_name)) {
 			_az_RETURN_IF_FAILED(az_json_reader_next_token(&jr));
-			if (jr.token.kind != AZ_JSON_TOKEN_STRING)
-			{
+			if (jr.token.kind != AZ_JSON_TOKEN_STRING) {
 				IOT_SAMPLE_LOG_ERROR("Invalid format of `passphrase` field");
 				return false;
 			}
-			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_string(&jr.token, wifi_connect_passphrase, sizeof(wifi_connect_passphrase), &wifi_connect_passphrase_len), "Failed to get for `passphrase` field in payload");
-		}
-		else
-		{
+			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_string(&jr.token, wifi_connect_passphrase, sizeof(wifi_connect_passphrase), &wifi_connect_passphrase_len),
+										 "Failed to get for `passphrase` field in payload");
+		} else {
 			continue;
 		}
 	}
 
-	if(wifi_connect_ssid_len == 0)
-	{	
+	if (wifi_connect_ssid_len == 0) {
 		IOT_SAMPLE_LOG_ERROR("Invalid SSID");
 		return false;
 	}
@@ -673,81 +649,88 @@ static bool invoke_wifi_connect(
 	IOT_SAMPLE_LOG_SUCCESS("Start Connecting to %s", wifi_connect_ssid);
 
 #if defined(AZURE_PNP_CERTIFICATION_TEST) && AZURE_PNP_CERTIFICATION_TEST
-		IOT_SAMPLE_LOG("For PnP Certification test, not doing wifi connection");
+	IOT_SAMPLE_LOG("For PnP Certification test, not doing wifi connection");
 #else
-	if(xTaskCreate(pnp_wireless_wifi_connect_thread, ((const char*)"pnp_wireless_wifi_connect_thread"), 512, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+	if (xTaskCreate(pnp_wireless_wifi_connect_thread, ((const char *)"pnp_wireless_wifi_connect_thread"), 512, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate(pnp_wireless_wifi_connect_thread) failed", __FUNCTION__);
+	}
 #endif
 
 
 	build_wifi_connect_command_response_payload(wireless_component, response, out_response);
-	
+
 	return true;
 }
 
-static rtw_result_t app_scan_result_handler( rtw_scan_handler_result_t* malloced_scan_result )
+static rtw_result_t app_scan_result_handler(rtw_scan_handler_result_t *malloced_scan_result)
 {
 
 	static int ApNum = 0;
 
 
-	if (malloced_scan_result->scan_complete != RTW_TRUE) 
-	{
-		if(ApNum < PNP_WIRELESS_MAX_SCAN_AP && !is_scan_done){
-			rtw_scan_result_t* record = &malloced_scan_result->ap_details;
+	if (malloced_scan_result->scan_complete != RTW_TRUE) {
+		if (ApNum < PNP_WIRELESS_MAX_SCAN_AP && !is_scan_done) {
+			rtw_scan_result_t *record = &malloced_scan_result->ap_details;
 			record->SSID.val[record->SSID.len] = 0; /* Ensure the SSID is null terminated */
-			
-			scan_info_addr->idx = ApNum+1;
-			strcpy(wifi_scan_bss_type[ApNum], ( record->bss_type == RTW_BSS_TYPE_ADHOC ) ? "Adhoc" : "Infra"); 
+
+			scan_info_addr->idx = ApNum + 1;
+			strcpy(wifi_scan_bss_type[ApNum], (record->bss_type == RTW_BSS_TYPE_ADHOC) ? "Adhoc" : "Infra");
 			scan_info_addr->bss_type = az_span_create_from_str(wifi_scan_bss_type[ApNum]);
 			sprintf(wifi_scan_mac[ApNum], MAC_FMT, MAC_ARG(record->BSSID.octet));
 			scan_info_addr->mac = az_span_create_from_str(wifi_scan_mac[ApNum]);
 			scan_info_addr->signal_strength = record->signal_strength;
 			scan_info_addr->channel = record->channel;
 
-			strcpy(wifi_scan_wps_type[ApNum], 
-				( record->wps_type == RTW_WPS_TYPE_DEFAULT ) ? "DEFAULT" :
-				( record->wps_type == RTW_WPS_TYPE_USER_SPECIFIED ) ? "USER_SPECIFIED" :
-				( record->wps_type == RTW_WPS_TYPE_MACHINE_SPECIFIED ) ? "MACHINE_SPECIFIED" :
-				( record->wps_type == RTW_WPS_TYPE_REKEY ) ? "REKEY" :
-				( record->wps_type == RTW_WPS_TYPE_PUSHBUTTON ) ? "PUSHBUTTON" :
-				( record->wps_type == RTW_WPS_TYPE_REGISTRAR_SPECIFIED ) ? "REGISTRAR_SPECIFIED" :
-				( record->wps_type == RTW_WPS_TYPE_NONE ) ? "NONE" :
-				( record->wps_type == RTW_WPS_TYPE_WSC ) ? "WSC" :
-				"Unknown");
+			strcpy(wifi_scan_wps_type[ApNum],
+				   (record->wps_type == RTW_WPS_TYPE_DEFAULT) ? "DEFAULT" :
+				   (record->wps_type == RTW_WPS_TYPE_USER_SPECIFIED) ? "USER_SPECIFIED" :
+				   (record->wps_type == RTW_WPS_TYPE_MACHINE_SPECIFIED) ? "MACHINE_SPECIFIED" :
+				   (record->wps_type == RTW_WPS_TYPE_REKEY) ? "REKEY" :
+				   (record->wps_type == RTW_WPS_TYPE_PUSHBUTTON) ? "PUSHBUTTON" :
+				   (record->wps_type == RTW_WPS_TYPE_REGISTRAR_SPECIFIED) ? "REGISTRAR_SPECIFIED" :
+				   (record->wps_type == RTW_WPS_TYPE_NONE) ? "NONE" :
+				   (record->wps_type == RTW_WPS_TYPE_WSC) ? "WSC" :
+				   "Unknown");
 			scan_info_addr->wps_type = az_span_create_from_str(wifi_scan_wps_type[ApNum]);
 
-			strcpy(wifi_scan_security[ApNum], 
-				( record->security == RTW_SECURITY_OPEN ) ? "Open" :
-				( record->security == RTW_SECURITY_WEP_PSK ) ? "WEP" :
-				( record->security == RTW_SECURITY_WPA_TKIP_PSK ) ? "WPA TKIP" :
-				( record->security == RTW_SECURITY_WPA_AES_PSK ) ? "WPA AES" :
-				( record->security == RTW_SECURITY_WPA2_AES_PSK ) ? "WPA2 AES" :
-				( record->security == RTW_SECURITY_WPA2_TKIP_PSK ) ? "WPA2 TKIP" :
-				( record->security == RTW_SECURITY_WPA2_MIXED_PSK ) ? "WPA2 Mixed" :
+			strcpy(wifi_scan_security[ApNum],
+				   (record->security == RTW_SECURITY_OPEN) ? "Open" :
+				   (record->security == RTW_SECURITY_WEP_PSK) ? "WEP" :
+				   (record->security == RTW_SECURITY_WPA_TKIP_PSK) ? "WPA TKIP" :
+				   (record->security == RTW_SECURITY_WPA_AES_PSK) ? "WPA AES" :
+				   (record->security == RTW_SECURITY_WPA_MIXED_PSK) ? "WPA Mixed" :
+				   (record->security == RTW_SECURITY_WPA2_TKIP_PSK) ? "WPA2 TKIP" :
+				   (record->security == RTW_SECURITY_WPA2_AES_PSK) ? "WPA2 AES" :
+				   (record->security == RTW_SECURITY_WPA2_MIXED_PSK) ? "WPA2 Mixed" :
+				   (record->security == RTW_SECURITY_WPA_WPA2_TKIP_PSK) ? "WPA/WPA2 TKIP" :
+				   (record->security == RTW_SECURITY_WPA_WPA2_AES_PSK) ? "WPA/WPA2 AES" :
+				   (record->security == RTW_SECURITY_WPA_WPA2_MIXED_PSK) ? "WPA/WPA2 Mixed" :
 #if defined(CONFIG_PLATFORM_8721D)
-				( record->security == RTW_SECURITY_WPA_WPA2_TKIP_PSK) ? "WPA/WPA2 TKIP" :
-				( record->security == RTW_SECURITY_WPA_WPA2_AES_PSK) ? "WPA/WPA2 AES" :
-				( record->security == RTW_SECURITY_WPA_WPA2_MIXED_PSK) ? "WPA/WPA2 Mixed" :
+				   (record->security == RTW_SECURITY_WPA2_ENTERPRISE) ? "WPA2 Enterprise" :
+				   (record->security == RTW_SECURITY_WPA_WPA2_ENTERPRISE) ? "WPA/WPA2 Enterprise" :
 #elif defined(CONFIG_PLATFORM_8710C)
-				( record->security == RTW_SECURITY_WPA_WPA2_MIXED ) ? "WPA/WPA2 AES" :
+				   (record->security == RTW_SECURITY_WPA_TKIP_ENTERPRISE) ? "WPA TKIP Enterprise" :
+				   (record->security == RTW_SECURITY_WPA_AES_ENTERPRISE) ? "WPA AES Enterprise" :
+				   (record->security == RTW_SECURITY_WPA_MIXED_ENTERPRISE) ? "WPA Mixed Enterprise" :
+				   (record->security == RTW_SECURITY_WPA2_TKIP_ENTERPRISE) ? "WPA2 TKIP Enterprise" :
+				   (record->security == RTW_SECURITY_WPA2_AES_ENTERPRISE) ? "WPA2 AES Enterprise" :
+				   (record->security == RTW_SECURITY_WPA2_MIXED_ENTERPRISE) ? "WPA2 Mixed Enterprise" :
+				   (record->security == RTW_SECURITY_WPA_WPA2_TKIP_ENTERPRISE) ? "WPA/WPA2 TKIP Enterprise" :
+				   (record->security == RTW_SECURITY_WPA_WPA2_AES_ENTERPRISE) ? "WPA/WPA2 AES Enterprise" :
+				   (record->security == RTW_SECURITY_WPA_WPA2_MIXED_ENTERPRISE) ? "WPA/WPA2 Mixed Enterprise" :
 #endif
-				( record->security == RTW_SECURITY_WPA2_ENTERPRISE ) ? "WPA2 Enterprise" :
-				( record->security == RTW_SECURITY_WPA_WPA2_ENTERPRISE ) ? "WPA/WPA2 Enterprise" : 
 #ifdef CONFIG_SAE_SUPPORT
-				( record->security == RTW_SECURITY_WPA3_AES_PSK) ? "WP3-SAE AES" :
+				   (record->security == RTW_SECURITY_WPA3_AES_PSK) ? "WPA3-SAE AES" :
 #endif
-				"Unknown"); 
+				   "Unknown");
 			scan_info_addr->security = az_span_create_from_str(wifi_scan_security[ApNum]);
-			strcpy(wifi_scan_ssid[ApNum], (char*)record->SSID.val); 
-			scan_info_addr->ssid = az_span_create_from_str((char*)wifi_scan_ssid[ApNum]);
+			strcpy(wifi_scan_ssid[ApNum], (char *)record->SSID.val);
+			scan_info_addr->ssid = az_span_create_from_str((char *)wifi_scan_ssid[ApNum]);
 
 			++ApNum;
-	 		scan_info_addr += 1;
+			scan_info_addr += 1;
 		}
-	}
-	else
-	{ 
+	} else {
 		ApNum = 0;
 		is_scan_done = true;
 	}
@@ -755,10 +738,10 @@ static rtw_result_t app_scan_result_handler( rtw_scan_handler_result_t* malloced
 }
 
 static bool invoke_wifi_scan(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span response,
-    az_span* out_response)
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span response,
+	az_span *out_response)
 {
 
 	int32_t tmp_channel[30];
@@ -770,61 +753,51 @@ static bool invoke_wifi_scan(
 	az_json_reader jr;
 	int scan_check_interval;
 	int scan_check_block_time;
-	
+
 	memset(&(wireless_component->scan_info[0]), 0, sizeof(pnp_scan_info) * PNP_WIRELESS_MAX_SCAN_AP);
-	memset(wifi_scan_bss_type, 0, PNP_WIRELESS_MAX_SCAN_AP*5);
-	memset(wifi_scan_mac, 0, PNP_WIRELESS_MAX_SCAN_AP*20);
-	memset(wifi_scan_wps_type, 0, PNP_WIRELESS_MAX_SCAN_AP*20);
-	memset(wifi_scan_security, 0, PNP_WIRELESS_MAX_SCAN_AP*20);
-	memset(wifi_scan_ssid, 0, PNP_WIRELESS_MAX_SCAN_AP*33);
+	memset(wifi_scan_bss_type, 0, PNP_WIRELESS_MAX_SCAN_AP * 5);
+	memset(wifi_scan_mac, 0, PNP_WIRELESS_MAX_SCAN_AP * 20);
+	memset(wifi_scan_wps_type, 0, PNP_WIRELESS_MAX_SCAN_AP * 20);
+	memset(wifi_scan_security, 0, PNP_WIRELESS_MAX_SCAN_AP * 20);
+	memset(wifi_scan_ssid, 0, PNP_WIRELESS_MAX_SCAN_AP * 33);
 	scan_info_addr = &(wireless_component->scan_info[0]);
 	is_scan_done = false;
-	
-	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_reader_init(&jr, payload, NULL), "Failed to init json reader to parse wifi_scan payload");	
-	
-	while (az_result_succeeded(az_json_reader_next_token(&jr)) 
-		&& (jr.token.kind != AZ_JSON_TOKEN_END_ARRAY))
-	{
-		if (jr.token.kind == AZ_JSON_TOKEN_NUMBER)
-		{
+
+	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_reader_init(&jr, payload, NULL), "Failed to init json reader to parse wifi_scan payload");
+
+	while (az_result_succeeded(az_json_reader_next_token(&jr))
+		   && (jr.token.kind != AZ_JSON_TOKEN_END_ARRAY)) {
+		if (jr.token.kind == AZ_JSON_TOKEN_NUMBER) {
 			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_int32(&jr.token, &tmp_channel[num_channel]), "Failed to get for channel element in payload");
-			if(tmp_channel[num_channel] < 0) 
-			{
+			if (tmp_channel[num_channel] < 0) {
 				IOT_SAMPLE_LOG_ERROR("Invalid format of `channel` field");
 				return false;
 			}
 			num_channel++;
-		}
-		else
-		{
+		} else {
 			continue;
 		}
 	}
 
-	if(num_channel > 0) 
-	{
-		channel_list = (u8*)malloc(num_channel);
-		if(!channel_list)
-		{
+	if (num_channel > 0) {
+		channel_list = (u8 *)malloc(num_channel);
+		if (!channel_list) {
 			IOT_SAMPLE_LOG_ERROR("Can't malloc memory for channel list");
 			return false;
 		}
-		pscan_config = (u8*)malloc(num_channel);
-		if(!pscan_config)
-		{
+		pscan_config = (u8 *)malloc(num_channel);
+		if (!pscan_config) {
 			IOT_SAMPLE_LOG_ERROR("Can't malloc memory for pscan_config");
 			return false;
 		}
-		
+
 		//parse command channel list
-		for(i = 0; i < num_channel; i++)
-		{
+		for (i = 0; i < num_channel; i++) {
 			*(channel_list + i) = (u8)tmp_channel[i];
 			*(pscan_config + i) = PSCAN_ENABLE;
 		}
-		
-		if((ret = wifi_set_pscan_chan(channel_list, pscan_config, num_channel)) < 0)
-		{
+
+		if ((ret = wifi_set_pscan_chan(channel_list, pscan_config, num_channel)) < 0) {
 			IOT_SAMPLE_LOG_ERROR("Wifi set partial scan channel fail");
 			return false;
 		}
@@ -832,103 +805,93 @@ static bool invoke_wifi_scan(
 #if defined(AZURE_PNP_CERTIFICATION_TEST) && AZURE_PNP_CERTIFICATION_TEST
 	IOT_SAMPLE_LOG("For PnP Certification test, not doing wifi scan");
 #else
-	if((ret = wifi_scan_networks(app_scan_result_handler, NULL )) != RTW_SUCCESS)
-	{
-		IOT_SAMPLE_LOG_ERROR("Wifi scan failed"); 
+	if ((ret = wifi_scan_networks(app_scan_result_handler, NULL)) != RTW_SUCCESS) {
+		IOT_SAMPLE_LOG_ERROR("Wifi scan failed");
 		return false;
 	}
-	
+
 	// block to wait for scan result, wait for 3 second and check result for every 200ms
 	scan_check_interval = 200;
 	scan_check_block_time = 3000;
-	while(!is_scan_done || scan_check_block_time>0)
-	{
+	while (!is_scan_done || scan_check_block_time > 0) {
 		vTaskDelay(scan_check_interval);
-		scan_check_block_time-=scan_check_interval;
+		scan_check_block_time -= scan_check_interval;
 	}
-	
-	if(is_scan_done){
-		IOT_SAMPLE_LOG_SUCCESS("Wifi scan Success"); 
-	}
-	else
-	{
+
+	if (is_scan_done) {
+		IOT_SAMPLE_LOG_SUCCESS("Wifi scan Success");
+	} else {
 		IOT_SAMPLE_LOG_ERROR("Wifi scan out of time");
 		return false;
 	}
 #endif
 
-	if(channel_list)
+	if (channel_list) {
 		free(channel_list);
-	if(pscan_config)
+	}
+	if (pscan_config) {
 		free(pscan_config);
+	}
 
 	// Build command response message.
 	build_wifi_scan_command_response_payload(wireless_component, response, out_response);
-	
+
 	return true;
 
 }
 
 static bool invoke_ota(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span response,
-    az_span* out_response)
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span response,
+	az_span *out_response)
 {
 	char ip_address[20];
 	int32_t port;
-	int32_t ip_address_len=0;
+	int32_t ip_address_len = 0;
 	az_json_reader jr;
-	
-	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_reader_init(&jr, payload, NULL), "Failed to init json reader to parse ota payload");	
-	
-	while (az_result_succeeded(az_json_reader_next_token(&jr)) 
-		&& (jr.token.kind != AZ_JSON_TOKEN_END_OBJECT))
-	{
-		if (az_json_token_is_text_equal(&jr.token, command_ota_ip_address_name))
-		{
+
+	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_reader_init(&jr, payload, NULL), "Failed to init json reader to parse ota payload");
+
+	while (az_result_succeeded(az_json_reader_next_token(&jr))
+		   && (jr.token.kind != AZ_JSON_TOKEN_END_OBJECT)) {
+		if (az_json_token_is_text_equal(&jr.token, command_ota_ip_address_name)) {
 			_az_RETURN_IF_FAILED(az_json_reader_next_token(&jr));
-			if (jr.token.kind != AZ_JSON_TOKEN_STRING)
-			{
+			if (jr.token.kind != AZ_JSON_TOKEN_STRING) {
 				IOT_SAMPLE_LOG_ERROR("Invalid format of `ip_address` field");
 				return false;
 			}
-			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_string(&jr.token, ip_address, sizeof(ip_address), &ip_address_len), "Failed to get for `ip_address` field in payload");
-		}
-		else if (az_json_token_is_text_equal(&jr.token, command_ota_port_name))
-		{
+			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_string(&jr.token, ip_address, sizeof(ip_address), &ip_address_len),
+										 "Failed to get for `ip_address` field in payload");
+		} else if (az_json_token_is_text_equal(&jr.token, command_ota_port_name)) {
 			_az_RETURN_IF_FAILED(az_json_reader_next_token(&jr));
-			if (jr.token.kind != AZ_JSON_TOKEN_NUMBER)
-			{
+			if (jr.token.kind != AZ_JSON_TOKEN_NUMBER) {
 				IOT_SAMPLE_LOG_ERROR("Invalid format of `port` field");
 				return false;
 			}
 			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_int32(&jr.token, &port), "Failed to get for `port` field in payload");
-		}
-		else
-		{
+		} else {
 			continue;
 		}
 	}
 
-	if(ip_address_len <= 0 || inet_addr(ip_address) == INADDR_NONE)
-	{
+	if (ip_address_len <= 0 || inet_addr(ip_address) == INADDR_NONE) {
 		IOT_SAMPLE_LOG_ERROR("Invalid Ip Address");
 		return false;
 	}
-	
+
 	IOT_SAMPLE_LOG_SUCCESS("Starting OTA update");
 
-	
+
 #if defined(AZURE_PNP_CERTIFICATION_TEST) && AZURE_PNP_CERTIFICATION_TEST
 	IOT_SAMPLE_LOG("For PnP Certification test, not doing OTA");
 #else
 	update_ota_local(ip_address, port);
 #endif
-	
+
 	// Build command response message.
 	build_ota_command_response_payload(wireless_component, response, out_response);
-	
+
 	return true;
 
 }
@@ -938,7 +901,7 @@ static void generate_ping_echo(unsigned char *buf, int size)
 	int i;
 	struct icmp_echo_hdr *pecho;
 
-	for(i = 0; i < size; i ++) {
+	for (i = 0; i < size; i ++) {
 		buf[sizeof(struct icmp_echo_hdr) + i] = (unsigned char) i;
 	}
 
@@ -955,14 +918,14 @@ static void generate_ping_echo(unsigned char *buf, int size)
 
 
 static bool invoke_ping(
-    pnp_wireless_component* wireless_component,
-    az_span payload,
-    az_span response,
-    az_span* out_response)
+	pnp_wireless_component *wireless_component,
+	az_span payload,
+	az_span response,
+	az_span *out_response)
 {
-	
-    int32_t ping_count = PNP_WIRELESS_DEFAULT_PING_TIME;
-    int32_t buffer_size = PNP_WIRELESS_DEFAULT_PING_SIZE;
+
+	int32_t ping_count = PNP_WIRELESS_DEFAULT_PING_TIME;
+	int32_t buffer_size = PNP_WIRELESS_DEFAULT_PING_SIZE;
 	memset(ping_host, 0, sizeof(ping_host));
 	int32_t host_len = 0;
 	int i, ping_socket;
@@ -975,37 +938,28 @@ static bool invoke_ping(
 	struct ip_hdr *iphdr;
 	struct icmp_echo_hdr *pecho;
 	az_json_reader jr;
-	
-	
-	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_reader_init(&jr, payload, NULL), "Failed to init json reader to parse set_gpio payload");	
+
+
+	IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_reader_init(&jr, payload, NULL), "Failed to init json reader to parse set_gpio payload");
 	while (az_result_succeeded(az_json_reader_next_token(&jr))
-		&& jr.token.kind != AZ_JSON_TOKEN_END_OBJECT)
-	{
-		if (az_json_token_is_text_equal(&jr.token, command_ping_host_address_name))
-		{
+		   && jr.token.kind != AZ_JSON_TOKEN_END_OBJECT) {
+		if (az_json_token_is_text_equal(&jr.token, command_ping_host_address_name)) {
 			_az_RETURN_IF_FAILED(az_json_reader_next_token(&jr));
-			if (jr.token.kind != AZ_JSON_TOKEN_STRING)
-			{
+			if (jr.token.kind != AZ_JSON_TOKEN_STRING) {
 				IOT_SAMPLE_LOG_ERROR("Invalid format of `host_address` field");
 				return false;
 			}
 			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_string(&jr.token, ping_host, sizeof(ping_host), &host_len), "Failed to get for `host_address` field in payload");
-		}
-		else if (az_json_token_is_text_equal(&jr.token, command_ping_number_name))
-		{
+		} else if (az_json_token_is_text_equal(&jr.token, command_ping_number_name)) {
 			_az_RETURN_IF_FAILED(az_json_reader_next_token(&jr));
-			if (jr.token.kind != AZ_JSON_TOKEN_NUMBER)
-			{
+			if (jr.token.kind != AZ_JSON_TOKEN_NUMBER) {
 				IOT_SAMPLE_LOG_ERROR("Invalid format of `number` field");
 				return false;
 			}
 			IOT_SAMPLE_EXIT_IF_AZ_FAILED(az_json_token_get_int32(&jr.token, &ping_count), "Failed to get for `number` field in payload");
-		}
-		else if (az_json_token_is_text_equal(&jr.token, command_ping_buffer_size_name))
-		{
+		} else if (az_json_token_is_text_equal(&jr.token, command_ping_buffer_size_name)) {
 			_az_RETURN_IF_FAILED(az_json_reader_next_token(&jr));
-			if (jr.token.kind != AZ_JSON_TOKEN_NUMBER)
-			{
+			if (jr.token.kind != AZ_JSON_TOKEN_NUMBER) {
 				IOT_SAMPLE_LOG_ERROR("Invalid format of `buffer_size` field");
 				return false;
 			}
@@ -1014,154 +968,124 @@ static bool invoke_ping(
 		// else ignore other tokens
 	}
 
-	if(host_len == 0 || inet_addr(ping_host) == INADDR_NONE)
-	{
+	if (host_len == 0 || inet_addr(ping_host) == INADDR_NONE) {
 		IOT_SAMPLE_LOG_ERROR("Invalid hosthame");
 		return false;
-	}
-	else if(ping_count > PNP_WIRELESS_MAX_PING_TIME)
-	{
+	} else if (ping_count > PNP_WIRELESS_MAX_PING_TIME) {
 		// Avoid to exceed response timeout from server
 		ping_count = PNP_WIRELESS_MAX_PING_TIME;
-	}
-	else if(ping_count <= 0)
-	{
+	} else if (ping_count <= 0) {
 		ping_count = PNP_WIRELESS_DEFAULT_PING_TIME;
-	}
-	else if(buffer_size <= 0)
-	{
+	} else if (buffer_size <= 0) {
 		buffer_size = PNP_WIRELESS_DEFAULT_PING_SIZE;
 	}
 
 
 	//Ping size = icmp header(8 bytes) + data size
 	ping_size = sizeof(struct icmp_echo_hdr) + buffer_size;
-	
+
 	memset(ping_info, 0, sizeof(ping_info));
-	memset(ping_content, 0, PNP_WIRELESS_MAX_PING_TIME*64);
+	memset(ping_content, 0, PNP_WIRELESS_MAX_PING_TIME * 64);
 	memset(ping_result, 0, sizeof(ping_result));
 	sprintf(ping_info, "PING %s %d(%d) bytes of data", ping_host, buffer_size, sizeof(struct ip_hdr) + sizeof(struct icmp_echo_hdr) + buffer_size);
 	wireless_component->ping_info.info = az_span_create_from_str(ping_info);
 
-	for(i = 0; i < ping_count; i++) {
+	for (i = 0; i < ping_count; i++) {
 		ping_socket = socket(AF_INET, SOCK_RAW, IP_PROTO_ICMP);
 		setsockopt(ping_socket, SOL_SOCKET, SO_RCVTIMEO, &ping_timeout, sizeof(ping_timeout));
-	
+
 		to_addr.sin_len = sizeof(to_addr);
 		to_addr.sin_family = AF_INET;
 		to_addr.sin_addr.s_addr = inet_addr(ping_host);
-	
+
 		generate_ping_echo(ping_buf, buffer_size);
 		sendto(ping_socket, ping_buf, ping_size, 0, (struct sockaddr *) &to_addr, sizeof(to_addr));
-			
+
 		ping_time = xTaskGetTickCount();
-		if((reply_size = recvfrom(ping_socket, reply_buf, sizeof(reply_buf), 0, (struct sockaddr *) &from_addr, (socklen_t *) &from_addr_len))
-			>= (int)(sizeof(struct ip_hdr) + sizeof(struct icmp_echo_hdr))) 
-		{
-	
+		if ((reply_size = recvfrom(ping_socket, reply_buf, sizeof(reply_buf), 0, (struct sockaddr *) &from_addr, (socklen_t *) &from_addr_len))
+			>= (int)(sizeof(struct ip_hdr) + sizeof(struct icmp_echo_hdr))) {
+
 			reply_time = xTaskGetTickCount();
 			iphdr = (struct ip_hdr *)reply_buf;
 			pecho = (struct icmp_echo_hdr *)(reply_buf + (IPH_HL(iphdr) * 4));
-	
-			if((pecho->id == PNP_WIRELESS_PING_ID) && (pecho->seqno == htons(ping_seq)))
-			{
-				sprintf(ping_content[ping_seq-1], "%d bytes from %s: icmp_seq=%d time=%d ms", reply_size - sizeof(struct ip_hdr), inet_ntoa(from_addr.sin_addr), htons(pecho->seqno), (reply_time - ping_time) * portTICK_RATE_MS);
-				
-				wireless_component->ping_info.content[ping_seq-1] = az_span_create_from_str(ping_content[ping_seq-1]);
+
+			if ((pecho->id == PNP_WIRELESS_PING_ID) && (pecho->seqno == htons(ping_seq))) {
+				sprintf(ping_content[ping_seq - 1], "%d bytes from %s: icmp_seq=%d time=%d ms", reply_size - sizeof(struct ip_hdr), inet_ntoa(from_addr.sin_addr),
+						htons(pecho->seqno), (reply_time - ping_time) * portTICK_RATE_MS);
+
+				wireless_component->ping_info.content[ping_seq - 1] = az_span_create_from_str(ping_content[ping_seq - 1]);
 
 				received_count++;
 				total_time += (reply_time - ping_time) * portTICK_RATE_MS;
 			}
-		}
-		else
-		{
-			sprintf(ping_content[ping_seq-1], "Request timeout for icmp_seq %d", ping_seq);
-			wireless_component->ping_info.content[ping_seq-1] = az_span_create_from_str(ping_content[ping_seq-1]);
+		} else {
+			sprintf(ping_content[ping_seq - 1], "Request timeout for icmp_seq %d", ping_seq);
+			wireless_component->ping_info.content[ping_seq - 1] = az_span_create_from_str(ping_content[ping_seq - 1]);
 		}
 		close(ping_socket);
-		vTaskDelay(50); 
+		vTaskDelay(50);
 	}
-	sprintf(ping_result, "%d packets transmitted, %d received, %d%% packet loss, average %d ms", ping_count, received_count, (ping_count-received_count)*100/ping_count, total_time/received_count);
+	sprintf(ping_result, "%d packets transmitted, %d received, %d%% packet loss, average %d ms", ping_count, received_count,
+			(ping_count - received_count) * 100 / ping_count, total_time / received_count);
 	wireless_component->ping_info.result = az_span_create_from_str(ping_result);
 
 	build_ping_command_response_payload(wireless_component, response, out_response);
-	
+
 	ping_seq = 0;
-	
+
 	return true;
 }
 
 
 bool pnp_wireless_process_command_request(
-    pnp_wireless_component* wireless_component,
-    az_span command_name,
-    az_span command_received_payload,
-    az_span payload,
-    az_span* out_payload,
-    az_iot_status* out_status)
+	pnp_wireless_component *wireless_component,
+	az_span command_name,
+	az_span command_received_payload,
+	az_span payload,
+	az_span *out_payload,
+	az_iot_status *out_status)
 {
-	if (az_span_is_content_equal(command_wifi_connect_name, command_name))
-	{
+	if (az_span_is_content_equal(command_wifi_connect_name, command_name)) {
 		// Invoke command.
-		if (invoke_wifi_connect(wireless_component, command_received_payload, payload, out_payload))
-		{
+		if (invoke_wifi_connect(wireless_component, command_received_payload, payload, out_payload)) {
 			*out_status = AZ_IOT_STATUS_OK;
-		}
-		else
-		{
+		} else {
 			*out_payload = command_empty_response_payload;
 			*out_status = AZ_IOT_STATUS_BAD_REQUEST;
 			IOT_SAMPLE_LOG_AZ_SPAN("Bad request when invoking command on wireless component:", command_name);
 			return false;
 		}
-	}
-	else if(az_span_is_content_equal(command_wifi_scan_name, command_name))
-	{
+	} else if (az_span_is_content_equal(command_wifi_scan_name, command_name)) {
 		// Invoke command.
-		if (invoke_wifi_scan(wireless_component, command_received_payload, payload, out_payload))
-		{
+		if (invoke_wifi_scan(wireless_component, command_received_payload, payload, out_payload)) {
 			*out_status = AZ_IOT_STATUS_OK;
-		}
-		else
-		{
+		} else {
 			*out_payload = command_empty_response_payload;
 			*out_status = AZ_IOT_STATUS_BAD_REQUEST;
 			IOT_SAMPLE_LOG_AZ_SPAN("Bad request when invoking command on wireless component:", command_name);
 			return false;
 		}
-	}
-	else if(az_span_is_content_equal(command_ota_name, command_name))
-	{
+	} else if (az_span_is_content_equal(command_ota_name, command_name)) {
 		// Invoke command.
-		if (invoke_ota(wireless_component, command_received_payload, payload, out_payload))
-		{
+		if (invoke_ota(wireless_component, command_received_payload, payload, out_payload)) {
 			*out_status = AZ_IOT_STATUS_OK;
-		}
-		else
-		{
+		} else {
 			*out_payload = command_empty_response_payload;
 			*out_status = AZ_IOT_STATUS_BAD_REQUEST;
 			IOT_SAMPLE_LOG_AZ_SPAN("Bad request when invoking command on wireless component:", command_name);
 			return false;
 		}
-	}
-	else if(az_span_is_content_equal(command_ping_name, command_name))
-	{
+	} else if (az_span_is_content_equal(command_ping_name, command_name)) {
 		// Invoke command.
-		if (invoke_ping(wireless_component, command_received_payload, payload, out_payload))
-		{
+		if (invoke_ping(wireless_component, command_received_payload, payload, out_payload)) {
 			*out_status = AZ_IOT_STATUS_OK;
-		}
-		else
-		{
+		} else {
 			*out_payload = command_empty_response_payload;
 			*out_status = AZ_IOT_STATUS_BAD_REQUEST;
 			IOT_SAMPLE_LOG_AZ_SPAN("Bad request when invoking command on wireless component:", command_name);
 			return false;
 		}
-	}
-	else // Unsupported command
-	{
+	} else { // Unsupported command
 		*out_payload = command_empty_response_payload;
 		*out_status = AZ_IOT_STATUS_NOT_FOUND;
 		IOT_SAMPLE_LOG_AZ_SPAN("Command not supported on wireless component:", command_name);

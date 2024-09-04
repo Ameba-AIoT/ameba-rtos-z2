@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corp.
+ * Copyright (c) 2014, 2017 IBM Corp.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,11 +12,18 @@
  *
  * Contributors:
  *    Ian Craggs - initial API and implementation and/or initial documentation
+ *    Ian Craggs - MQTT V5 implementation
  *******************************************************************************/
+#include "platform_opts.h"
 
-#include "StackTrace.h"
+#if defined(MQTTV5)
+#include "V5/MQTTV5Packet.h"
+#else
 #include "MQTTPacket.h"
+#endif
+#include "StackTrace.h"
 #include <string.h>
+#include "MQTTFreertos.h"
 
 #define min(a, b) ((a < b) ? 1 : 0)
 
@@ -33,8 +40,19 @@
   * @param buflen the length in bytes of the data in the supplied buffer
   * @return error code.  1 is success
   */
+#if defined(MQTTV5)
 int MQTTDeserialize_publish(unsigned char* dup, int* qos, unsigned char* retained, unsigned short* packetid, MQTTString* topicName,
-		unsigned char** payload, int* payloadlen, unsigned char* buf, int buflen)
+	unsigned char** payload, int* payloadlen, unsigned char* buf, int buflen)
+{
+	return MQTTV5Deserialize_publish(dup, qos, retained, packetid, topicName, NULL, payload, payloadlen, buf, buflen);
+}
+
+int MQTTV5Deserialize_publish(unsigned char* dup, int* qos, unsigned char* retained, unsigned short* packetid, MQTTString* topicName,
+	MQTTProperties* properties, unsigned char** payload, int* payloadlen, unsigned char* buf, int buflen)
+#else
+int MQTTDeserialize_publish(unsigned char* dup, int* qos, unsigned char* retained, unsigned short* packetid, MQTTString* topicName,
+	unsigned char** payload, int* payloadlen, unsigned char* buf, int buflen)
+#endif
 {
 	MQTTHeader header = {0};
 	unsigned char* curdata = buf;
@@ -60,6 +78,11 @@ int MQTTDeserialize_publish(unsigned char* dup, int* qos, unsigned char* retaine
 	if (*qos > 0)
 		*packetid = readInt(&curdata);
 
+#if defined(MQTTV5)
+	if (properties && !MQTTProperties_read(properties, &curdata, enddata))
+		goto exit;
+#endif
+
 	*payloadlen = enddata - curdata;
 	*payload = curdata;
 	rc = 1;
@@ -79,7 +102,20 @@ exit:
   * @param buflen the length in bytes of the data in the supplied buffer
   * @return error code.  1 is success, 0 is failure
   */
+#if defined(MQTTV5)
+int MQTTV5Deserialize_ack(unsigned char* packettype, unsigned char* dup, unsigned short* packetid,
+	int* reasonCode, MQTTProperties* properties, unsigned char* buf, int buflen);
+
 int MQTTDeserialize_ack(unsigned char* packettype, unsigned char* dup, unsigned short* packetid, unsigned char* buf, int buflen)
+{
+	return MQTTV5Deserialize_ack(packettype, dup, packetid, NULL, NULL, buf, buflen);
+}
+
+int MQTTV5Deserialize_ack(unsigned char* packettype, unsigned char* dup, unsigned short* packetid,
+	int *reasonCode, MQTTProperties* properties, unsigned char* buf, int buflen)
+#else
+int MQTTDeserialize_ack(unsigned char* packettype, unsigned char* dup, unsigned short* packetid, unsigned char* buf, int buflen)
+#endif
 {
 	MQTTHeader header = {0};
 	unsigned char* curdata = buf;
@@ -91,12 +127,34 @@ int MQTTDeserialize_ack(unsigned char* packettype, unsigned char* dup, unsigned 
 	header.byte = readChar(&curdata);
 	*dup = header.bits.dup;
 	*packettype = header.bits.type;
+
 	curdata += (rc = MQTTPacket_decodeBuf(curdata, &mylen)); /* read remaining length */
 	enddata = curdata + mylen;
 
 	if (enddata - curdata < 2)
 		goto exit;
 	*packetid = readInt(&curdata);
+
+#if defined(MQTTV5)
+	if (reasonCode)
+	{
+		if (enddata == curdata) /* no reason code, or properties */
+			*reasonCode = 0;
+		else
+		{
+			*reasonCode = readChar(&curdata);
+			mqtt_printf(MQTT_INFO,"%s ReasonCode: %d, %s", MQTTPacketIDPrint((int)*packettype),*reasonCode,MQTTGetReason(*reasonCode));
+		}
+        }
+
+	if (properties)
+	{
+		if (enddata == curdata)
+			properties->length = properties->count = 0; /* signal that no properties were received */
+		else if (!MQTTProperties_read(properties, &curdata, enddata))
+			goto exit;
+	}
+#endif
 
 	rc = 1;
 exit:

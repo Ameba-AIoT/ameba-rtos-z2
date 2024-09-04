@@ -1,5 +1,5 @@
 /*******************************************************************************
-/ * Copyright (c) 2014 IBM Corp.
+ * Copyright (c) 2014 IBM Corp.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,14 +23,14 @@ extern "C" {
 #endif
 
 #if defined(WIN32_DLL) || defined(WIN64_DLL)
-  #define DLLImport __declspec(dllimport)
-  #define DLLExport __declspec(dllexport)
+	#define DLLImport __declspec(dllimport)
+	#define DLLExport __declspec(dllexport)
 #elif defined(LINUX_SO)
-  #define DLLImport extern
-  #define DLLExport  __attribute__ ((visibility ("default")))
+	#define DLLImport extern
+	#define DLLExport  __attribute__ ((visibility ("default")))
 #else
-  #define DLLImport
-  #define DLLExport  
+	#define DLLImport
+	#define DLLExport
 #endif
 
 enum errors
@@ -45,6 +45,9 @@ enum msgTypes
 	CONNECT = 1, CONNACK, PUBLISH, PUBACK, PUBREC, PUBREL,
 	PUBCOMP, SUBSCRIBE, SUBACK, UNSUBSCRIBE, UNSUBACK,
 	PINGREQ, PINGRESP, DISCONNECT
+#if defined(MQTTV5)
+	, AUTH
+#endif
 };
 
 /**
@@ -94,13 +97,14 @@ int MQTTstrlen(MQTTString mqttstring);
 #include "MQTTUnsubscribe.h"
 #include "MQTTFormat.h"
 
-int MQTTSerialize_ack(unsigned char* buf, int buflen, unsigned char type, unsigned char dup, unsigned short packetid);
-int MQTTDeserialize_ack(unsigned char* packettype, unsigned char* dup, unsigned short* packetid, unsigned char* buf, int buflen);
+DLLExport int MQTTSerialize_ack(unsigned char* buf, int buflen, unsigned char type, unsigned char dup, unsigned short packetid);
+DLLExport int MQTTDeserialize_ack(unsigned char* packettype, unsigned char* dup, unsigned short* packetid, unsigned char* buf, int buflen);
 
+int MQTTPacket_VBIlen(int rem_len);
 int MQTTPacket_len(int rem_len);
-int MQTTPacket_equals(MQTTString* a, char* b);
+DLLExport int MQTTPacket_equals(MQTTString* a, char* b);
 
-int MQTTPacket_encode(unsigned char* buf, int length);
+DLLExport int MQTTPacket_encode(unsigned char* buf, int length);
 int MQTTPacket_decode(int (*getcharfn)(unsigned char*, int), int* value);
 int MQTTPacket_decodeBuf(unsigned char* buf, int* value);
 

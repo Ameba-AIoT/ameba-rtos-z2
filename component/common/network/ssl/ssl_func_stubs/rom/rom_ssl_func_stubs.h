@@ -19,11 +19,18 @@
 #include "mbedtls/ecdh.h"
 #include "mbedtls/ecdsa.h"
 #include "mbedtls/pk.h"
-#if CONFIG_MBEDTLS_VERSION3 != 1 
+#if CONFIG_MBEDTLS_VERSION3 != 1
 #include "mbedtls/pk_internal.h"
 #include "mbedtls/arc4.h"
 #else
 #include "basic_types.h"
+#endif
+
+#ifndef u32
+typedef uint32_t u32;
+#endif
+#ifndef u8
+typedef uint8_t  u8;
 #endif
 
 #if defined(CONFIG_PLATFORM_8710C) && defined(CONFIG_BUILD_SECURE) && (CONFIG_BUILD_SECURE == 1)
@@ -36,24 +43,24 @@ typedef struct ssl_func_stubs_s {
 		u32 use_hw_crypto_func
 	);
 	void (*init_rom_ssl_hw_crypto_aes_ecb)(
-		int (*hw_crypto_aes_ecb_init)(const u8*, const u32),
-		int (*hw_crypto_aes_ecb_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-		int (*hw_crypto_aes_ecb_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+		int (*hw_crypto_aes_ecb_init)(const u8 *, const u32),
+		int (*hw_crypto_aes_ecb_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+		int (*hw_crypto_aes_ecb_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 	);
 	void (*init_rom_ssl_hw_crypto_aes_cbc)(
-		int (*hw_crypto_aes_cbc_init)(const u8*, const u32),
-		int (*hw_crypto_aes_cbc_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-		int (*hw_crypto_aes_cbc_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+		int (*hw_crypto_aes_cbc_init)(const u8 *, const u32),
+		int (*hw_crypto_aes_cbc_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+		int (*hw_crypto_aes_cbc_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 	);
 	void (*init_rom_ssl_hw_crypto_des_cbc)(
-		int (*hw_crypto_des_cbc_init)(const u8*, const u32),
-		int (*hw_crypto_des_cbc_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-		int (*hw_crypto_des_cbc_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+		int (*hw_crypto_des_cbc_init)(const u8 *, const u32),
+		int (*hw_crypto_des_cbc_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+		int (*hw_crypto_des_cbc_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 	);
 	void (*init_rom_ssl_hw_crypto_3des_cbc)(
-		int (*hw_crypto_3des_cbc_init)(const u8*, const u32),
-		int (*hw_crypto_3des_cbc_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-		int (*hw_crypto_3des_cbc_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+		int (*hw_crypto_3des_cbc_init)(const u8 *, const u32),
+		int (*hw_crypto_3des_cbc_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+		int (*hw_crypto_3des_cbc_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 	);
 	// bignum
 	void (*mbedtls_mpi_init)(mbedtls_mpi *X);
@@ -109,24 +116,24 @@ typedef struct ssl_func_stubs_s {
 		u32 use_hw_crypto_func
 	);
 	void (*init_rom_ssl_hw_crypto_aes_ecb)(
-		int (*hw_crypto_aes_ecb_init)(const u8*, const u32),
-		int (*hw_crypto_aes_ecb_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-		int (*hw_crypto_aes_ecb_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+		int (*hw_crypto_aes_ecb_init)(const u8 *, const u32),
+		int (*hw_crypto_aes_ecb_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+		int (*hw_crypto_aes_ecb_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 	);
 	void (*init_rom_ssl_hw_crypto_aes_cbc)(
-		int (*hw_crypto_aes_cbc_init)(const u8*, const u32),
-		int (*hw_crypto_aes_cbc_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-		int (*hw_crypto_aes_cbc_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+		int (*hw_crypto_aes_cbc_init)(const u8 *, const u32),
+		int (*hw_crypto_aes_cbc_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+		int (*hw_crypto_aes_cbc_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 	);
 	void (*init_rom_ssl_hw_crypto_des_cbc)(
-		int (*hw_crypto_des_cbc_init)(const u8*, const u32),
-		int (*hw_crypto_des_cbc_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-		int (*hw_crypto_des_cbc_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+		int (*hw_crypto_des_cbc_init)(const u8 *, const u32),
+		int (*hw_crypto_des_cbc_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+		int (*hw_crypto_des_cbc_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 	);
 	void (*init_rom_ssl_hw_crypto_3des_cbc)(
-		int (*hw_crypto_3des_cbc_init)(const u8*, const u32),
-		int (*hw_crypto_3des_cbc_decrypt)(const u8*, const u32, const u8*, const u32, u8*),
-		int (*hw_crypto_3des_cbc_encrypt)(const u8*, const u32, const u8*, const u32, u8*)
+		int (*hw_crypto_3des_cbc_init)(const u8 *, const u32),
+		int (*hw_crypto_3des_cbc_decrypt)(const u8 *, const u32, const u8 *, const u32, u8 *),
+		int (*hw_crypto_3des_cbc_encrypt)(const u8 *, const u32, const u8 *, const u32, u8 *)
 	);
 	// bignum
 	void (*mbedtls_mpi_init)(mbedtls_mpi *X);
@@ -171,10 +178,10 @@ typedef struct ssl_func_stubs_s {
 	int (*mbedtls_mpi_is_prime)(const mbedtls_mpi *X, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
 	int (*mbedtls_mpi_gen_prime)(mbedtls_mpi *X, size_t nbits, int dh_flag, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
 	// ecp
-	const mbedtls_ecp_curve_info* (*mbedtls_ecp_curve_list)(void);
-	const mbedtls_ecp_curve_info* (*mbedtls_ecp_curve_info_from_grp_id)(mbedtls_ecp_group_id grp_id);
-	const mbedtls_ecp_curve_info* (*mbedtls_ecp_curve_info_from_tls_id)(uint16_t tls_id);
-	const mbedtls_ecp_curve_info* (*mbedtls_ecp_curve_info_from_name)(const char *name);
+	const mbedtls_ecp_curve_info *(*mbedtls_ecp_curve_list)(void);
+	const mbedtls_ecp_curve_info *(*mbedtls_ecp_curve_info_from_grp_id)(mbedtls_ecp_group_id grp_id);
+	const mbedtls_ecp_curve_info *(*mbedtls_ecp_curve_info_from_tls_id)(uint16_t tls_id);
+	const mbedtls_ecp_curve_info *(*mbedtls_ecp_curve_info_from_name)(const char *name);
 	void (*mbedtls_ecp_point_init)(mbedtls_ecp_point *pt);
 	void (*mbedtls_ecp_group_init)(mbedtls_ecp_group *grp);
 	void (*mbedtls_ecp_keypair_init)(mbedtls_ecp_keypair *key);
@@ -195,9 +202,12 @@ typedef struct ssl_func_stubs_s {
 	int (*mbedtls_ecp_tls_write_group)(const mbedtls_ecp_group *grp, size_t *olen, unsigned char *buf, size_t blen);
 	int (*mbedtls_ecp_check_pubkey)(const mbedtls_ecp_group *grp, const mbedtls_ecp_point *pt);
 	int (*mbedtls_ecp_check_privkey)(const mbedtls_ecp_group *grp, const mbedtls_mpi *d);
-	int (*mbedtls_ecp_mul)(mbedtls_ecp_group *grp, mbedtls_ecp_point *R, const mbedtls_mpi *m, const mbedtls_ecp_point *P, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
-	int (*mbedtls_ecp_muladd)(mbedtls_ecp_group *grp, mbedtls_ecp_point *R, const mbedtls_mpi *m, const mbedtls_ecp_point *P, const mbedtls_mpi *n, const mbedtls_ecp_point *Q);
-	int (*mbedtls_ecp_gen_keypair_base)(mbedtls_ecp_group *grp, const mbedtls_ecp_point *G, mbedtls_mpi *d, mbedtls_ecp_point *Q, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_ecp_mul)(mbedtls_ecp_group *grp, mbedtls_ecp_point *R, const mbedtls_mpi *m, const mbedtls_ecp_point *P, int (*f_rng)(void *, unsigned char *,
+						   size_t), void *p_rng);
+	int (*mbedtls_ecp_muladd)(mbedtls_ecp_group *grp, mbedtls_ecp_point *R, const mbedtls_mpi *m, const mbedtls_ecp_point *P, const mbedtls_mpi *n,
+							  const mbedtls_ecp_point *Q);
+	int (*mbedtls_ecp_gen_keypair_base)(mbedtls_ecp_group *grp, const mbedtls_ecp_point *G, mbedtls_mpi *d, mbedtls_ecp_point *Q, int (*f_rng)(void *,
+										unsigned char *, size_t), void *p_rng);
 	int (*mbedtls_ecp_gen_keypair)(mbedtls_ecp_group *grp, mbedtls_mpi *d, mbedtls_ecp_point *Q, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
 	int (*mbedtls_ecp_gen_key)(mbedtls_ecp_group_id grp_id, mbedtls_ecp_keypair *key, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
 	int (*mbedtls_ecp_check_pub_priv)(const mbedtls_ecp_keypair *pub, const mbedtls_ecp_keypair *prv);
@@ -263,9 +273,11 @@ typedef struct ssl_func_stubs_s {
 	void (*mbedtls_aes_decrypt)(mbedtls_aes_context *ctx, const unsigned char input[16], unsigned char output[16]);
 	int (*mbedtls_aes_crypt_ecb)(mbedtls_aes_context *ctx, int mode, const unsigned char input[16], unsigned char output[16]);
 	int (*mbedtls_aes_crypt_cbc)(mbedtls_aes_context *ctx, int mode, size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output);
-	int (*mbedtls_aes_crypt_cfb128)(mbedtls_aes_context *ctx, int mode, size_t length, size_t *iv_off, unsigned char iv[16], const unsigned char *input, unsigned char *output);
+	int (*mbedtls_aes_crypt_cfb128)(mbedtls_aes_context *ctx, int mode, size_t length, size_t *iv_off, unsigned char iv[16], const unsigned char *input,
+									unsigned char *output);
 	int (*mbedtls_aes_crypt_cfb8)(mbedtls_aes_context *ctx, int mode, size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output);
-	int (*mbedtls_aes_crypt_ctr)(mbedtls_aes_context *ctx, size_t length, size_t *nc_off, unsigned char nonce_counter[16], unsigned char stream_block[16], const unsigned char *input, unsigned char *output);
+	int (*mbedtls_aes_crypt_ctr)(mbedtls_aes_context *ctx, size_t length, size_t *nc_off, unsigned char nonce_counter[16], unsigned char stream_block[16],
+								 const unsigned char *input, unsigned char *output);
 	// des
 	void (*mbedtls_des_init)(mbedtls_des_context *ctx);
 	void (*mbedtls_des_free)(mbedtls_des_context *ctx);
@@ -286,9 +298,9 @@ typedef struct ssl_func_stubs_s {
 	int (*mbedtls_des3_crypt_ecb)(mbedtls_des3_context *ctx, const unsigned char input[8], unsigned char output[8]);
 	int (*mbedtls_des3_crypt_cbc)(mbedtls_des3_context *ctx, int mode, size_t length, unsigned char iv[8], const unsigned char *input, unsigned char *output);
 	// md
-	const int* (*mbedtls_md_list)(void);
-	const mbedtls_md_info_t* (*mbedtls_md_info_from_string)(const char *md_name);
-	const mbedtls_md_info_t* (*mbedtls_md_info_from_type)(mbedtls_md_type_t md_type);
+	const int *(*mbedtls_md_list)(void);
+	const mbedtls_md_info_t *(*mbedtls_md_info_from_string)(const char *md_name);
+	const mbedtls_md_info_t *(*mbedtls_md_info_from_type)(mbedtls_md_type_t md_type);
 	void (*mbedtls_md_init)(mbedtls_md_context_t *ctx);
 	void (*mbedtls_md_free)(mbedtls_md_context_t *ctx);
 	int (*mbedtls_md_clone)(mbedtls_md_context_t *dst, const mbedtls_md_context_t *src);
@@ -302,11 +314,12 @@ typedef struct ssl_func_stubs_s {
 	int (*mbedtls_md_hmac_update)(mbedtls_md_context_t *ctx, const unsigned char *input, size_t ilen);
 	int (*mbedtls_md_hmac_finish)(mbedtls_md_context_t *ctx, unsigned char *output);
 	int (*mbedtls_md_hmac_reset)(mbedtls_md_context_t *ctx);
-	int (*mbedtls_md_hmac)(const mbedtls_md_info_t *md_info, const unsigned char *key, size_t keylen, const unsigned char *input, size_t ilen, unsigned char *output);
+	int (*mbedtls_md_hmac)(const mbedtls_md_info_t *md_info, const unsigned char *key, size_t keylen, const unsigned char *input, size_t ilen,
+						   unsigned char *output);
 	int (*mbedtls_md_process)(mbedtls_md_context_t *ctx, const unsigned char *data);
 	unsigned char (*mbedtls_md_get_size)(const mbedtls_md_info_t *md_info);
 	mbedtls_md_type_t (*mbedtls_md_get_type)(const mbedtls_md_info_t *md_info);
-	const char* (*mbedtls_md_get_name)(const mbedtls_md_info_t *md_info);
+	const char *(*mbedtls_md_get_name)(const mbedtls_md_info_t *md_info);
 	// asn1parse
 	int (*mbedtls_asn1_get_len)(unsigned char **p, const unsigned char *end, size_t *len);
 	int (*mbedtls_asn1_get_tag)(unsigned char **p, const unsigned char *end, size_t *len, int tag);
@@ -315,12 +328,12 @@ typedef struct ssl_func_stubs_s {
 	int (*mbedtls_asn1_get_mpi)(unsigned char **p, const unsigned char *end, mbedtls_mpi *X);
 	int (*mbedtls_asn1_get_bitstring)(unsigned char **p, const unsigned char *end, mbedtls_asn1_bitstring *bs);
 	int (*mbedtls_asn1_get_bitstring_null)(unsigned char **p, const unsigned char *end, size_t *len);
-	int (*mbedtls_asn1_get_sequence_of)( unsigned char **p, const unsigned char *end, mbedtls_asn1_sequence *cur, int tag);
+	int (*mbedtls_asn1_get_sequence_of)(unsigned char **p, const unsigned char *end, mbedtls_asn1_sequence *cur, int tag);
 	int (*mbedtls_asn1_get_alg)(unsigned char **p, const unsigned char *end, mbedtls_asn1_buf *alg, mbedtls_asn1_buf *params);
 	int (*mbedtls_asn1_get_alg_null)(unsigned char **p, const unsigned char *end, mbedtls_asn1_buf *alg);
 	void (*mbedtls_asn1_free_named_data)(mbedtls_asn1_named_data *cur);
 	void (*mbedtls_asn1_free_named_data_list)(mbedtls_asn1_named_data **head);
-	mbedtls_asn1_named_data* (*mbedtls_asn1_find_named_data)(mbedtls_asn1_named_data *list, const char *oid, size_t len);
+	mbedtls_asn1_named_data *(*mbedtls_asn1_find_named_data)(mbedtls_asn1_named_data *list, const char *oid, size_t len);
 	// asn1write
 	int (*mbedtls_asn1_write_len)(unsigned char **p, unsigned char *start, size_t len);
 	int (*mbedtls_asn1_write_tag)(unsigned char **p, unsigned char *start, unsigned char tag);
@@ -335,7 +348,8 @@ typedef struct ssl_func_stubs_s {
 	int (*mbedtls_asn1_write_ia5_string)(unsigned char **p, unsigned char *start, const char *text, size_t text_len);
 	int (*mbedtls_asn1_write_bitstring)(unsigned char **p, unsigned char *start, const unsigned char *buf, size_t bits);
 	int (*mbedtls_asn1_write_octet_string)(unsigned char **p, unsigned char *start, const unsigned char *buf, size_t size);
-	mbedtls_asn1_named_data* (*mbedtls_asn1_store_named_data)(mbedtls_asn1_named_data **head, const char *oid, size_t oid_len, const unsigned char *val, size_t val_len);
+	mbedtls_asn1_named_data *(*mbedtls_asn1_store_named_data)(mbedtls_asn1_named_data **head, const char *oid, size_t oid_len, const unsigned char *val,
+			size_t val_len);
 	// base64
 	int (*mbedtls_base64_encode)(unsigned char *dst, size_t dlen, size_t *olen, const unsigned char *src, size_t slen);
 	int (*mbedtls_base64_decode)(unsigned char *dst, size_t dlen, size_t *olen, const unsigned char *src, size_t slen);
@@ -346,20 +360,34 @@ typedef struct ssl_func_stubs_s {
 	int (*mbedtls_rsa_check_privkey)(const mbedtls_rsa_context *ctx);
 	int (*mbedtls_rsa_check_pub_priv)(const mbedtls_rsa_context *pub, const mbedtls_rsa_context *prv);
 	int (*mbedtls_rsa_public)(mbedtls_rsa_context *ctx, const unsigned char *input, unsigned char *output);
-	int (*mbedtls_rsa_private)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, const unsigned char *input, unsigned char *output);
-	int (*mbedtls_rsa_rsaes_oaep_encrypt)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, const unsigned char *label, size_t label_len, size_t ilen, const unsigned char *input, unsigned char *output);
-	int (*mbedtls_rsa_rsaes_pkcs1_v15_encrypt)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t ilen, const unsigned char *input, unsigned char *output);
-	int (*mbedtls_rsa_pkcs1_encrypt)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t ilen, const unsigned char *input, unsigned char *output);
-	int (*mbedtls_rsa_rsaes_oaep_decrypt)( mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, const unsigned char *label, size_t label_len, size_t *olen, const unsigned char *input, unsigned char *output, size_t output_max_len);
-	int (*mbedtls_rsa_rsaes_pkcs1_v15_decrypt)( mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t *olen, const unsigned char *input, unsigned char *output, size_t output_max_len);
-	int (*mbedtls_rsa_pkcs1_decrypt)( mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t *olen, const unsigned char *input, unsigned char *output, size_t output_max_len);
-	int (*mbedtls_rsa_rsassa_pss_sign)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, unsigned char *sig);
-	int (*mbedtls_rsa_rsassa_pkcs1_v15_sign)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, unsigned char *sig);
-	int (*mbedtls_rsa_pkcs1_sign)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, unsigned char *sig);
-	int (*mbedtls_rsa_rsassa_pss_verify_ext)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, mbedtls_md_type_t mgf1_hash_id, int expected_salt_len, const unsigned char *sig);
-	int (*mbedtls_rsa_rsassa_pss_verify)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, const unsigned char *sig);
-	int (*mbedtls_rsa_rsassa_pkcs1_v15_verify)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, const unsigned char *sig);
-	int (*mbedtls_rsa_pkcs1_verify)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, const unsigned char *sig);
+	int (*mbedtls_rsa_private)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, const unsigned char *input,
+							   unsigned char *output);
+	int (*mbedtls_rsa_rsaes_oaep_encrypt)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode,
+										  const unsigned char *label, size_t label_len, size_t ilen, const unsigned char *input, unsigned char *output);
+	int (*mbedtls_rsa_rsaes_pkcs1_v15_encrypt)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t ilen,
+			const unsigned char *input, unsigned char *output);
+	int (*mbedtls_rsa_pkcs1_encrypt)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t ilen,
+									 const unsigned char *input, unsigned char *output);
+	int (*mbedtls_rsa_rsaes_oaep_decrypt)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode,
+										  const unsigned char *label, size_t label_len, size_t *olen, const unsigned char *input, unsigned char *output, size_t output_max_len);
+	int (*mbedtls_rsa_rsaes_pkcs1_v15_decrypt)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t *olen,
+			const unsigned char *input, unsigned char *output, size_t output_max_len);
+	int (*mbedtls_rsa_pkcs1_decrypt)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, size_t *olen,
+									 const unsigned char *input, unsigned char *output, size_t output_max_len);
+	int (*mbedtls_rsa_rsassa_pss_sign)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg,
+									   unsigned int hashlen, const unsigned char *hash, unsigned char *sig);
+	int (*mbedtls_rsa_rsassa_pkcs1_v15_sign)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode,
+			mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, unsigned char *sig);
+	int (*mbedtls_rsa_pkcs1_sign)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg,
+								  unsigned int hashlen, const unsigned char *hash, unsigned char *sig);
+	int (*mbedtls_rsa_rsassa_pss_verify_ext)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode,
+			mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, mbedtls_md_type_t mgf1_hash_id, int expected_salt_len, const unsigned char *sig);
+	int (*mbedtls_rsa_rsassa_pss_verify)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg,
+										 unsigned int hashlen, const unsigned char *hash, const unsigned char *sig);
+	int (*mbedtls_rsa_rsassa_pkcs1_v15_verify)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode,
+			mbedtls_md_type_t md_alg, unsigned int hashlen, const unsigned char *hash, const unsigned char *sig);
+	int (*mbedtls_rsa_pkcs1_verify)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode, mbedtls_md_type_t md_alg,
+									unsigned int hashlen, const unsigned char *hash, const unsigned char *sig);
 	void (*mbedtls_rsa_free)(mbedtls_rsa_context *ctx);
 	int (*mbedtls_rsa_gen_key)(mbedtls_rsa_context *ctx, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, unsigned int nbits, int exponent);
 	int (*mbedtls_rsa_copy)(mbedtls_rsa_context *dst, const mbedtls_rsa_context *src);
@@ -371,16 +399,19 @@ typedef struct ssl_func_stubs_s {
 	void (*mbedtls_ctr_drbg_set_reseed_interval)(mbedtls_ctr_drbg_context *ctx, int interval);
 	void (*mbedtls_ctr_drbg_update)(mbedtls_ctr_drbg_context *ctx, const unsigned char *additional, size_t add_len);
 	int (*mbedtls_ctr_drbg_reseed)(mbedtls_ctr_drbg_context *ctx, const unsigned char *additional, size_t len);
-	int (*mbedtls_ctr_drbg_seed_entropy_len)(mbedtls_ctr_drbg_context *ctx, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy, const unsigned char *custom, size_t len, size_t entropy_len);
-	int (*mbedtls_ctr_drbg_seed)(mbedtls_ctr_drbg_context *ctx, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy, const unsigned char *custom, size_t len);
+	int (*mbedtls_ctr_drbg_seed_entropy_len)(mbedtls_ctr_drbg_context *ctx, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy,
+			const unsigned char *custom, size_t len, size_t entropy_len);
+	int (*mbedtls_ctr_drbg_seed)(mbedtls_ctr_drbg_context *ctx, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy, const unsigned char *custom,
+								 size_t len);
 	int (*mbedtls_ctr_drbg_random_with_add)(void *p_rng, unsigned char *output, size_t output_len, const unsigned char *additional, size_t add_len);
 	int (*mbedtls_ctr_drbg_random)(void *p_rng, unsigned char *output, size_t output_len);
 	// hmac_drbg
 	void (*mbedtls_hmac_drbg_init)(mbedtls_hmac_drbg_context *ctx);
 	void (*mbedtls_hmac_drbg_update)(mbedtls_hmac_drbg_context *ctx, const unsigned char *additional, size_t add_len);
-	int (*mbedtls_hmac_drbg_seed_buf)(mbedtls_hmac_drbg_context *ctx, const mbedtls_md_info_t * md_info, const unsigned char *data, size_t data_len);
+	int (*mbedtls_hmac_drbg_seed_buf)(mbedtls_hmac_drbg_context *ctx, const mbedtls_md_info_t *md_info, const unsigned char *data, size_t data_len);
 	int (*mbedtls_hmac_drbg_reseed)(mbedtls_hmac_drbg_context *ctx, const unsigned char *additional, size_t len);
-	int (*mbedtls_hmac_drbg_seed)(mbedtls_hmac_drbg_context *ctx, const mbedtls_md_info_t * md_info, int (*f_entropy)(void *, unsigned char *, size_t), void *p_entropy, const unsigned char *custom, size_t len);
+	int (*mbedtls_hmac_drbg_seed)(mbedtls_hmac_drbg_context *ctx, const mbedtls_md_info_t *md_info, int (*f_entropy)(void *, unsigned char *, size_t),
+								  void *p_entropy, const unsigned char *custom, size_t len);
 	void (*mbedtls_hmac_drbg_set_prediction_resistance)(mbedtls_hmac_drbg_context *ctx, int resistance);
 	void (*mbedtls_hmac_drbg_set_entropy_len)(mbedtls_hmac_drbg_context *ctx, size_t len);
 	void (*mbedtls_hmac_drbg_set_reseed_interval)(mbedtls_hmac_drbg_context *ctx, int interval);
@@ -389,28 +420,37 @@ typedef struct ssl_func_stubs_s {
 	void (*mbedtls_hmac_drbg_free)(mbedtls_hmac_drbg_context *ctx);
 	// pem
 	void (*mbedtls_pem_init)(mbedtls_pem_context *ctx);
-	int (*mbedtls_pem_read_buffer)(mbedtls_pem_context *ctx, const char *header, const char *footer, const unsigned char *data, const unsigned char *pwd, size_t pwdlen, size_t *use_len);
+	int (*mbedtls_pem_read_buffer)(mbedtls_pem_context *ctx, const char *header, const char *footer, const unsigned char *data, const unsigned char *pwd,
+								   size_t pwdlen, size_t *use_len);
 	void (*mbedtls_pem_free)(mbedtls_pem_context *ctx);
-	int (*mbedtls_pem_write_buffer)(const char *header, const char *footer, const unsigned char *der_data, size_t der_len, unsigned char *buf, size_t buf_len, size_t *olen);
+	int (*mbedtls_pem_write_buffer)(const char *header, const char *footer, const unsigned char *der_data, size_t der_len, unsigned char *buf, size_t buf_len,
+									size_t *olen);
 	// dhm
 	void (*mbedtls_dhm_init)(mbedtls_dhm_context *ctx);
 	int (*mbedtls_dhm_read_params)(mbedtls_dhm_context *ctx, unsigned char **p, const unsigned char *end);
-	int (*mbedtls_dhm_make_params)(mbedtls_dhm_context *ctx, int x_size, unsigned char *output, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_dhm_make_params)(mbedtls_dhm_context *ctx, int x_size, unsigned char *output, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t),
+								   void *p_rng);
 	int (*mbedtls_dhm_read_public)(mbedtls_dhm_context *ctx, const unsigned char *input, size_t ilen);
-	int (*mbedtls_dhm_make_public)(mbedtls_dhm_context *ctx, int x_size, unsigned char *output, size_t olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
-	int (*mbedtls_dhm_calc_secret)(mbedtls_dhm_context *ctx, unsigned char *output, size_t output_size, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_dhm_make_public)(mbedtls_dhm_context *ctx, int x_size, unsigned char *output, size_t olen, int (*f_rng)(void *, unsigned char *, size_t),
+								   void *p_rng);
+	int (*mbedtls_dhm_calc_secret)(mbedtls_dhm_context *ctx, unsigned char *output, size_t output_size, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t),
+								   void *p_rng);
 	void (*mbedtls_dhm_free)(mbedtls_dhm_context *ctx);
 	int (*mbedtls_dhm_parse_dhm)(mbedtls_dhm_context *dhm, const unsigned char *dhmin, size_t dhminlen);
 	// ecjpake
 	void (*mbedtls_ecjpake_init)(mbedtls_ecjpake_context *ctx);
 	void (*mbedtls_ecjpake_free)(mbedtls_ecjpake_context *ctx);
-	int (*mbedtls_ecjpake_setup)(mbedtls_ecjpake_context *ctx, mbedtls_ecjpake_role role, mbedtls_md_type_t hash, mbedtls_ecp_group_id curve, const unsigned char *secret, size_t len);
+	int (*mbedtls_ecjpake_setup)(mbedtls_ecjpake_context *ctx, mbedtls_ecjpake_role role, mbedtls_md_type_t hash, mbedtls_ecp_group_id curve,
+								 const unsigned char *secret, size_t len);
 	int (*mbedtls_ecjpake_check)(const mbedtls_ecjpake_context *ctx);
 	int (*mbedtls_ecjpake_read_round_one)(mbedtls_ecjpake_context *ctx, const unsigned char *buf, size_t len);
-	int (*mbedtls_ecjpake_write_round_one)(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_ecjpake_write_round_one)(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *,
+										   size_t), void *p_rng);
 	int (*mbedtls_ecjpake_read_round_two)(mbedtls_ecjpake_context *ctx, const unsigned char *buf, size_t len);
-	int (*mbedtls_ecjpake_write_round_two)(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
-	int (*mbedtls_ecjpake_derive_secret)(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_ecjpake_write_round_two)(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *,
+										   size_t), void *p_rng);
+	int (*mbedtls_ecjpake_derive_secret)(mbedtls_ecjpake_context *ctx, unsigned char *buf, size_t len, size_t *olen, int (*f_rng)(void *, unsigned char *, size_t),
+										 void *p_rng);
 	// arc4
 #if CONFIG_MBEDTLS_VERSION3 == 0
 	void (*mbedtls_arc4_init)(mbedtls_arc4_context *ctx);
@@ -420,21 +460,30 @@ typedef struct ssl_func_stubs_s {
 #endif
 	// ecdh
 	int (*mbedtls_ecdh_gen_public)(mbedtls_ecp_group *grp, mbedtls_mpi *d, mbedtls_ecp_point *Q, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
-	int (*mbedtls_ecdh_compute_shared)(mbedtls_ecp_group *grp, mbedtls_mpi *z, const mbedtls_ecp_point *Q, const mbedtls_mpi *d, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_ecdh_compute_shared)(mbedtls_ecp_group *grp, mbedtls_mpi *z, const mbedtls_ecp_point *Q, const mbedtls_mpi *d, int (*f_rng)(void *,
+									   unsigned char *, size_t), void *p_rng);
 	void (*mbedtls_ecdh_init)(mbedtls_ecdh_context *ctx);
 	void (*mbedtls_ecdh_free)(mbedtls_ecdh_context *ctx);
-	int (*mbedtls_ecdh_make_params)(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_ecdh_make_params)(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t),
+									void *p_rng);
 	int (*mbedtls_ecdh_read_params)(mbedtls_ecdh_context *ctx, const unsigned char **buf, const unsigned char *end);
 	int (*mbedtls_ecdh_get_params)(mbedtls_ecdh_context *ctx, const mbedtls_ecp_keypair *key, mbedtls_ecdh_side side);
-	int (*mbedtls_ecdh_make_public)(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_ecdh_make_public)(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t),
+									void *p_rng);
 	int (*mbedtls_ecdh_read_public)(mbedtls_ecdh_context *ctx, const unsigned char *buf, size_t blen);
-	int (*mbedtls_ecdh_calc_secret)(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_ecdh_calc_secret)(mbedtls_ecdh_context *ctx, size_t *olen, unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t),
+									void *p_rng);
 	// ecdsa
-	int (*mbedtls_ecdsa_sign)(mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s, const mbedtls_mpi *d, const unsigned char *buf, size_t blen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
-	int (*mbedtls_ecdsa_sign_det)(mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s, const mbedtls_mpi *d, const unsigned char *buf, size_t blen, mbedtls_md_type_t md_alg);
-	int (*mbedtls_ecdsa_verify)(mbedtls_ecp_group *grp, const unsigned char *buf, size_t blen, const mbedtls_ecp_point *Q, const mbedtls_mpi *r, const mbedtls_mpi *s);
-	int (*mbedtls_ecdsa_write_signature)(mbedtls_ecdsa_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hlen, unsigned char *sig, size_t *slen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
-	int (*mbedtls_ecdsa_write_signature_det)(mbedtls_ecdsa_context *ctx, const unsigned char *hash, size_t hlen, unsigned char *sig, size_t *slen, mbedtls_md_type_t md_alg);
+	int (*mbedtls_ecdsa_sign)(mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s, const mbedtls_mpi *d, const unsigned char *buf, size_t blen,
+							  int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_ecdsa_sign_det)(mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s, const mbedtls_mpi *d, const unsigned char *buf, size_t blen,
+								  mbedtls_md_type_t md_alg);
+	int (*mbedtls_ecdsa_verify)(mbedtls_ecp_group *grp, const unsigned char *buf, size_t blen, const mbedtls_ecp_point *Q, const mbedtls_mpi *r,
+								const mbedtls_mpi *s);
+	int (*mbedtls_ecdsa_write_signature)(mbedtls_ecdsa_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hlen, unsigned char *sig,
+										 size_t *slen, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_ecdsa_write_signature_det)(mbedtls_ecdsa_context *ctx, const unsigned char *hash, size_t hlen, unsigned char *sig, size_t *slen,
+			mbedtls_md_type_t md_alg);
 	int (*mbedtls_ecdsa_read_signature)(mbedtls_ecdsa_context *ctx, const unsigned char *hash, size_t hlen, const unsigned char *sig, size_t slen);
 	int (*mbedtls_ecdsa_genkey)(mbedtls_ecdsa_context *ctx, mbedtls_ecp_group_id gid, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
 	int (*mbedtls_ecdsa_from_keypair)(mbedtls_ecdsa_context *ctx, const mbedtls_ecp_keypair *key);
@@ -443,19 +492,25 @@ typedef struct ssl_func_stubs_s {
 	// pk
 	void (*mbedtls_pk_init)(mbedtls_pk_context *ctx);
 	void (*mbedtls_pk_free)(mbedtls_pk_context *ctx);
-	const mbedtls_pk_info_t* (*mbedtls_pk_info_from_type)(mbedtls_pk_type_t pk_type);
+	const mbedtls_pk_info_t *(*mbedtls_pk_info_from_type)(mbedtls_pk_type_t pk_type);
 	int (*mbedtls_pk_setup)(mbedtls_pk_context *ctx, const mbedtls_pk_info_t *info);
-	int (*mbedtls_pk_setup_rsa_alt)(mbedtls_pk_context *ctx, void *key, mbedtls_pk_rsa_alt_decrypt_func decrypt_func, mbedtls_pk_rsa_alt_sign_func sign_func, mbedtls_pk_rsa_alt_key_len_func key_len_func);
+	int (*mbedtls_pk_setup_rsa_alt)(mbedtls_pk_context *ctx, void *key, mbedtls_pk_rsa_alt_decrypt_func decrypt_func, mbedtls_pk_rsa_alt_sign_func sign_func,
+									mbedtls_pk_rsa_alt_key_len_func key_len_func);
 	int (*mbedtls_pk_can_do)(const mbedtls_pk_context *ctx, mbedtls_pk_type_t type);
-	int (*mbedtls_pk_verify)(mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hash_len, const unsigned char *sig, size_t sig_len);
-	int (*mbedtls_pk_verify_ext)(mbedtls_pk_type_t type, const void *options, mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hash_len, const unsigned char *sig, size_t sig_len);
-	int (*mbedtls_pk_sign)(mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hash_len, unsigned char *sig, size_t *sig_len, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
-	int (*mbedtls_pk_decrypt)(mbedtls_pk_context *ctx, const unsigned char *input, size_t ilen, unsigned char *output, size_t *olen, size_t osize, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
-	int (*mbedtls_pk_encrypt)(mbedtls_pk_context *ctx, const unsigned char *input, size_t ilen, unsigned char *output, size_t *olen, size_t osize, int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_pk_verify)(mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hash_len, const unsigned char *sig,
+							 size_t sig_len);
+	int (*mbedtls_pk_verify_ext)(mbedtls_pk_type_t type, const void *options, mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash,
+								 size_t hash_len, const unsigned char *sig, size_t sig_len);
+	int (*mbedtls_pk_sign)(mbedtls_pk_context *ctx, mbedtls_md_type_t md_alg, const unsigned char *hash, size_t hash_len, unsigned char *sig, size_t *sig_len,
+						   int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_pk_decrypt)(mbedtls_pk_context *ctx, const unsigned char *input, size_t ilen, unsigned char *output, size_t *olen, size_t osize,
+							  int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
+	int (*mbedtls_pk_encrypt)(mbedtls_pk_context *ctx, const unsigned char *input, size_t ilen, unsigned char *output, size_t *olen, size_t osize,
+							  int (*f_rng)(void *, unsigned char *, size_t), void *p_rng);
 	int (*mbedtls_pk_check_pair)(const mbedtls_pk_context *pub, const mbedtls_pk_context *prv);
 	size_t (*mbedtls_pk_get_bitlen)(const mbedtls_pk_context *ctx);
 	int (*mbedtls_pk_debug)(const mbedtls_pk_context *ctx, mbedtls_pk_debug_item *items);
-	const char* (*mbedtls_pk_get_name)(const mbedtls_pk_context *ctx);
+	const char *(*mbedtls_pk_get_name)(const mbedtls_pk_context *ctx);
 	mbedtls_pk_type_t (*mbedtls_pk_get_type)(const mbedtls_pk_context *ctx);
 	// pkwrite
 	int (*mbedtls_pk_write_pubkey)(unsigned char **p, unsigned char *start, const mbedtls_pk_context *key);

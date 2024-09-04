@@ -3,11 +3,11 @@
  * to be findable by lwIP (ie. an #include <lwippools.h> must either directly
  * include this or include something more generic which includes this), and
  * MEMP_USE_CUSTOM_POOLS has to be set in lwipopts.h. */
-//added for libcoap 
+//added for libcoap
 #include <coap/net.h>
 #include <coap/subscribe.h>
 #include <coap/resource.h>
-   
+
 #ifndef MEMP_NUM_COAPCONTEXT
 #define MEMP_NUM_COAPCONTEXT 2
 #endif

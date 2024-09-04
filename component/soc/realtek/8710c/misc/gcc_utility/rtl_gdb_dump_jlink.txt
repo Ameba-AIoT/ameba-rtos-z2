@@ -1,0 +1,17 @@
+# GDB script dump
+
+#===============================================================================
+#set GDB connection 
+set remotetimeout 100000
+target remote :2331
+
+printf "Dumping...\n"
+
+#===============================================================================
+#dump
+source dump.gdb
+
+printf "Dump done, exit\n"
+
+quit
+

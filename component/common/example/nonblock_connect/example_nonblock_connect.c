@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_NONBLOCK_CONNECT) && CONFIG_EXAMPLE_NONBLOCK_CONNECT
 #include "FreeRTOS.h"
 #include "task.h"
 #include <platform/platform_stdlib.h>
@@ -12,8 +15,8 @@ int errno = 0;
 static void example_nonblock_connect_thread(void *param)
 {
 	/* To avoid gcc warnings */
-	( void ) param;
-	
+	(void) param;
+
 	int server_fd = -1;
 	struct sockaddr_in server_addr;
 
@@ -29,7 +32,7 @@ static void example_nonblock_connect_thread(void *param)
 		server_addr.sin_port = htons(SERVER_PORT);
 		connect(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));
 
-		if(errno == EINPROGRESS) {
+		if (errno == EINPROGRESS) {
 			fd_set wfds;
 			struct timeval time_out;
 
@@ -39,12 +42,12 @@ static void example_nonblock_connect_thread(void *param)
 			FD_SET(server_fd, &wfds);	// Only set server fd
 
 			// Use select to wait for non-blocking connect
-			if(select(server_fd + 1, NULL, &wfds, NULL, &time_out) == 1)
+			if (select(server_fd + 1, NULL, &wfds, NULL, &time_out) == 1) {
 				printf("Server connection successful\n");
-			else
+			} else {
 				printf("Server connection failed\n");
-		}
-		else {
+			}
+		} else {
 			printf("ERROR: connect\n");
 		}
 
@@ -53,13 +56,17 @@ static void example_nonblock_connect_thread(void *param)
 		goto exit;
 	}
 exit:
-	if(server_fd >= 0)
+	if (server_fd >= 0) {
 		close(server_fd);
+	}
 	vTaskDelete(NULL);
 }
 
 void example_nonblock_connect(void)
 {
-	if(xTaskCreate(example_nonblock_connect_thread, ((const char*)"example_nonblock_connect_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+	if (xTaskCreate(example_nonblock_connect_thread, ((const char *)"example_nonblock_connect_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate(init_thread) failed", __FUNCTION__);
+	}
 }
+
+#endif //#if defined(CONFIG_EXAMPLE_NONBLOCK_CONNECT) && CONFIG_EXAMPLE_NONBLOCK_CONNECT

@@ -46,6 +46,14 @@ void gtimer_init (gtimer_t *obj, uint32_t tid)
     tmr_list[0] = tid;
     tmr_list[1] = 0xFF; // end of list
 
+#if defined(CONFIG_BUILD_NONSECURE) && (CONFIG_BUILD_NONSECURE == 1)
+    if (tid == GTimer8) {
+        DBG_TIMER_ERR ("gtimer_init: Timer%u can only be used in secure trustzone\n", tid);
+        obj->timer_adp.tid = 0xFF; //set timer 255 as Error
+        return;
+    }
+#endif
+
     if (tid == 0xFF) {
         located_tid = hal_timer_allocate (NULL);
     } else {
@@ -53,7 +61,8 @@ void gtimer_init (gtimer_t *obj, uint32_t tid)
     }
 
     if (located_tid >= MaxGTimerNum) {
-        DBG_TIMER_ERR ("gtimer_init: Timer%u is in use\n", located_tid);
+        DBG_TIMER_ERR ("gtimer_init: Timer%u is in use\n", tid);
+        obj->timer_adp.tid = 0xFF; //set timer 255 as Error
         return;
     }
 
@@ -71,6 +80,8 @@ void gtimer_init (gtimer_t *obj, uint32_t tid)
   */
 void gtimer_deinit (gtimer_t *obj)
 {
+    hal_timer_disable (&obj->timer_adp);
+    (&obj->timer_adp)->tmr_ba->lc = 0;
     hal_timer_deinit (&obj->timer_adp);
 }
 
@@ -117,8 +128,12 @@ uint64_t gtimer_read_us (gtimer_t *obj)
 void gtimer_reload (gtimer_t *obj, uint32_t duration_us)
 {
     uint32_t act_us;
-
-    act_us = hal_timer_set_timeout (&obj->timer_adp, duration_us, 1);
+    if ((&obj->timer_adp)->tid == GTimer8) {
+        hal_misc_sdm_32k_enable (0);
+        act_us = hal_timer_set_timeout (&obj->timer_adp, duration_us, 31);
+    } else {
+        act_us = hal_timer_set_timeout (&obj->timer_adp, duration_us, 1);
+    }
     DBG_TIMER_INFO ("gtimer_reload: actual timeout=%lu\n", act_us);
 }
 
@@ -129,7 +144,20 @@ void gtimer_reload (gtimer_t *obj, uint32_t duration_us)
   */
 void gtimer_start (gtimer_t *obj)
 {
-    hal_timer_enable(&obj->timer_adp);
+    if ((&obj->timer_adp)->tid >= MaxGTimerNum) {
+        DBG_TIMER_ERR ("gtimer_start: Timer%u is invalid\n", (&obj->timer_adp)->tid);
+        return;
+    }
+    if ((&obj->timer_adp)->tmr_ba->ctrl_b.en == 0 && (&obj->timer_adp)->tmr_ba->lc == 0) {
+        if ((&obj->timer_adp)->tid == GTimer8) {
+            hal_misc_sdm_32k_enable (0);
+            hal_timer_init_free_run (&obj->timer_adp, (&obj->timer_adp)->tid, GTimerCountUp, 31);
+        } else {
+            hal_timer_init_free_run (&obj->timer_adp, (&obj->timer_adp)->tid, GTimerCountUp, 1);
+        }
+    } else {
+        hal_timer_enable(&obj->timer_adp);
+    }
 }
 
 /**

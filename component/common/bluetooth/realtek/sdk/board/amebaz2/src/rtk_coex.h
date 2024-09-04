@@ -2,6 +2,9 @@
  * Copyright (c) 2017, Realsil Semiconductor Corporation. All rights reserved.
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -27,3 +30,7 @@ unsigned int bt_coex_sw_mailbox_set(unsigned int mailbox_control);
 void bt_coex_init(void);
 
 unsigned int send_coex_mailbox_to_wifi_from_BtAPP(uint8_t state);
+
+#ifdef __cplusplus
+}
+#endif

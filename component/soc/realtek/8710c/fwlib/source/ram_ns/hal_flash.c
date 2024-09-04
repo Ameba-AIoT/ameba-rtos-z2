@@ -595,7 +595,7 @@ void hal_flash_return_spi (phal_spic_adaptor_t phal_spic_adaptor)
 {
     pflash_cmd_t cmd = phal_spic_adaptor->cmd;
     spic_valid_cmd_t valid_cmd;
-    spic_init_para_t spic_init_data;
+    spic_init_para_t spic_init_data = {0};
     pspic_init_para_t pspic_init_data = &spic_init_data;
     SPIC_Type *spic_dev  = phal_spic_adaptor->spic_dev;
     u8 spic_send_cmd_mode = phal_spic_adaptor->spic_send_cmd_mode;
@@ -833,7 +833,7 @@ void hal_flash_read_write_flash (phal_spic_adaptor_t phal_spic_adaptor, u32 leng
     u8 index;
     u8 spic_send_cmd_mode;
     u8 addr_byte_num;
-    u8 buffer[256];
+    u8 buffer[256] = {0};
     u8* ptr = &buffer[0];
 
     hal_flash_stream_read(phal_spic_adaptor, length, (u32)data, buffer);
@@ -1051,7 +1051,7 @@ void hal_flash_support_new_type (phal_spic_adaptor_t phal_spic_adaptor)
  */
 u8 hal_flash_get_size (phal_spic_adaptor_t phal_spic_adaptor)
 {
-    u8 efuse_value;
+    u8 efuse_value = 0;
     u8 size_id = phal_spic_adaptor->flash_id[2];
     u32 size = 0;
 

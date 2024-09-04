@@ -676,7 +676,7 @@ int MQTTDataHandle(MQTTClient* c, fd_set *readfd, MQTTPacket_connectData *connec
 		break;
 	case PUBACK:
 		{
-			unsigned short mypacketid;
+			unsigned short mypacketid = 0;
 			unsigned char dup, type;
 #if defined(MQTTV5)
 			if (MQTTV5Deserialize_ack(&type, &dup, &mypacketid, &reasoncode, &ackproperties, c->readbuf, c->readbuf_size) != 1)
@@ -697,6 +697,7 @@ int MQTTDataHandle(MQTTClient* c, fd_set *readfd, MQTTPacket_connectData *connec
 			MQTTString topicName;
 			MQTTMessage msg;
 			int intQoS;
+			memset(&msg, 0, sizeof(MQTTMessage));
 #if defined(MQTTV5)
 			if (MQTTV5Deserialize_publish(&msg.dup, &intQoS, &msg.retained, &msg.id, &topicName, &ackproperties,
 						(unsigned char**)&msg.payload, (int*)&msg.payloadlen, c->readbuf, c->readbuf_size) != 1)
@@ -746,7 +747,7 @@ int MQTTDataHandle(MQTTClient* c, fd_set *readfd, MQTTPacket_connectData *connec
 		}
 	case PUBREC:
 		{
-			unsigned short mypacketid;
+			unsigned short mypacketid = 0;
 			unsigned char dup, type;
 #if defined(MQTTV5)
 			if (MQTTV5Deserialize_ack(&type, &dup, &mypacketid, &reasoncode, &ackproperties, c->readbuf, c->readbuf_size) != 1)
@@ -773,7 +774,7 @@ int MQTTDataHandle(MQTTClient* c, fd_set *readfd, MQTTPacket_connectData *connec
 		}
 	case PUBREL:
 		{
-			unsigned short mypacketid;
+			unsigned short mypacketid = 0;
 			unsigned char dup, type;
 #if defined(MQTTV5)
 			if (MQTTV5Deserialize_ack(&type, &dup, &mypacketid, &reasoncode, &ackproperties, c->readbuf, c->readbuf_size) != 1)
@@ -1431,7 +1432,7 @@ int MQTTV5Disconnect(MQTTClient* c, int ReasonCode, MQTTProperties* DisconProper
 const char* MQTTGetReason(int ReasonCode)
 {
 	int i;
-	const char* rc;
+	const char* rc = NULL;
 
 	for (i = 0; i < ARRAY_SIZE(GetReason); ++i)
 	{
@@ -1441,6 +1442,11 @@ const char* MQTTGetReason(int ReasonCode)
 			break;
 		}
 	}
+
+	if (rc == NULL) {
+		rc = "Unknown error";
+	}
+
 	return rc;
 } 
 #endif

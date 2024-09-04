@@ -18,10 +18,9 @@ static char publish_payload_buffer[2048];
 static uint32_t request_id_int;
 static char request_id_buffer[16];
 
-az_result pnp_mqtt_message_init(pnp_mqtt_message* out_mqtt_message)
+az_result pnp_mqtt_message_init(pnp_mqtt_message *out_mqtt_message)
 {
-	if (out_mqtt_message == NULL)
-	{
+	if (out_mqtt_message == NULL) {
 		return AZ_ERROR_ARG;
 	}
 
@@ -37,12 +36,11 @@ az_result pnp_mqtt_message_init(pnp_mqtt_message* out_mqtt_message)
 az_span pnp_mqtt_get_request_id(void)
 {
 	az_span remainder;
-	az_span out_span = az_span_create((uint8_t*)request_id_buffer, sizeof(request_id_buffer));
+	az_span out_span = az_span_create((uint8_t *)request_id_buffer, sizeof(request_id_buffer));
 
 	// Note that if left to run for a long time, this will overflow and reset back to 0.
 	az_result rc = az_span_u32toa(out_span, request_id_int++, &remainder);
-	if (az_result_failed(rc))
-	{
+	if (az_result_failed(rc)) {
 		IOT_SAMPLE_LOG_ERROR("Failed to get request id: az_result return code 0x%08x.", rc);
 	}
 

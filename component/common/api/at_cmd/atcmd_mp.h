@@ -5,10 +5,10 @@
 #define CONFIG_ATCMD_MP_EXT1	0 //support MP ext1 AT command
 #define CONFIG_ATCMD_MP_EXT2	1 //support MP ext2 AT command
 
-typedef struct _at_command_mp_ext_item_{
+typedef struct _at_command_mp_ext_item_ {
 	char	*mp_ext_cmd;
-	int		(*mp_ext_fun)(void **argv, int argc);
+	int	(*mp_ext_fun)(void **argv, int argc);
 	char	*mp_ext_usage;
-}at_mp_ext_item_t;
+} at_mp_ext_item_t;
 
 #endif

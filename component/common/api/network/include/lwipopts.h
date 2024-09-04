@@ -3,7 +3,7 @@
   * This module is a confidential and proprietary property of RealTek and
   * possession or use of this module requires written permission of RealTek.
   *
-  * Copyright(c) 2016, Realtek Semiconductor Corporation. All rights reserved. 
+  * Copyright(c) 2016, Realtek Semiconductor Corporation. All rights reserved.
   *
 ******************************************************************************/
 
@@ -12,8 +12,11 @@
 
 #include <platform/platform_stdlib.h>
 #include "platform_opts.h"
+#ifdef API_TEST_MODE
+#include <api_test_config.h>
+#endif
 #define WIFI_LOGO_CERTIFICATION_CONFIG 0    //for ping 10k test buffer setting
-    
+
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
  * critical regions during buffer allocation, deallocation and memory
@@ -49,17 +52,15 @@
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
 #if WIFI_LOGO_CERTIFICATION_CONFIG
-    #define MEM_SIZE                (10*1024) //for ping 10k test
-#elif CONFIG_ETHERNET
-	#define MEM_SIZE				(6*1024)  //for iperf test
+#define MEM_SIZE                (20*1024) //for ping 10k test
 #elif defined(CONFIG_HIGH_TP_TEST) && CONFIG_HIGH_TP_TEST
-    #define MEM_SIZE                (23*1024)
+#define MEM_SIZE                (23*1024)
 #elif defined(CONFIG_PLATFORM_8721D)
-	#define MEM_SIZE    			  (7*1024)
+#define MEM_SIZE    			  (7*1024)
 #elif defined(ENABLE_AMAZON_COMMON)
-	#define MEM_SIZE                (10*1024)
+#define MEM_SIZE                (10*1024)
 #else
-    #define MEM_SIZE                (5*1024)
+#define MEM_SIZE                (5*1024)
 #endif
 
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
@@ -78,9 +79,9 @@ a lot of data that needs to be copied, this should be set high. */
 /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
    segments. */
 #ifdef CONFIG_HIGH_TP_TEST
-    #define MEMP_NUM_TCP_SEG        60
+#define MEMP_NUM_TCP_SEG        60
 #else
-    #define MEMP_NUM_TCP_SEG        20
+#define MEMP_NUM_TCP_SEG        20
 #endif
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
@@ -91,22 +92,22 @@ a lot of data that needs to be copied, this should be set high. */
 /* ---------- Pbuf options ---------- */
 /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
 #if WIFI_LOGO_CERTIFICATION_CONFIG
-    #define PBUF_POOL_SIZE          30 //for ping 10k test
+#define PBUF_POOL_SIZE          60 //for ping 10k test
 #elif defined(CONFIG_HIGH_TP_TEST) && CONFIG_HIGH_TP_TEST
-    #define PBUF_POOL_SIZE          60
+#define PBUF_POOL_SIZE          60
 #elif defined(ENABLE_AMAZON_COMMON)
-	#define PBUF_POOL_SIZE          30
+#define PBUF_POOL_SIZE          30
 #else
-    #define PBUF_POOL_SIZE          20
+#define PBUF_POOL_SIZE          20
 #endif
 
 /* IP_REASS_MAX_PBUFS: Total maximum amount of pbufs waiting to be reassembled.*/
 #if WIFI_LOGO_CERTIFICATION_CONFIG
-    #define IP_REASS_MAX_PBUFS              30 //for ping 10k test
+#define IP_REASS_MAX_PBUFS              60 //for ping 10k test
 #elif defined(ENABLE_AMAZON_COMMON)
-	#define IP_REASS_MAX_PBUFS              30
+#define IP_REASS_MAX_PBUFS              30
 #else
-    #define IP_REASS_MAX_PBUFS              10
+#define IP_REASS_MAX_PBUFS              10
 #endif
 
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
@@ -126,28 +127,28 @@ a lot of data that needs to be copied, this should be set high. */
 
 /* TCP sender buffer space (bytes). */
 #ifdef CONFIG_HIGH_TP_TEST
-    #define TCP_SND_BUF             (10*TCP_MSS)
+#define TCP_SND_BUF             (10*TCP_MSS)
 #else
-    #define TCP_SND_BUF             (5*TCP_MSS)
+#define TCP_SND_BUF             (5*TCP_MSS)
 #endif
 /*  TCP_SND_QUEUELEN: TCP sender buffer space (pbufs). This must be at least
   as much as (2 * TCP_SND_BUF/TCP_MSS) for things to work. */
 
 #ifdef CONFIG_HIGH_TP_TEST
-    #define TCP_SND_QUEUELEN        (6* TCP_SND_BUF/TCP_MSS)
+#define TCP_SND_QUEUELEN        (6* TCP_SND_BUF/TCP_MSS)
 #else
-    #define TCP_SND_QUEUELEN        (4* TCP_SND_BUF/TCP_MSS)
+#define TCP_SND_QUEUELEN        (4* TCP_SND_BUF/TCP_MSS)
 #endif
 
 /* TCP receive window. */
 #ifdef CONFIG_HIGH_TP_TEST
-    #define TCP_WND                 (8*TCP_MSS)
+#define TCP_WND                 (8*TCP_MSS)
 #elif defined(CONFIG_PLATFORM_8721D)
-	#define TCP_WND  			  (5*TCP_MSS)
+#define TCP_WND  			  (5*TCP_MSS)
 #elif defined(ENABLE_AMAZON_COMMON)
-	#define TCP_WND                 (4*TCP_MSS)
+#define TCP_WND                 (4*TCP_MSS)
 #else
-    #define TCP_WND                 (2*TCP_MSS)
+#define TCP_WND                 (2*TCP_MSS)
 #endif
 
 /* ---------- ICMP options ---------- */
@@ -181,7 +182,9 @@ a lot of data that needs to be copied, this should be set high. */
 /* Support Multicast */
 #define LWIP_IGMP                   1
 #define LWIP_RAND()                 rand()
+#ifndef CONFIG_MATTER
 extern unsigned int sys_now(void);
+#endif
 #define LWIP_SRAND()                srand(sys_now())
 
 #define LWIP_MTU_ADJUST 		1
@@ -189,26 +192,21 @@ extern unsigned int sys_now(void);
 /* Support TCP Keepalive */
 #define LWIP_TCP_KEEPALIVE				1
 
-/*LWIP_UART_ADAPTER==1: Enable LWIP_UART_ADAPTER when CONFIG_GAGENT is enabled, 
+/*LWIP_UART_ADAPTER==1: Enable LWIP_UART_ADAPTER when CONFIG_GAGENT is enabled,
    because some GAGENT functions denpond on the following macro definitions.*/
 #define LWIP_UART_ADAPTER                   0
 
-#if (defined(CONFIG_MIIO) && (CONFIG_MIIO)) 
-#undef  LWIP_SO_SNDTIMEO        
-#define LWIP_SO_SNDTIMEO                		1
-#endif
-
-#if LWIP_UART_ADAPTER || CONFIG_ETHERNET
-#undef  LWIP_SO_SNDTIMEO        
+#if LWIP_UART_ADAPTER
+#undef  LWIP_SO_SNDTIMEO
 #define LWIP_SO_SNDTIMEO                		1
 
-#undef  SO_REUSE        
+#undef  SO_REUSE
 #define SO_REUSE                        			1
 
-#undef MEMP_NUM_NETCONN                	
+#undef MEMP_NUM_NETCONN
 #define MEMP_NUM_NETCONN                	10
 
-#undef TCP_WND                
+#undef TCP_WND
 #define TCP_WND                                       (4*TCP_MSS)
 
 #define TCP_KEEPIDLE_DEFAULT			10000UL
@@ -218,16 +216,16 @@ extern unsigned int sys_now(void);
 
 #if (defined(CONFIG_EXAMPLE_UART_ATCMD) && (CONFIG_EXAMPLE_UART_ATCMD)) \
     || (defined(CONFIG_EXAMPLE_SPI_ATCMD) && (CONFIG_EXAMPLE_SPI_ATCMD))
-#undef  LWIP_SO_SNDTIMEO        
+#undef  LWIP_SO_SNDTIMEO
 #define LWIP_SO_SNDTIMEO                		1
 
-#undef  SO_REUSE        
+#undef  SO_REUSE
 #define SO_REUSE                        			1
 
 #undef SO_REUSE_RXTOALL
 #define SO_REUSE_RXTOALL				1
 
-#undef MEMP_NUM_NETCONN                	
+#undef MEMP_NUM_NETCONN
 #define MEMP_NUM_NETCONN                	10
 
 #undef MEMP_NUM_TCP_PCB
@@ -236,7 +234,7 @@ extern unsigned int sys_now(void);
 #undef MEMP_NUM_UDP_PCB
 #define MEMP_NUM_UDP_PCB				(MEMP_NUM_NETCONN)
 
-#undef TCP_WND                
+#undef TCP_WND
 #define TCP_WND                                       	(4*TCP_MSS)
 
 #define TCP_KEEPIDLE_DEFAULT			10000UL
@@ -249,7 +247,7 @@ extern unsigned int sys_now(void);
 
 #if defined(CONFIG_EXAMPLE_AMAZON_ALEXA) && CONFIG_EXAMPLE_AMAZON_ALEXA
 
-#undef TCP_WND                
+#undef TCP_WND
 #define TCP_WND                                       	(4*TCP_MSS)
 
 #undef TCP_SND_BUF
@@ -265,7 +263,17 @@ extern unsigned int sys_now(void);
 
 /* ---------- Statistics options ---------- */
 #define LWIP_STATS 0
+#ifdef PLATFORM_OHOS
+#define LWIP_PROVIDE_ERRNO 0
+#else
 #define LWIP_PROVIDE_ERRNO 1
+#endif
+#ifdef ENABLE_AMAZON_COMMON
+#undef LWIP_STATS
+#define LWIP_STATS 1
+#define LWIP_SNMP                  LWIP_UDP
+#define MIB2_STATS                 LWIP_SNMP
+#endif
 
 
 /*
@@ -274,41 +282,41 @@ extern unsigned int sys_now(void);
    --------------------------------------
 */
 
-/* 
+/*
 Certain platform allows computing and verifying the IP, UDP, TCP and ICMP checksums by hardware:
  - To use this feature let the following define uncommented.
  - To disable it and process by CPU comment the  the checksum.
 */
 //Do checksum by lwip - WLAN nic does not support Checksum offload
-//#define CHECKSUM_BY_HARDWARE 
+//#define CHECKSUM_BY_HARDWARE
 
 
 #ifdef CHECKSUM_BY_HARDWARE
-  /* CHECKSUM_GEN_IP==0: Generate checksums by hardware for outgoing IP packets.*/
-  #define CHECKSUM_GEN_IP                 0
-  /* CHECKSUM_GEN_UDP==0: Generate checksums by hardware for outgoing UDP packets.*/
-  #define CHECKSUM_GEN_UDP                0
-  /* CHECKSUM_GEN_TCP==0: Generate checksums by hardware for outgoing TCP packets.*/
-  #define CHECKSUM_GEN_TCP                0 
-  /* CHECKSUM_CHECK_IP==0: Check checksums by hardware for incoming IP packets.*/
-  #define CHECKSUM_CHECK_IP               0
-  /* CHECKSUM_CHECK_UDP==0: Check checksums by hardware for incoming UDP packets.*/
-  #define CHECKSUM_CHECK_UDP              0
-  /* CHECKSUM_CHECK_TCP==0: Check checksums by hardware for incoming TCP packets.*/
-  #define CHECKSUM_CHECK_TCP              0
+/* CHECKSUM_GEN_IP==0: Generate checksums by hardware for outgoing IP packets.*/
+#define CHECKSUM_GEN_IP                 0
+/* CHECKSUM_GEN_UDP==0: Generate checksums by hardware for outgoing UDP packets.*/
+#define CHECKSUM_GEN_UDP                0
+/* CHECKSUM_GEN_TCP==0: Generate checksums by hardware for outgoing TCP packets.*/
+#define CHECKSUM_GEN_TCP                0
+/* CHECKSUM_CHECK_IP==0: Check checksums by hardware for incoming IP packets.*/
+#define CHECKSUM_CHECK_IP               0
+/* CHECKSUM_CHECK_UDP==0: Check checksums by hardware for incoming UDP packets.*/
+#define CHECKSUM_CHECK_UDP              0
+/* CHECKSUM_CHECK_TCP==0: Check checksums by hardware for incoming TCP packets.*/
+#define CHECKSUM_CHECK_TCP              0
 #else
-  /* CHECKSUM_GEN_IP==1: Generate checksums in software for outgoing IP packets.*/
-  #define CHECKSUM_GEN_IP                 1
-  /* CHECKSUM_GEN_UDP==1: Generate checksums in software for outgoing UDP packets.*/
-  #define CHECKSUM_GEN_UDP                1
-  /* CHECKSUM_GEN_TCP==1: Generate checksums in software for outgoing TCP packets.*/
-  #define CHECKSUM_GEN_TCP                1
-  /* CHECKSUM_CHECK_IP==1: Check checksums in software for incoming IP packets.*/
-  #define CHECKSUM_CHECK_IP               1
-  /* CHECKSUM_CHECK_UDP==1: Check checksums in software for incoming UDP packets.*/
-  #define CHECKSUM_CHECK_UDP              1
-  /* CHECKSUM_CHECK_TCP==1: Check checksums in software for incoming TCP packets.*/
-  #define CHECKSUM_CHECK_TCP              1
+/* CHECKSUM_GEN_IP==1: Generate checksums in software for outgoing IP packets.*/
+#define CHECKSUM_GEN_IP                 1
+/* CHECKSUM_GEN_UDP==1: Generate checksums in software for outgoing UDP packets.*/
+#define CHECKSUM_GEN_UDP                1
+/* CHECKSUM_GEN_TCP==1: Generate checksums in software for outgoing TCP packets.*/
+#define CHECKSUM_GEN_TCP                1
+/* CHECKSUM_CHECK_IP==1: Check checksums in software for incoming IP packets.*/
+#define CHECKSUM_CHECK_IP               1
+/* CHECKSUM_CHECK_UDP==1: Check checksums in software for incoming UDP packets.*/
+#define CHECKSUM_CHECK_UDP              1
+/* CHECKSUM_CHECK_TCP==1: Check checksums in software for incoming TCP packets.*/
+#define CHECKSUM_CHECK_TCP              1
 #endif
 
 
@@ -330,7 +338,7 @@ Certain platform allows computing and verifying the IP, UDP, TCP and ICMP checks
 /**
  * LWIP_SOCKET==1: Enable Socket API (require to use sockets.c)
  */
-#define LWIP_SOCKET                     1	
+#define LWIP_SOCKET                     1
 
 /*
    -----------------------------------
@@ -354,15 +362,21 @@ Certain platform allows computing and verifying the IP, UDP, TCP and ICMP checks
 #define DEFAULT_RAW_RECVMBOX_SIZE		6
 #define DEFAULT_ACCEPTMBOX_SIZE         6
 #define DEFAULT_THREAD_STACKSIZE        500
+#ifdef PLATFORM_OHOS
+#define TCPIP_THREAD_PRIO               2
+#else
 #define TCPIP_THREAD_PRIO               (configMAX_PRIORITIES - 2)
+#endif
 
 /* Added by Realtek. For DHCP server reply unicast DHCP packets before the ip actually assigned. */
-#define ETHARP_SUPPORT_STATIC_ENTRIES   1	 
+#define ETHARP_SUPPORT_STATIC_ENTRIES   1
 
 /* Added by Realtek start */
 #define LWIP_RANDOMIZE_INITIAL_LOCAL_PORTS 1
 #define LWIP_DNS_LEGACY_SUPPORT 0
-#define LWIP_TCP_PCB_PURGE_IMMEDIATELY_ON_CLOSE 1 //Purge TCP PCB immediately upon socket closure
+#define LWIP_ICMP_SUPPRESS 0
+#define LWIP_ICMP_SUPPRESS_INTERVAL 900 // allow one icmp per second with tolerance of 100 ms
+#define LWIP_TCP_PCB_PURGE_IMMEDIATELY_ON_CLOSE 0 //Purge TCP PCB immediately upon socket closure
 /* Added by Realtek end */
 
 /* Extra options for lwip_v2.0.2 which should not affect lwip_v1.4.1 */
@@ -373,25 +387,39 @@ Certain platform allows computing and verifying the IP, UDP, TCP and ICMP checks
 #undef LWIP_DEBUG
 #define LWIP_RAW                        1
 #define LWIP_AUTOIP                     1
-#define TCPIP_THREAD_NAME              "TCP_IP" 
+#define TCPIP_THREAD_NAME              "TCP_IP"
 
 #define LWIP_IPV6                       0
 #if LWIP_IPV6
+#define LWIP_IPV6_MLD                   1
+#define LWIP_IPV6_AUTOCONFIG            1
+#define LWIP_ICMP6                      1
 #undef  MEMP_NUM_SYS_TIMEOUT
 #define MEMP_NUM_SYS_TIMEOUT            13
+#define LWIP_IPV6_DHCP6                 1
+#endif
+
+#ifdef PLATFORM_OHOS
+#if defined LWIP_TIMEVAL_PRIVATE
+#undef LWIP_TIMEVAL_PRIVATE
+#define LWIP_TIMEVAL_PRIVATE            1
+#endif
 #endif
 
 /*CONFIG_LIBCOAP_ON is defined to 1 in the lib_coap project options preprocessor defined symbol
 CONFIG_EXAMPLE_COAP_SERVER and CONFIG_EXAMPLE_COAP_CLIENT is defined in platform_opts.h*/
-#if CONFIG_EXAMPLE_COAP_SERVER || CONFIG_EXAMPLE_COAP_CLIENT || (defined(CONFIG_LIBCOAP_ON) && (CONFIG_LIBCOAP_ON))   
+#if CONFIG_EXAMPLE_COAP_SERVER || CONFIG_EXAMPLE_COAP_CLIENT || (defined(CONFIG_LIBCOAP_ON) && (CONFIG_LIBCOAP_ON))
+
+#ifndef PLATFORM_OHOS
 #if defined LWIP_TIMEVAL_PRIVATE
 #undef LWIP_TIMEVAL_PRIVATE
+#endif
 #define LWIP_TIMEVAL_PRIVATE            1
 #endif
 #undef SO_REUSE
 #define SO_REUSE                        1
 #undef MEMP_NUM_NETCONN
-#define MEMP_NUM_NETCONN                20   
+#define MEMP_NUM_NETCONN                20
 #define MEMP_USE_CUSTOM_POOLS           1
 #undef LWIP_IPV6
 #define LWIP_IPV6                       1
@@ -401,13 +429,13 @@ CONFIG_EXAMPLE_COAP_SERVER and CONFIG_EXAMPLE_COAP_CLIENT is defined in platform
 #undef MEMP_NUM_SYS_TIMEOUT
 #define MEMP_NUM_SYS_TIMEOUT            20
 #ifndef xchar
-#define xchar(i)                ((i) < 10 ? '0' + (i) : 'A' + (i) - 10)               
+#define xchar(i)                ((i) < 10 ? '0' + (i) : 'A' + (i) - 10)
 #endif
 #endif
-#endif 
-      
-#if defined(ENABLE_AMAZON_COMMON) 
-#define LWIP_COMPAT_MUTEX_ALLOWED  
+#endif
+
+#if defined(ENABLE_AMAZON_COMMON)
+#define LWIP_COMPAT_MUTEX_ALLOWED
 #define ERRNO   1
 #define LWIP_SO_SNDTIMEO                1
 #define SYS_LIGHTWEIGHT_PROT    1
@@ -418,10 +446,17 @@ CONFIG_EXAMPLE_COAP_SERVER and CONFIG_EXAMPLE_COAP_CLIENT is defined in platform
 #define LWIP_SOCKET_SET_ERRNO           1
 #endif
 
-#if (defined(CONFIG_MIIO)&&(CONFIG_MIIO))
-#define LWIP_NETIF_HOSTNAME             1
+#if (defined(CONFIG_EXAMPLE_AZURE_IOTHUB_TELEMETRY) && (CONFIG_EXAMPLE_AZURE_IOTHUB_TELEMETRY)) \
+      || (defined(CONFIG_EXAMPLE_AZURE_IOTHUB_X509) && (CONFIG_EXAMPLE_AZURE_IOTHUB_X509)) \
+      || (defined(CONFIG_EXAMPLE_HTTP2_CLIENT) && (CONFIG_EXAMPLE_HTTP2_CLIENT)) \
+      || (defined(CONFIG_TEST_HTTP2_TLS_ON) && (CONFIG_TEST_HTTP2_TLS_ON))
+#define ERRNO                           1
 #endif
 
 #include "lwip/init.h"                  //for version control
+
+#if defined(CONFIG_MATTER) && CONFIG_MATTER
+#include "lwipopts_matter.h"
+#endif
 
 #endif /* LWIP_HDR_LWIPOPTS_H */

@@ -20,7 +20,7 @@ typedef s32 acpi_native_int;//this definition is in (Linux/include/acpi/actypes.
 
 #ifndef _VALIST
 #define _VALIST
-    typedef char *va_list;
+typedef char *va_list;
 #endif                          /* _VALIST */
 
 /* Storage alignment properties */

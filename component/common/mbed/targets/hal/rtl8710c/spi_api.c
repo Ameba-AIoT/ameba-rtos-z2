@@ -94,7 +94,10 @@ void spi_free (spi_t *obj)
     obj->dma_en = 0;
 }
 
-/*
+/* SPI_FORMAT FUNCTION
+ *
+ * bits: 8 or 16 bits format
+ *
  * mode | POL PHA
  * -----+--------
  *   0  |  0   0
@@ -111,6 +114,11 @@ void spi_free (spi_t *obj)
 void spi_format (spi_t *obj, int bits, int mode, int slave)
 {
     phal_ssi_adaptor_t phal_ssi_adaptor = &(obj->hal_ssi_adaptor);
+
+    //Checks bits parameter is 16 or 8 bits
+    if (bits != 16 && bits != 8) {
+        DBG_SSI_ERR("spi_format bits parameter must be 8 or 16 bits format\r\n");
+    }
 
     if (slave) {
         hal_ssi_set_device_role(phal_ssi_adaptor, SsiSlave);
@@ -443,7 +451,7 @@ int32_t spi_slave_read_stream_timeout(spi_t *obj, char *rx_buffer, uint32_t leng
         start_us = hal_read_cur_time();
         while (obj->state & SPI_STATE_RX_BUSY) {
             if (hal_is_timeout(start_us, timeout_ms*1000)) {
-                ret = hal_ssi_stop_recv(phal_ssi_adaptor);
+                ret = hal_ssi_stop_recv_rtl8710c_ram(phal_ssi_adaptor);
                 obj->state &= ~ SPI_STATE_RX_BUSY;
                 timeout = 1;
                 DBG_SSI_INFO("Slave is timeout\n");
@@ -495,7 +503,7 @@ int32_t spi_slave_read_stream_terminate(spi_t *obj, char *rx_buffer, uint32_t le
 
             /*Transfer is not complete, but the SPI de-select the slave to cancel the transfer*/
             if(hal_ssi_get_busy(phal_ssi_adaptor) == 0){
-                hal_ssi_stop_recv(phal_ssi_adaptor); 
+                hal_ssi_stop_recv_rtl8710c_ram(phal_ssi_adaptor); 
                 goto EndOfCS;
             }
         }
@@ -550,7 +558,7 @@ int32_t spi_slave_read_stream_dma(spi_t *obj, char *rx_buffer, uint32_t length)
 
     /* Checks PSRAM alignment */
     if (is_dcache_enabled() && (((uint32_t)(rx_buffer)) >> 24) == 0x60) {
-        if((uint32_t)(rx_buffer) & 0x1F != 0x0) {
+        if(((uint32_t)(rx_buffer) & 0x1F) != 0x0) {
             DBG_SSI_ERR("PSRAM Buffer must be 32B aligned\r\n");
             return HAL_ERR_MEM;
         }
@@ -587,7 +595,7 @@ int32_t spi_slave_write_stream_dma(spi_t *obj, char *tx_buffer, uint32_t length)
 
     /* Checks PSRAM alignment */
     if (is_dcache_enabled() && (((uint32_t)(tx_buffer)) >> 24) == 0x60) {
-        if((uint32_t)(tx_buffer) & 0x1F != 0x0) {
+        if(((uint32_t)(tx_buffer) & 0x1F) != 0x0) {
             DBG_SSI_ERR("PSRAM Buffer must be 32B aligned\r\n");
             return HAL_ERR_MEM;
         }
@@ -624,7 +632,7 @@ int32_t spi_master_read_stream_dma(spi_t *obj, char *rx_buffer, uint32_t length)
 
     /* Checks PSRAM alignment */
     if (is_dcache_enabled() && (((uint32_t)(rx_buffer)) >> 24) == 0x60) {
-        if((uint32_t)(rx_buffer) & 0x1F != 0x0) {
+        if(((uint32_t)(rx_buffer) & 0x1F) != 0x0) {
             DBG_SSI_ERR("PSRAM Buffer must be 32B aligned\r\n");
             return HAL_ERR_MEM;
         }
@@ -674,7 +682,7 @@ int32_t spi_master_write_stream_dma(spi_t *obj, char *tx_buffer, uint32_t length
 
     /* Checks PSRAM alignment */
     if (is_dcache_enabled() && (((uint32_t)(tx_buffer)) >> 24) == 0x60) {
-        if((uint32_t)(tx_buffer) & 0x1F != 0x0) {
+        if(((uint32_t)(tx_buffer) & 0x1F) != 0x0) {
             DBG_SSI_ERR("PSRAM Buffer must be 32B aligned\r\n");
             return HAL_ERR_MEM;
         }
@@ -711,13 +719,13 @@ int32_t spi_master_write_read_stream_dma(spi_t *obj, char *tx_buffer, char *rx_b
 
     /* Checks PSRAM alignment */
     if (is_dcache_enabled() && (((uint32_t)(tx_buffer)) >> 24) == 0x60) {
-	    if((uint32_t)(tx_buffer) & 0x1F != 0x0) {
+	    if(((uint32_t)(tx_buffer) & 0x1F )!= 0x0) {
             DBG_SSI_ERR("PSRAM Buffer must be 32B aligned\r\n");
             return HAL_ERR_MEM;
         }
     }
     if (is_dcache_enabled() && (((uint32_t)(rx_buffer)) >> 24) == 0x60) {
-        if((uint32_t)(rx_buffer) & 0x1F != 0x0) {
+        if(((uint32_t)(rx_buffer) & 0x1F) != 0x0) {
             DBG_SSI_ERR("PSRAM Buffer must be 32B aligned\r\n");
             return HAL_ERR_MEM;
         }
@@ -767,7 +775,7 @@ int32_t spi_slave_read_stream_dma_timeout(spi_t *obj, char *rx_buffer, uint32_t 
 
     /* Checks PSRAM alignment */
     if (is_dcache_enabled() && (((uint32_t)(rx_buffer)) >> 24) == 0x60) {
-        if((uint32_t)(rx_buffer) & 0x1F != 0x0) {
+        if(((uint32_t)(rx_buffer) & 0x1F) != 0x0) {
             DBG_SSI_ERR("PSRAM Buffer must be 32B aligned\r\n");
             return HAL_ERR_MEM;
         }
@@ -797,7 +805,7 @@ int32_t spi_slave_read_stream_dma_timeout(spi_t *obj, char *rx_buffer, uint32_t 
         start_us = hal_read_cur_time();
         while (obj->state & SPI_STATE_RX_BUSY) {
              if (hal_is_timeout(start_us, timeout_ms*1000)) {
-                ret = hal_ssi_stop_recv(phal_ssi_adaptor);
+                ret = hal_ssi_stop_recv_rtl8710c_ram(phal_ssi_adaptor);
                 obj->state &= ~ SPI_STATE_RX_BUSY;
                 timeout = 1;
                 DBG_SSI_INFO("Slave is timeout\n");
@@ -826,7 +834,7 @@ int32_t spi_slave_read_stream_dma_terminate(spi_t *obj, char *rx_buffer, uint32_
 
     /* Checks PSRAM alignment */
     if (is_dcache_enabled() && (((uint32_t)(rx_buffer)) >> 24) == 0x60) {
-        if((uint32_t)(rx_buffer) & 0x1F != 0x0) {
+        if(((uint32_t)(rx_buffer) & 0x1F) != 0x0) {
             DBG_SSI_ERR("PSRAM Buffer must be 32B aligned\r\n");
             return HAL_ERR_MEM;
         }
@@ -861,7 +869,7 @@ int32_t spi_slave_read_stream_dma_terminate(spi_t *obj, char *rx_buffer, uint32_
             } 
             
             if(hal_ssi_get_busy(phal_ssi_adaptor) == 0){
-                hal_ssi_stop_recv(phal_ssi_adaptor);
+                hal_ssi_stop_recv_rtl8710c_ram(phal_ssi_adaptor);
                 goto EndOfDMACS;
             }
         }

@@ -6,7 +6,8 @@
 
 #include "FreeRTOS.h"
 
-const char * http_strstr(const char *str1, const char *str2) {
+const char *http_strstr(const char *str1, const char *str2)
+{
 	char *a, *b;
 
 	/* First scan quickly through the two strings looking for a
@@ -18,7 +19,7 @@ const char * http_strstr(const char *str1, const char *str2) {
 	if (*b == 0) {
 		return str1;
 	}
-	for ( ; *str1 != 0; str1 += 1) {
+	for (; *str1 != 0; str1 += 1) {
 		if (*str1 != *b) {
 			continue;
 		}
@@ -36,7 +37,7 @@ const char * http_strstr(const char *str1, const char *str2) {
 	return (char *) 0;
 }
 
-static void* http_malloc(unsigned int size)
+static void *http_malloc(unsigned int size)
 {
 	return pvPortMalloc(size);
 }
@@ -51,8 +52,9 @@ static char *http_itoa(int value)
 	char *val_str;
 	int tmp = value, len = 1;
 
-	while((tmp /= 10) > 0)
+	while ((tmp /= 10) > 0) {
 		len ++;
+	}
 
 	val_str = (char *) http_malloc(len + 1);
 	sprintf(val_str, "%d", value);
@@ -63,8 +65,8 @@ static char *http_itoa(int value)
 char *http_post_header(char *host, char *resource, char *type, int data_len)
 {
 	char *len_str = http_itoa(data_len);
-	char *header = (char *) http_malloc(strlen("POST ") + strlen(resource) + strlen(" HTTP/1.1\r\nHost: ") + strlen(host) + 
-		strlen("\r\nContent-Type: ") + strlen(type) + strlen("\r\nContent-Length: ") + strlen(len_str) + strlen("\r\n\r\n") + 1);
+	char *header = (char *) http_malloc(strlen("POST ") + strlen(resource) + strlen(" HTTP/1.1\r\nHost: ") + strlen(host) +
+										strlen("\r\nContent-Type: ") + strlen(type) + strlen("\r\nContent-Length: ") + strlen(len_str) + strlen("\r\n\r\n") + 1);
 	sprintf(header, "POST %s HTTP/1.1\r\nHost: %s\r\nContent-Type: %s\r\nContent-Length: %s\r\n\r\n", resource, host, type, len_str);
 	http_free(len_str);
 
@@ -88,8 +90,8 @@ char *http_response_header(char *buf, int response_len)
 	memcpy(http_response, buf, response_len);
 	http_response[response_len] = '\0';
 
-	if(strncmp(http_response, "HTTP", 4) == 0) {
-		if((header_end = (char *)http_strstr(http_response, "\r\n\r\n")) != NULL) {
+	if (strncmp(http_response, "HTTP", 4) == 0) {
+		if ((header_end = (char *)http_strstr(http_response, "\r\n\r\n")) != NULL) {
 			header_end += 4;
 			header_len = header_end - http_response;
 			http_header = (char *) http_malloc(header_len + 1);
@@ -112,24 +114,22 @@ char *http_response_body(char *buf, int response_len)
 	memcpy(http_response, buf, response_len);
 	http_response[response_len] = '\0';
 
-	if(strncmp(http_response, "HTTP", 4) == 0) {
-		if((body_start = (char *)http_strstr(http_response, "\r\n\r\n")) != NULL) {
+	if (strncmp(http_response, "HTTP", 4) == 0) {
+		if ((body_start = (char *)http_strstr(http_response, "\r\n\r\n")) != NULL) {
 			body_start += 4;
 			body_len = http_response + response_len - body_start;
 
-			if(body_len > 0) {
+			if (body_len > 0) {
 				http_body = (char *) http_malloc(body_len + 1);
 				memcpy(http_body, body_start, body_len);
 				http_body[body_len] = '\0';
 			}
 
 			http_free(http_response);
-		}
-		else {
+		} else {
 			http_body = http_response;
 		}
-	}
-	else {
+	} else {
 		http_body = http_response;
 	}
 

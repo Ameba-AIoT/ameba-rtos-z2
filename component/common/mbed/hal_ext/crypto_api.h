@@ -29,7 +29,7 @@
 
 #if (defined(CONFIG_PLATFORM_8195BHP) && (CONFIG_PLATFORM_8195BHP == 1)) \
     || (defined(CONFIG_PLATFORM_8710C) && (CONFIG_PLATFORM_8710C == 1))
-///@name AmebaPro/AmebaZ2 Only 
+///@name AmebaPro/AmebaZ2 Only
 ///@{
 #include "device.h"
 #include "basic_types.h"
@@ -70,11 +70,11 @@ extern "C" {
  * used for compatible ameba1 sha2 APIs
  */
 typedef enum _SHA2_TYPE_ {
-		MBED_SHA2_NONE 	= 0,
-		MBED_SHA2_224 	= 224/8,
-		MBED_SHA2_256 	= 256/8,
-		MBED_SHA2_384 	= 384/8,
-		MBED_SHA2_512 	= 512/8
+	MBED_SHA2_NONE 	= 0,
+	MBED_SHA2_224 	= 224 / 8,
+	MBED_SHA2_256 	= 256 / 8,
+	MBED_SHA2_384 	= 384 / 8,
+	MBED_SHA2_512 	= 512 / 8
 } SHA2_TYPE;
 
 /** @addtogroup crypto CRYPTO
@@ -297,7 +297,7 @@ int crypto_sha2_256_final(uint8_t *pDigest);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_hmac_md5(const uint8_t *message, const uint32_t msglen,
-                    const uint8_t *key, const uint32_t keylen, uint8_t *pDigest);
+					const uint8_t *key, const uint32_t keylen, uint8_t *pDigest);
 
 /**
  * @brief  Initializes the HMAC-MD5 function.
@@ -347,7 +347,7 @@ int crypto_hmac_md5_final(uint8_t *pDigest);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_hmac_sha1(const uint8_t *message, const uint32_t msglen,
-                     const uint8_t *key, const uint32_t keylen, uint8_t *pDigest);
+					 const uint8_t *key, const uint32_t keylen, uint8_t *pDigest);
 
 /**
  * @brief  Initializes the HMAC_SHA1 function.
@@ -397,7 +397,7 @@ int crypto_hmac_sha1_final(uint8_t *pDigest);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_hmac_sha2_224(const uint8_t *message, const uint32_t msglen,
-                         const uint8_t *key, const uint32_t keylen, uint8_t *pDigest);
+						 const uint8_t *key, const uint32_t keylen, uint8_t *pDigest);
 
 /**
  * @brief  Initializes the HMAC_SHA2_224 function.
@@ -447,7 +447,7 @@ int crypto_hmac_sha2_224_final(uint8_t *pDigest);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_hmac_sha2_256(const uint8_t *message, const uint32_t msglen,
-                         const uint8_t *key, const uint32_t keylen, uint8_t *pDigest);
+						 const uint8_t *key, const uint32_t keylen, uint8_t *pDigest);
 
 /**
  * @brief  Initializes the HMAC_SHA2_256 function.
@@ -508,9 +508,9 @@ int crypto_des_cbc_init(const uint8_t *key, const uint32_t keylen);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_des_cbc_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 /**
  * @brief  DES-CBC buffer decryption.
@@ -523,9 +523,9 @@ int crypto_des_cbc_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_des_cbc_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 
 // DES-ECB
@@ -549,9 +549,9 @@ int crypto_des_ecb_init(const uint8_t *key, const uint32_t keylen);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_des_ecb_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 /**
  * @brief  DES-ECB buffer decryption.
@@ -564,9 +564,9 @@ int crypto_des_ecb_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_des_ecb_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 // 3DES-CBC
 /**
@@ -589,9 +589,9 @@ int crypto_3des_cbc_init(const uint8_t *key, const uint32_t keylen);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_3des_cbc_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 /**
  * @brief  3DES-CBC buffer decryption.
@@ -604,9 +604,9 @@ int crypto_3des_cbc_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_3des_cbc_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 // 3DES-ECB
 /**
@@ -629,9 +629,9 @@ int crypto_3des_ecb_init(const uint8_t *key, const uint32_t keylen);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_3des_ecb_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 /**
  * @brief  3DES-ECB buffer decryption.
@@ -644,9 +644,9 @@ int crypto_3des_ecb_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_3des_ecb_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 #endif //#if (defined(CONFIG_PLATFORM_8195BHP) && (CONFIG_PLATFORM_8195BHP == 1))
 
@@ -671,9 +671,9 @@ int crypto_aes_cbc_init(const uint8_t *key, const uint32_t keylen);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_cbc_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 /**
  * @brief  AES-CBC buffer decryption.
@@ -686,9 +686,9 @@ int crypto_aes_cbc_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_cbc_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 // AES-ECB
 /**
@@ -711,9 +711,9 @@ int crypto_aes_ecb_init(const uint8_t *key, const uint32_t keylen);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_ecb_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 /**
  * @brief  AES-ECB buffer decryption.
@@ -726,9 +726,9 @@ int crypto_aes_ecb_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_ecb_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 // AES-CTR
 /**
@@ -751,9 +751,9 @@ int crypto_aes_ctr_init(const uint8_t *key, const uint32_t keylen);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_ctr_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 /**
  * @brief  AES-CTR buffer decryption.
@@ -766,9 +766,9 @@ int crypto_aes_ctr_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_ctr_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 // AES-CFB
 /**
@@ -791,9 +791,9 @@ int crypto_aes_cfb_init(const uint8_t *key, const uint32_t keylen);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_cfb_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 /**
  * @brief  AES-CFB buffer decryption.
@@ -806,9 +806,9 @@ int crypto_aes_cfb_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_cfb_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 // AES-OFB
 /**
@@ -831,9 +831,9 @@ int crypto_aes_ofb_init(const uint8_t *key, const uint32_t keylen);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_ofb_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 /**
  * @brief  AES-OFB buffer decryption.
@@ -846,9 +846,9 @@ int crypto_aes_ofb_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_ofb_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t ivlen,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t ivlen,
+	uint8_t *pResult);
 
 // AES-GCM
 /**
@@ -873,10 +873,10 @@ int crypto_aes_gcm_init(const uint8_t *key, const uint32_t keylen);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_gcm_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv,
-    const uint8_t *aad, const uint32_t aadlen,
-    uint8_t *pResult, uint8_t *pTag);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv,
+	const uint8_t *aad, const uint32_t aadlen,
+	uint8_t *pResult, uint8_t *pTag);
 
 /**
  * @brief  AES-GCM buffer decryption.
@@ -891,10 +891,10 @@ int crypto_aes_gcm_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_gcm_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv,
-    const uint8_t *aad, const uint32_t aadlen,
-    uint8_t *pResult, uint8_t *pTag);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv,
+	const uint8_t *aad, const uint32_t aadlen,
+	uint8_t *pResult, uint8_t *pTag);
 
 #if (defined(CONFIG_PLATFORM_8195BHP) && (CONFIG_PLATFORM_8195BHP == 1))
 
@@ -918,9 +918,9 @@ int crypto_chacha_init(const uint8_t *key);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_chacha_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t count,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t count,
+	uint8_t *pResult);
 
 /**
  * @brief  Chacha20 buffer decryption.
@@ -933,9 +933,9 @@ int crypto_chacha_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_chacha_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint32_t count,
-    uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint32_t count,
+	uint8_t *pResult);
 
 // POLY1305
 /**
@@ -948,9 +948,9 @@ int crypto_chacha_decrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_poly1305(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *key,
-    uint8_t *pDigest);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *key,
+	uint8_t *pDigest);
 
 /**
  * @brief  Initializes the Poly1305 function with a secret key.
@@ -969,7 +969,7 @@ int crypto_poly1305_init(const uint8_t *key);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_poly1305_process(
-    const uint8_t *message, const uint32_t msglen,
+	const uint8_t *message, const uint32_t msglen,
 	uint8_t *pDigest);
 
 // CHACHA+POLY1305
@@ -994,10 +994,10 @@ int crypto_chacha_poly1305_init(const uint8_t *key);
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_chacha_poly1305_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *nonce,
-    const uint8_t *aad, const uint32_t aadlen,
-    uint8_t *pResult, uint8_t *pTag);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *nonce,
+	const uint8_t *aad, const uint32_t aadlen,
+	uint8_t *pResult, uint8_t *pTag);
 
 /**
  * @brief  Chacha20_Poly1305 buffer decryption.
@@ -1012,10 +1012,10 @@ int crypto_chacha_poly1305_encrypt(
  * @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_chacha_poly1305_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *nonce,
-    const uint8_t *aad, const uint32_t aadlen,
-    uint8_t *pResult, uint8_t *pTag);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *nonce,
+	const uint8_t *aad, const uint32_t aadlen,
+	uint8_t *pResult, uint8_t *pTag);
 
 #endif //#if (defined(CONFIG_PLATFORM_8195BHP) && (CONFIG_PLATFORM_8195BHP == 1))
 
@@ -1035,9 +1035,9 @@ int crypto_chacha_poly1305_decrypt(
  *  @return < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_ghash(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *key, const uint32_t keylen,
-    uint8_t *pDigest);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *key, const uint32_t keylen,
+	uint8_t *pDigest);
 
 /**
  *  @brief Initializes the AES-GHASH function with a secret key.
@@ -1076,10 +1076,10 @@ int crypto_aes_ghash_process(const uint8_t *message, const uint32_t msglen, uint
  *  @return < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_gmac(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *key, const uint32_t keylen,
-    const uint8_t *iv,
-    const uint8_t *aad, const uint32_t aadlen, uint8_t *pTag);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *key, const uint32_t keylen,
+	const uint8_t *iv,
+	const uint8_t *aad, const uint32_t aadlen, uint8_t *pTag);
 
 /**
  *  @brief Initializes the AES-GMAC function with a secret key.
@@ -1104,8 +1104,8 @@ int crypto_aes_gmac_init(const uint8_t *key, const uint32_t keylen);
  *  @return < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_gmac_process(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, const uint8_t *aad, const uint32_t aadlen, uint8_t *pTag);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, const uint8_t *aad, const uint32_t aadlen, uint8_t *pTag);
 
 //AES-GCTR
 /**
@@ -1129,8 +1129,8 @@ int crypto_aes_gctr_init(const uint8_t *key, const uint32_t keylen);
  *  @return < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_gctr_encrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, uint8_t *pResult);
 
 /**
  *  @brief AES-GCTR buffer decryption.
@@ -1143,8 +1143,8 @@ int crypto_aes_gctr_encrypt(
  *  @return < 0: FAIL(Refer to ERRNO)
  */
 int crypto_aes_gctr_decrypt(
-    const uint8_t *message, const uint32_t msglen,
-    const uint8_t *iv, uint8_t *pResult);
+	const uint8_t *message, const uint32_t msglen,
+	const uint8_t *iv, uint8_t *pResult);
 
 #endif //#if (defined(CONFIG_PLATFORM_8710C) && (CONFIG_PLATFORM_8710C == 1))
 
@@ -1181,7 +1181,7 @@ int crypto_crc32_dma(const uint8_t *message, const uint32_t msglen, uint32_t *pC
  *  @retval < 0: FAIL(Refer to ERRNO)
  */
 int crypto_crc_setting(int order, unsigned long polynom, unsigned long crcinit,
-                       unsigned long crcxor, int refin, int refout);
+					   unsigned long crcxor, int refin, int refout);
 
 /**
  * @brief  Calculate CRC value using command mode.
@@ -1206,9 +1206,9 @@ int crypto_crc_dma(const uint8_t *message, const uint32_t msglen, uint32_t *pCrc
 #if (defined(CONFIG_PLATFORM_8710C) && (CONFIG_PLATFORM_8710C == 1))
 
 #if defined(CONFIG_BUILD_SECURE)
-int NS_ENTRY crypto_random_generate_nsc (uint8_t *rn_buf, uint32_t rn_size);
+int NS_ENTRY crypto_random_generate_nsc(uint8_t *rn_buf, uint32_t rn_size);
 #elif defined(CONFIG_BUILD_NONSECURE)
-int crypto_random_generate_nsc (uint8_t *rn_buf, uint32_t rn_size);
+int crypto_random_generate_nsc(uint8_t *rn_buf, uint32_t rn_size);
 #endif
 
 /**
@@ -1219,11 +1219,11 @@ int crypto_random_generate_nsc (uint8_t *rn_buf, uint32_t rn_size);
  *  @retval 0: SUCCESS
  *  @retval < 0: FAIL(Refer to ERRNO)
  */
-int crypto_random_generate (uint8_t *rn_buf, uint32_t rn_size);
+int crypto_random_generate(uint8_t *rn_buf, uint32_t rn_size);
 
 #if !defined(CONFIG_BUILD_NONSECURE)
 
-/** 
+/**
  *  @brief Hash key derivation function.
  *  @details Use input material to derive a key data.
  *  @param[in]   salt       The salt data for HKDF.
@@ -1240,7 +1240,7 @@ int crypto_random_generate (uint8_t *rn_buf, uint32_t rn_size);
  *
  */
 int crypto_hkdf_derive(const uint8_t *salt, size_t salt_len, const uint8_t *ikm, size_t ikm_len,
-                const uint8_t *info, size_t info_len, uint8_t *okm, size_t okm_len );
+					   const uint8_t *info, size_t info_len, uint8_t *okm, size_t okm_len);
 
 /**
  *  @brief To generate a seed for random number generating.
@@ -1250,7 +1250,7 @@ int crypto_hkdf_derive(const uint8_t *salt, size_t salt_len, const uint8_t *ikm,
  *  @retval 0: SUCCESS
  *  @retval < 0: FAIL(Refer to ERRNO)
  */
-int crypto_random_seed (uint8_t *seed_buf, uint32_t seed_size);
+int crypto_random_seed(uint8_t *seed_buf, uint32_t seed_size);
 
 #endif  // end of else of "#if !defined(CONFIG_BUILD_NONSECURE)"
 #endif //#if (defined(CONFIG_PLATFORM_8710C) && (CONFIG_PLATFORM_8710C == 1))
@@ -1338,6 +1338,12 @@ int crypto_random_seed (uint8_t *seed_buf, uint32_t seed_size);
 #define rtl_crypto_aes_ctr_encrypt          crypto_aes_ctr_encrypt
 /// Redefine Ameba1 crypto aes_ctr cipher decrypt function.
 #define rtl_crypto_aes_ctr_decrypt          crypto_aes_ctr_decrypt
+/// Redefine Ameba crypto aes_gcm cipher initialize function.
+#define rtl_crypto_aes_gcm_init             crypto_aes_gcm_init
+/// Redefine Ameba crypto aes_gcm cipher encrypt function.
+#define rtl_crypto_aes_gcm_encrypt          crypto_aes_gcm_encrypt
+/// Redefine Ameba crypto aes_gcm cipher decrypt function.
+#define rtl_crypto_aes_gcm_decrypt          crypto_aes_gcm_decrypt
 
 /**
  * @brief  Compatible function: Ameba1 SHA2 message digest algorithm (hash function).
@@ -1352,15 +1358,15 @@ int crypto_random_seed (uint8_t *seed_buf, uint32_t seed_size);
  *         - SHA2_256: (256/8)
  */
 __STATIC_INLINE int rtl_crypto_sha2(const SHA2_TYPE sha2type, const uint8_t *message,
-                                    const uint32_t msglen, uint8_t *pDigest)
+									const uint32_t msglen, uint8_t *pDigest)
 {
-    if (sha2type == MBED_SHA2_224) {
-        return crypto_sha2_224(message, msglen, pDigest);
-    } else if (sha2type == MBED_SHA2_256) {
-        return crypto_sha2_256(message, msglen, pDigest);
-    }else {
-        return _ERRNO_CRYPTO_NOT_SUPPORT_THIS_FEATURE;
-    }
+	if (sha2type == MBED_SHA2_224) {
+		return crypto_sha2_224(message, msglen, pDigest);
+	} else if (sha2type == MBED_SHA2_256) {
+		return crypto_sha2_256(message, msglen, pDigest);
+	} else {
+		return _ERRNO_CRYPTO_NOT_SUPPORT_THIS_FEATURE;
+	}
 }
 
 /**
@@ -1374,13 +1380,13 @@ __STATIC_INLINE int rtl_crypto_sha2(const SHA2_TYPE sha2type, const uint8_t *mes
  */
 __STATIC_INLINE int rtl_crypto_sha2_init(const SHA2_TYPE sha2type)
 {
-    if (sha2type == MBED_SHA2_224) {
-        return crypto_sha2_224_init();
-    } else if (sha2type == MBED_SHA2_256) {
-        return crypto_sha2_256_init();
-    }else {
-        return _ERRNO_CRYPTO_NOT_SUPPORT_THIS_FEATURE;
-    }
+	if (sha2type == MBED_SHA2_224) {
+		return crypto_sha2_224_init();
+	} else if (sha2type == MBED_SHA2_256) {
+		return crypto_sha2_256_init();
+	} else {
+		return _ERRNO_CRYPTO_NOT_SUPPORT_THIS_FEATURE;
+	}
 }
 
 /**
@@ -1393,7 +1399,7 @@ __STATIC_INLINE int rtl_crypto_sha2_init(const SHA2_TYPE sha2type)
  */
 __STATIC_INLINE int rtl_crypto_sha2_process(const uint8_t *message, const uint32_t msglen, uint8_t *pDigest)
 {
-    return crypto_sha2_256_process(message, msglen, pDigest);
+	return crypto_sha2_256_process(message, msglen, pDigest);
 }
 
 /**
@@ -1410,16 +1416,16 @@ __STATIC_INLINE int rtl_crypto_sha2_process(const uint8_t *message, const uint32
  *         - SHA2_224: (224/8)
  *         - SHA2_256: (256/8)
  */
-__STATIC_INLINE int rtl_crypto_hmac_sha2(const SHA2_TYPE sha2type, const uint8_t *message,const uint32_t msglen,
-                                         const uint8_t *key, const uint32_t keylen, uint8_t *pDigest)
+__STATIC_INLINE int rtl_crypto_hmac_sha2(const SHA2_TYPE sha2type, const uint8_t *message, const uint32_t msglen,
+		const uint8_t *key, const uint32_t keylen, uint8_t *pDigest)
 {
-    if (sha2type == MBED_SHA2_224) {
-        return crypto_hmac_sha2_224(message, msglen, key, keylen, pDigest);
-    } else if (sha2type == MBED_SHA2_256){
-        return crypto_hmac_sha2_256(message, msglen, key, keylen, pDigest);
-    } else {
-        return _ERRNO_CRYPTO_NOT_SUPPORT_THIS_FEATURE;
-    }
+	if (sha2type == MBED_SHA2_224) {
+		return crypto_hmac_sha2_224(message, msglen, key, keylen, pDigest);
+	} else if (sha2type == MBED_SHA2_256) {
+		return crypto_hmac_sha2_256(message, msglen, key, keylen, pDigest);
+	} else {
+		return _ERRNO_CRYPTO_NOT_SUPPORT_THIS_FEATURE;
+	}
 }
 
 /**
@@ -1435,13 +1441,13 @@ __STATIC_INLINE int rtl_crypto_hmac_sha2(const SHA2_TYPE sha2type, const uint8_t
  */
 __STATIC_INLINE int rtl_crypto_hmac_sha2_init(const SHA2_TYPE sha2type, const uint8_t *key, const uint32_t keylen)
 {
-    if (sha2type == MBED_SHA2_224) {
-        return crypto_hmac_sha2_224_init(key, keylen);
-    } else if (sha2type == MBED_SHA2_256) {
-        return crypto_hmac_sha2_256_init(key, keylen);
-    } else {
-        return _ERRNO_CRYPTO_NOT_SUPPORT_THIS_FEATURE;
-    }
+	if (sha2type == MBED_SHA2_224) {
+		return crypto_hmac_sha2_224_init(key, keylen);
+	} else if (sha2type == MBED_SHA2_256) {
+		return crypto_hmac_sha2_256_init(key, keylen);
+	} else {
+		return _ERRNO_CRYPTO_NOT_SUPPORT_THIS_FEATURE;
+	}
 }
 
 /**
@@ -1454,7 +1460,7 @@ __STATIC_INLINE int rtl_crypto_hmac_sha2_init(const SHA2_TYPE sha2type, const ui
  */
 __STATIC_INLINE int rtl_crypto_hmac_sha2_process(const uint8_t *message, const uint32_t msglen, uint8_t *pDigest)
 {
-    return crypto_hmac_sha2_256_process(message, msglen, pDigest);
+	return crypto_hmac_sha2_256_process(message, msglen, pDigest);
 }
 
 #ifdef  __cplusplus

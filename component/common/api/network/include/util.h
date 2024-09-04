@@ -10,11 +10,11 @@ extern "C" {
 
 #include "wifi_util.h"
 #if 0
-typedef enum _WIFI_EVENT_INDICATE{
+typedef enum _WIFI_EVENT_INDICATE {
 	WIFI_EVENT_CONNECT = 0,
 	WIFI_EVENT_DISCONNECT = 1,
 	WIFI_EVENT_FOURWAY_HANDSHAKE_DONE = 2,
-}WIFI_EVENT_INDICATE;
+} WIFI_EVENT_INDICATE;
 
 int wext_get_ssid(const char *ifname, __u8 *ssid);
 int wext_set_ssid(const char *ifname, const __u8 *ssid, __u16 ssid_len);

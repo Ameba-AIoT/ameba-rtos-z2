@@ -228,7 +228,7 @@ static int x509_get_version( unsigned char **p,
                              int *ver )
 {
     int ret;
-    size_t len;
+    size_t len = 0;
 
     if( ( ret = mbedtls_asn1_get_tag( p, end, &len,
             MBEDTLS_ASN1_CONTEXT_SPECIFIC | MBEDTLS_ASN1_CONSTRUCTED | 0 ) ) != 0 )
@@ -265,7 +265,7 @@ static int x509_get_dates( unsigned char **p,
                            mbedtls_x509_time *to )
 {
     int ret;
-    size_t len;
+    size_t len = 0;
 
     if( ( ret = mbedtls_asn1_get_tag( p, end, &len,
             MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE ) ) != 0 )
@@ -462,7 +462,7 @@ static int x509_get_subject_alt_name( unsigned char **p,
                                       mbedtls_x509_sequence *subject_alt_name )
 {
     int ret;
-    size_t len, tag_len;
+    size_t len = 0, tag_len = 0;
     mbedtls_asn1_buf *buf;
     unsigned char tag;
     mbedtls_asn1_sequence *cur = subject_alt_name;
@@ -539,7 +539,7 @@ static int x509_get_crt_ext( unsigned char **p,
                              mbedtls_x509_crt *crt )
 {
     int ret;
-    size_t len;
+    size_t len = 0;
     unsigned char *end_ext_data, *end_ext_octet;
 
     if( ( ret = mbedtls_x509_get_ext( p, end, &crt->v3_ext, 3 ) ) != 0 )
@@ -1024,7 +1024,7 @@ int mbedtls_x509_crt_parse( mbedtls_x509_crt *chain, const unsigned char *buf, s
         /* 1 rather than 0 since the terminating NULL byte is counted in */
         while( buflen > 1 )
         {
-            size_t use_len;
+            size_t use_len = 0;
             mbedtls_pem_init( &pem );
 
             /* If we get there, we know the string is null-terminated */
@@ -1353,7 +1353,7 @@ static int x509_info_ext_key_usage( char **buf, size_t *size,
                                     const mbedtls_x509_sequence *extended_key_usage )
 {
     int ret;
-    const char *desc;
+    const char *desc = NULL;
     size_t n = *size;
     char *p = *buf;
     const mbedtls_x509_sequence *cur = extended_key_usage;
@@ -2237,15 +2237,22 @@ int mbedtls_x509_crt_verify_with_profile( mbedtls_x509_crt *crt,
 
             while( cur != NULL )
             {
-                if( cur->buf.len == cn_len &&
-                    x509_memcasecmp( cn, cur->buf.p, cn_len ) == 0 )
-                    break;
+                const unsigned char san_type = (unsigned char) cur->buf.tag &
+                                               0x1F /* MBEDTLS_ASN1_TAG_VALUE_MASK */;
 
-                if( cur->buf.len > 2 &&
-                    memcmp( cur->buf.p, "*.", 2 ) == 0 &&
-                    x509_check_wildcard( cn, &cur->buf ) == 0 )
+                /* dNSName */
+                if( san_type == 2 /* MBEDTLS_X509_SAN_DNS_NAME */ )
                 {
-                    break;
+                    if( cur->buf.len == cn_len &&
+                        x509_memcasecmp( cn, cur->buf.p, cn_len ) == 0 )
+                        break;
+
+                    if( cur->buf.len > 2 &&
+                        memcmp( cur->buf.p, "*.", 2 ) == 0 &&
+                        x509_check_wildcard( cn, &cur->buf ) == 0 )
+                    {
+                        break;
+                    }
                 }
 
                 cur = cur->next;

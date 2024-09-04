@@ -186,6 +186,10 @@ int mbedtls_pkcs12_pbe( mbedtls_asn1_buf *pbe_params, int mode,
     mbedtls_cipher_context_t cipher_ctx;
     size_t olen = 0;
 
+    if (pwd == NULL && pwdlen != 0) {
+        return MBEDTLS_ERR_PKCS12_BAD_INPUT_DATA;
+    }
+
     cipher_info = mbedtls_cipher_info_from_type( cipher_type );
     if( cipher_info == NULL )
         return( MBEDTLS_ERR_PKCS12_FEATURE_UNAVAILABLE );
@@ -236,12 +240,19 @@ static void pkcs12_fill_buffer( unsigned char *data, size_t data_len,
     unsigned char *p = data;
     size_t use_len;
 
-    while( data_len > 0 )
-    {
-        use_len = ( data_len > fill_len ) ? fill_len : data_len;
-        memcpy( p, filler, use_len );
-        p += use_len;
-        data_len -= use_len;
+    if (filler != NULL && fill_len != 0) {
+        while (data_len > 0) {
+            use_len = (data_len > fill_len) ? fill_len : data_len;
+            memcpy(p, filler, use_len);
+            p += use_len;
+            data_len -= use_len;
+        }
+    } else {
+        /* If either of the above are not true then clearly there is nothing
+         * that this function can do. The function should *not* be called
+         * under either of those circumstances, as you could end up with an
+         * incorrect output but for safety's sake, leaving the check in as
+         * otherwise we could end up with memory corruption.*/
     }
 }
 
@@ -267,6 +278,10 @@ int mbedtls_pkcs12_derivation( unsigned char *data, size_t datalen,
     // This version only allows max of 64 bytes of password or salt
     if( datalen > 128 || pwdlen > 64 || saltlen > 64 )
         return( MBEDTLS_ERR_PKCS12_BAD_INPUT_DATA );
+
+    if (pwd == NULL && pwdlen != 0) {
+        return MBEDTLS_ERR_PKCS12_BAD_INPUT_DATA;
+    }
 
     md_info = mbedtls_md_info_from_type( md_type );
     if( md_info == NULL )

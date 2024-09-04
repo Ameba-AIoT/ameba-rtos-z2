@@ -82,7 +82,9 @@
 #include "rtl8710c_sdio_dev.h"
 #include <arm_cmse.h>   /* Use CMSE intrinsics */
 #if CONFIG_CMSIS_OS_EN
+#ifndef PLATFORM_OHOS
 #include "cmsis_os.h"               // CMSIS RTOS header file
+#endif
 #endif
 
 #endif  // end of "#ifndef MBED_CMSIS_H"

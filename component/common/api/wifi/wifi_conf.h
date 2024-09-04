@@ -596,7 +596,6 @@ int wifi_rf_off(void);
  *                - RTW_MODE_AP
  *                - RTW_MODE_STA_AP
  *                - RTW_MODE_PROMISC
- *                - RTW_MODE_P2P
  * @return     RTW_SUCCESS: WiFi initialization successful.
  * @return     RTW_ERROR: WiFi internal error.
  * @return     1: WIFI is already running.
@@ -1292,6 +1291,16 @@ int wifi_get_antenna_info(unsigned char *antenna);
 #endif // #ifdef CONFIG_ANTENNA_DIVERSITY
 
 /**
+ * @brief      SW reporting mgnt packets to wifi_indication() during wifi_connect().
+ * @param[in]  enable:
+ *                - 0: disable mode(default), SW doesn't report
+ *                - 1: enable mode, SW reports mgnt packets
+ * @return     None
+ * @note       Please make sure the Wi-Fi is enabled before invoking this function. (@ref wifi_on())
+ */
+void wifi_connect_monitor_mgnt(int enable);
+
+/**
  * @brief      Config mode of HW indicating packets (mgnt and data) and SW reporting packets to wifi_indication().
  * @param[in]  enable:
  *                - 0: disable mode(default), HW only indicate bssid-matched pkts and SW don't report.
@@ -1461,9 +1470,6 @@ int wifi_wowlan_ctrl(int enable);
 int wifi_wowlan_set_pattern(wowlan_pattern_t pattern);
 #endif
 //-------------------------------------------------------------//
-/**
-  * @}
-  */
 
 #ifdef CONFIG_MCC_STA_AP_MODE
 /**
@@ -1523,6 +1529,16 @@ int wifi_set_block_bc_mc_packet(unsigned char enable, unsigned char types);
 int wifi_get_block_bc_mc_packet(unsigned char types);
 
 #endif // CONFIG_MCC_STA_AP_MODE
+
+/**
+ * @brief  Get station security type
+ * @return  Station security type
+ */
+int wifi_get_sta_security_type(void);
+
+/**
+  * @}
+  */
 
 #ifdef __cplusplus
 }

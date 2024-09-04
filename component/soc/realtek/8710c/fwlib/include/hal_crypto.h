@@ -42,6 +42,12 @@ extern "C" {
 #include "cmsis.h"
 #include <arm_cmse.h>   /* Use CMSE intrinsics */
 
+#if defined(CONFIG_MATTER) && CONFIG_MATTER
+#ifndef IN
+#define IN
+#endif
+#endif
+
 /**
  * @addtogroup hs_hal_crypto CRYPTO
  * @{
@@ -1720,6 +1726,11 @@ void rtl_crypto_set_debug(int val);
 }
 #endif
 
+#if defined(CONFIG_MATTER) && CONFIG_MATTER
+#ifndef IN
+#define IN
+#endif
+#endif
 
 #endif // __HAL_CRYPTO_H__
 

@@ -63,26 +63,6 @@ __weak void __iar_zero_init3(void)
 
 }
 
-#if (defined(CONFIG_MIIO)&&(CONFIG_MIIO))
-void HalHardFaultHandler_Patch_c(u32 HardDefaultArg, u32 lr)
-{
-    uint32_t crash_flag = 0xE32C04EDUL;
-    extern int arch_psm_set_value(const char*, const char*, const void*, uint32_t);
-    arch_psm_set_value("arch", "crash_flag", &crash_flag, sizeof(uint32_t));
-    ((int_vector_t)(0xab5))();
-}
-
-void HalHardFaultHandler_Patch_asm(void)
-{
-    asm("TST LR, #4\n"
-        "ITE EQ\n"
-        "MRSEQ R0, MSP\n"
-        "MRSNE R0, PSP\n"
-        "MOV R1, LR\n"
-        "B HalHardFaultHandler_Patch_c");
-}
-#endif
-
 #if defined(CONFIG_BUILD_SECURE)
 /** 
  *  @brief To setup SAUs to partition the system memory as Secure memory and Non-secure memory.
@@ -146,6 +126,7 @@ extern void *__iar_cstart_call_ctors(void *ptr);
 #elif defined (__GNUC__)
 extern void __libc_init_array(void);
 void _init(void){}
+void _fini(void) {}
 #endif
 
 #if defined(CONFIG_BUILD_SECURE)
@@ -194,14 +175,27 @@ u32 Rand (void)
     return (rand_seed[0] ^ rand_seed[1] ^ rand_seed[2] ^ rand_seed[3]);
 }
 
+void gtimer8_reset (void)
+{
+    hal_timer_adapter_t ls_timer;
+    hal_timer_init (&ls_timer, GTimer8);
+    hal_timer_deinit(&ls_timer);
+}
+
+#if defined(CONFIG_BUILD_SECURE)
+SECTION_NS_ENTRY_FUNC
+void NS_ENTRY gtimer8_reset_nsc (void)
+{
+    gtimer8_reset();
+}
+#endif
+
 static void app_gen_random_seed(void)
 {
     u8 random[4] = {0};
     u32 data;
-      /* to reset gtimer8 */
-    hal_timer_adapter_t ls_timer;
-    hal_timer_init (&ls_timer, GTimer8);
-    hal_timer_deinit(&ls_timer);
+    /* to reset gtimer8 */
+    gtimer8_reset();
     crypto_init();
     crypto_random_generate((unsigned char *)random, 4);
     rand_first = 1;
@@ -222,17 +216,32 @@ void app_gen_random_seed_nsc(void)
     app_gen_random_seed();
 }
 
+#if defined(CONFIG_MATTER) && CONFIG_MATTER
+void start_random_seed_thread(void *param)
+{
+	app_gen_random_seed();
+	vTaskDelete(NULL);
+}
+
+void start_random_seed()
+{
+	if(xTaskCreate(start_random_seed_thread, ((const char*)"seed"), 512, NULL, 9, NULL) != pdPASS)
+		printf("\n\r%s xTaskCreate(start_random_seed_thread) failed", __FUNCTION__);
+}
+#endif
+
+#ifdef ENABLE_AMAZON_COMMON
+__weak void os_heap_init(void) { /* default os_heap_init, for FreeRTOS heap5 */ }
+#endif
+
 void app_start (void)
 {
 	dbg_printf ("Build @ %s, %s\r\n", __TIME__, __DATE__);
 
-#if (defined(CONFIG_MIIO)&&(CONFIG_MIIO))
-	ram_vector_table[3] = (int_vector_t)HalHardFaultHandler_Patch_asm;
-	ram_vector_table[4] = (int_vector_t)HalHardFaultHandler_Patch_asm;
-	ram_vector_table[5] = (int_vector_t)HalHardFaultHandler_Patch_asm;
-	ram_vector_table[6] = (int_vector_t)HalHardFaultHandler_Patch_asm;
-	ram_vector_table[7] = (int_vector_t)HalHardFaultHandler_Patch_asm;
+#ifdef ENABLE_AMAZON_COMMON
+	os_heap_init();
 #endif
+
 #ifdef PLATFORM_OHOS	
 	ram_vector_table[2] = (int_vector_t)OsHwiDefaultHandler;
 	ram_vector_table[3] = (int_vector_t)OsHwiDefaultHandler;
@@ -245,7 +254,11 @@ void app_start (void)
 
 	__secure_init_array();
 	shell_cmd_init ();
+#if defined(CONFIG_MATTER) && CONFIG_MATTER
+	start_random_seed();
+#else
 	app_gen_random_seed();
+#endif
 	main();
 #if defined ( __ICCARM__ )
 	// for compile issue, If user never call this function, Liking fail

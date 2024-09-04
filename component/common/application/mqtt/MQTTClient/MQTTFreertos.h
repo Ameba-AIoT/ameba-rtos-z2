@@ -26,24 +26,20 @@
 
 #define MQTT_OVER_SSL (1)
 #if (MQTT_OVER_SSL)
-#if CONFIG_USE_POLARSSL
-#include "polarssl/config.h"
-#include "polarssl/net.h"
-#include "polarssl/ssl.h"
-#include "polarssl/error.h"
-#include "polarssl/memory.h"
-#elif CONFIG_USE_MBEDTLS
 #if CONFIG_MBEDTLS_VERSION3 == 1 
 #include "mbedtls/build_info.h"
 #else
-#include "mbedtls/config.h"
+#if !defined(MBEDTLS_CONFIG_FILE)
+#include <mbedtls/config.h>
+#else
+#include MBEDTLS_CONFIG_FILE
+#endif
 #endif
 #include "mbedtls/platform.h"
 #include "mbedtls/net_sockets.h"
 #include "mbedtls/ssl.h"
 #include "mbedtls/error.h"
 #include "mbedtls/debug.h"
-#endif
 #endif
 
 enum {
@@ -82,12 +78,8 @@ struct Network
 
 #if (MQTT_OVER_SSL)
     unsigned char use_ssl;
-#if CONFIG_USE_POLARSSL   
-    ssl_context *ssl;
-#elif CONFIG_USE_MBEDTLS
     mbedtls_ssl_context *ssl;
     mbedtls_ssl_config *conf;
-#endif    
     char *rootCA;
     char *clientCA;
     char *private_key;

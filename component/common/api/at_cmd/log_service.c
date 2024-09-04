@@ -31,11 +31,11 @@ extern void at_transport_init(void);
 extern void at_mp_init(void);
 extern void at_bt_init(void);
 extern void at_isp_init(void);
-#if (CONFIG_JOYLINK || CONFIG_GAGENT || CONFIG_QQ_LINK || \
-	(defined(CONFIG_AIRKISS_CLOUD) && CONFIG_AIRKISS_CLOUD) || CONFIG_ALINK || \
-	(defined(CONFIG_HILINK) && CONFIG_HILINK) || (defined(CONFIG_MIIO) && CONFIG_MIIO) || \
-	(defined(CONFIG_RIC) && CONFIG_RIC)||(defined(CONFIG_LINKKIT_AWSS) && CONFIG_LINKKIT_AWSS))
+#if (defined(CONFIG_JOYLINK) && CONFIG_JOYLINK)
 extern void at_cloud_init(void);
+#endif
+#if defined(CONFIG_MATTER) && CONFIG_MATTER
+extern void at_matter_init(void);
 #endif
 void at_log_init(void);
 
@@ -79,10 +79,6 @@ log_init_t log_init_table[] = {
 #endif
 	at_log_init,
 	//	at_app_init,
-#if CONFIG_ETHERNET
-	at_ethernet_init,
-#endif
-
 #if (defined(CONFIG_GOOGLE_NEST) && CONFIG_GOOGLE_NEST)
 	at_google_init,
 #endif
@@ -103,10 +99,12 @@ log_init_t log_init_table[] = {
 	at_isp_init,
 #endif
 
-#if (CONFIG_JOYLINK || CONFIG_GAGENT || CONFIG_QQ_LINK || (defined(CONFIG_AIRKISS_CLOUD) && \
-	CONFIG_AIRKISS_CLOUD) || CONFIG_ALINK || (defined(CONFIG_HILINK) && CONFIG_HILINK) || \
-	(defined(CONFIG_MIIO) && CONFIG_MIIO) || (defined(CONFIG_RIC) && CONFIG_RIC)||(defined(CONFIG_LINKKIT_AWSS) && CONFIG_LINKKIT_AWSS))
+#if (defined(CONFIG_JOYLINK) && CONFIG_JOYLINK)
 	at_cloud_init,
+#endif
+
+#if defined(CONFIG_MATTER) && CONFIG_MATTER
+	at_matter_init,
 #endif
 };
 #else
@@ -339,30 +337,6 @@ void at_set_debug_mask(unsigned int newDbgFlag)
 	gDbgFlag = newDbgFlag;
 }
 
-#if defined(SUPPORT_INTERACTIVE_MODE) && SUPPORT_INTERACTIVE_MODE
-extern char uart_buf[64];
-void legency_interactive_handler(unsigned char argc, unsigned char **argv)
-{
-	/* To avoid gcc warnings */
-	(void) argc;
-	(void) argv;
-#if 0 //defined(CONFIG_PLATFORM_8195A)
-	if (argc < 1) {
-		DiagPrintf("Wrong argument number!\r\n");
-		return;
-	}
-
-
-	DiagPrintf("Wlan Normal Mode\n");
-
-	WlanNormal(argc, argv);
-#else
-	strncpy(uart_buf, log_buf, 63);//uart_buf[64]
-	xSemaphoreGive(uart_rx_interrupt_sema);
-#endif
-}
-#endif
-
 #if CONFIG_WLAN
 #ifndef WLAN0_NAME
 #define WLAN0_NAME		"wlan0"
@@ -457,14 +431,9 @@ void log_service(void *param)
 			if (mp_commnad_handler((char *)log_buf) < 0)
 #endif
 			{
-#if defined(SUPPORT_INTERACTIVE_MODE) && SUPPORT_INTERACTIVE_MODE
-				print_help_handler((char *)log_buf);
-				legency_interactive_handler(NULL, NULL);
-#else
 				if (print_help_handler((char *)log_buf) < 0) {
 					at_printf("\r\nunknown command '%s'", log_buf);
 				}
-#endif
 			}
 		}
 		log_buf[0] = '\0';

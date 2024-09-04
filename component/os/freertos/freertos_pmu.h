@@ -13,57 +13,55 @@
 #define BIT(n)                   (1<<n)
 #endif
 
-#ifdef PLATFORM_FREERTOS
-#include "FreeRTOS.h"
-#endif
+#include "osdep_service.h"
 
 #ifdef CONFIG_PLATFORM_8195A
 #define DEFAULT_WAKEUP_EVENT (SLEEP_WAKEUP_BY_STIMER | SLEEP_WAKEUP_BY_GTIMER | SLEEP_WAKEUP_BY_GPIO_INT | SLEEP_WAKEUP_BY_WLAN)
 
 typedef enum PMU_DEVICE {
 
-    PMU_OS = 0,
-    PMU_WLAN_DEVICE = 1,
-    PMU_LOGUART_DEVICE = 2,
-    PMU_SDIO_DEVICE = 3,
+	PMU_OS = 0,
+	PMU_WLAN_DEVICE = 1,
+	PMU_LOGUART_DEVICE = 2,
+	PMU_SDIO_DEVICE = 3,
 
-    PMU_DEV_USER_BASE= 16,
+	PMU_DEV_USER_BASE = 16,
 
-    PMU_MAX = 31
+	PMU_MAX = 31
 
 } PMU_DEVICE;
 
 // default locked by OS and not to sleep until OS release wakelock in somewhere
 #define DEFAULT_WAKELOCK         (BIT(PMU_OS))
-typedef uint32_t (*PSM_HOOK_FUN)( unsigned int, void* param_ptr );
+typedef uint32_t (*PSM_HOOK_FUN)(unsigned int, void *param_ptr);
 #endif
 
 #if (defined CONFIG_PLATFORM_8195BHP)
 // default locked by OS and not to sleep until OS release wakelock in somewhere
 #define DEFAULT_WAKELOCK         (BIT(PMU_OS))
-typedef uint32_t (*PSM_HOOK_FUN)( unsigned int, void* param_ptr );
+typedef uint32_t (*PSM_HOOK_FUN)(unsigned int, void *param_ptr);
 #endif
 
 #if (defined CONFIG_PLATFORM_8711B)
 typedef enum {
-	PMU_OS					=0,
-	PMU_WLAN_DEVICE		=1,
-	PMU_LOGUART_DEVICE	=2,
-	PMU_SDIO_DEVICE		=3,
+	PMU_OS					= 0,
+	PMU_WLAN_DEVICE		= 1,
+	PMU_LOGUART_DEVICE	= 2,
+	PMU_SDIO_DEVICE		= 3,
 
-	PMU_UART0_DEVICE		=4,
-	PMU_UART1_DEVICE		=5,
-	PMU_I2C0_DEVICE		=6,
-	PMU_I2C1_DEVICE		=7,
-	PMU_USOC_DEVICE		=8,
-	PMU_DONGLE_DEVICE	=9,
-	PMU_RTC_DEVICE		=10,
-	PMU_CONSOL_DEVICE	=11,
-	PMU_ADC_DEVICE	=12,
-	PMU_WAKWLOCK_TIMEOUT=13,
-	PMU_DEV_USER_BASE	=16,
+	PMU_UART0_DEVICE		= 4,
+	PMU_UART1_DEVICE		= 5,
+	PMU_I2C0_DEVICE		= 6,
+	PMU_I2C1_DEVICE		= 7,
+	PMU_USOC_DEVICE		= 8,
+	PMU_DONGLE_DEVICE	= 9,
+	PMU_RTC_DEVICE		= 10,
+	PMU_CONSOL_DEVICE	= 11,
+	PMU_ADC_DEVICE	= 12,
+	PMU_WAKWLOCK_TIMEOUT = 13,
+	PMU_DEV_USER_BASE	= 16,
 
-	PMU_MAX				=31
+	PMU_MAX				= 31
 } PMU_DEVICE;
 
 enum SLEEP_TYPE {
@@ -74,17 +72,17 @@ enum SLEEP_TYPE {
 // default locked by OS and not to sleep until OS release wakelock in somewhere
 #define DEFAULT_WAKELOCK         (BIT(PMU_OS))
 
-typedef uint32_t (*PSM_HOOK_FUN)( unsigned int, void* param_ptr );
+typedef uint32_t (*PSM_HOOK_FUN)(unsigned int, void *param_ptr);
 #endif
 
 #if defined(CONFIG_PLATFORM_8710C)
 typedef enum {
-	PMU_OS					=0,
-	PMU_WLAN_DEVICE		=1,
-	PMU_WAKELOCK_TIMEOUT=3,
+	PMU_OS					= 0,
+	PMU_WLAN_DEVICE		= 1,
+	PMU_WAKELOCK_TIMEOUT = 3,
 	PMU_ROAMING_TICKLESS = 4,
 	PMU_DEV_USER_BASE = 16,
-	PMU_LOGUART_DEVICE	=30, //must keep log uart the max id
+	PMU_LOGUART_DEVICE	= 30, //must keep log uart the max id
 	PMU_MAX = 31
 } PMU_DEVICE;
 
@@ -96,7 +94,7 @@ enum SLEEP_TYPE {
 // default locked by OS and not to sleep until OS release wakelock in somewhere
 #define DEFAULT_WAKELOCK         (BIT(PMU_OS))
 
-typedef uint32_t (*PSM_HOOK_FUN)( unsigned int, void* param_ptr );
+typedef uint32_t (*PSM_HOOK_FUN)(unsigned int, void *param_ptr);
 #endif
 
 /** Acquire wakelock
@@ -130,7 +128,7 @@ uint32_t pmu_get_wakelock_status(void);
 /** enable to keep wakelock stats
  *
  */
-void pmu_enable_wakelock_stats( unsigned char enable );
+void pmu_enable_wakelock_stats(unsigned char enable);
 
 /** Get text report that contain the statics of wakelock holding time
  *
@@ -139,7 +137,7 @@ void pmu_enable_wakelock_stats( unsigned char enable );
  *
  *  @param pcWriteBuffer  : The char buffer that contain the report
  */
-void pmu_get_wakelock_hold_stats( char *pcWriteBuffer );
+void pmu_get_wakelock_hold_stats(char *pcWriteBuffer);
 
 /** Recalculate the wakelock statics
  *
@@ -155,7 +153,7 @@ void pmu_clean_wakelock_stat(void);
   * @param  timeout: system can not sleep beore timeout, unit is ms.
   * @retval status value:
   *          - 0: _FAIL
-  *          - 1: _SUCCESS   
+  *          - 1: _SUCCESS
   */
 uint32_t pmu_set_sysactive_time(uint32_t timeout_ms);
 
@@ -163,7 +161,7 @@ void pmu_add_wakeup_event(uint32_t event);
 void pmu_del_wakeup_event(uint32_t event);
 
 #if (defined CONFIG_PLATFORM_8195A) || (defined CONFIG_PLATFORM_8195BHP) || (defined CONFIG_PLATFORM_8710C) || (defined CONFIG_PLATFORM_8711B)
-void pmu_register_sleep_callback(uint32_t nDeviceId, PSM_HOOK_FUN sleep_hook_fun, void* sleep_param_ptr, PSM_HOOK_FUN wakeup_hook_fun, void* wakeup_param_ptr);
+void pmu_register_sleep_callback(uint32_t nDeviceId, PSM_HOOK_FUN sleep_hook_fun, void *sleep_param_ptr, PSM_HOOK_FUN wakeup_hook_fun, void *wakeup_param_ptr);
 void pmu_unregister_sleep_callback(uint32_t nDeviceId);
 #endif
 

@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_WEBSOCKET_CLIENT) && CONFIG_EXAMPLE_WEBSOCKET_CLIENT
 #include "FreeRTOS.h"
 #include "task.h"
 #include <platform/platform_stdlib.h>
@@ -78,3 +81,5 @@ void example_wsclient(void)
 		printf("\n\r%s xTaskCreate(init_thread) failed", __FUNCTION__);
 	}
 }
+
+#endif //#if defined(CONFIG_EXAMPLE_WEBSOCKET_CLIENT) && CONFIG_EXAMPLE_WEBSOCKET_CLIENT

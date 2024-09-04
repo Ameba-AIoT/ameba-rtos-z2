@@ -1,3 +1,6 @@
+#include "platform_opts.h"
+
+#if defined(CONFIG_EXAMPLE_SOCKET_SELECT) && CONFIG_EXAMPLE_SOCKET_SELECT
 #include "FreeRTOS.h"
 #include "task.h"
 #include <platform/platform_stdlib.h>
@@ -18,8 +21,8 @@
 static void example_socket_select_thread(void *param)
 {
 	/* To avoid gcc warnings */
-	( void ) param;
-	
+	(void) param;
+
 	int max_socket_fd = -1;
 #if CONNECT_REMOTE
 	struct sockaddr_in remote_addr;
@@ -28,70 +31,72 @@ static void example_socket_select_thread(void *param)
 	struct sockaddr_in server_addr;
 	int server_fd = -1;
 	int socket_used[MAX_SOCKETS];
+#if CONNECT_REMOTE
 restart:
+#endif
 	// Delay to wait for IP by DHCP
-  	while(wifi_is_ready_to_transceive(RTW_STA_INTERFACE) != RTW_SUCCESS){
+	while (wifi_is_ready_to_transceive(RTW_STA_INTERFACE) != RTW_SUCCESS) {
 		printf("\n\rWait for WIFI connection ...\r\n");
-        	vTaskDelay(12000);
-        }
+		vTaskDelay(12000);
+	}
 	printf("\nExample: socket select\n");
 
 	memset(socket_used, 0, sizeof(socket_used));
 
 #if CONNECT_REMOTE
 reconnect:
-	if (wifi_is_connected_to_ap() == RTW_ERROR)
+	if (wifi_is_connected_to_ap() == RTW_ERROR) {
 		goto restart;
-		
-	if((remote_fd = socket(AF_INET, SOCK_STREAM, 0)) >= 0) {
+	}
+
+	if ((remote_fd = socket(AF_INET, SOCK_STREAM, 0)) >= 0) {
 		remote_addr.sin_family = AF_INET;
 		remote_addr.sin_addr.s_addr = inet_addr(REMOTE_HOST);
 		remote_addr.sin_port = htons(REMOTE_PORT);
 
-		if(connect(remote_fd, (struct sockaddr *) &remote_addr, sizeof(remote_addr)) == 0) {
+		if (connect(remote_fd, (struct sockaddr *) &remote_addr, sizeof(remote_addr)) == 0) {
 			printf("connect socket fd(%d)\n", remote_fd);
 			socket_used[remote_fd] = 1;
 
-			if(remote_fd > max_socket_fd)
+			if (remote_fd > max_socket_fd) {
 				max_socket_fd = remote_fd;
-		}
-		else {
+			}
+		} else {
 			printf("connect error\n");
 			close(remote_fd);
 			goto reconnect;
 		}
-	}
-	else {
+	} else {
 		printf("socket error\n");
 		goto exit;
 	}
 #endif
-	if((server_fd = socket(AF_INET, SOCK_STREAM, 0)) >= 0) {
+	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) >= 0) {
 		server_addr.sin_family = AF_INET;
 		server_addr.sin_port = htons(SERVER_PORT);
 		server_addr.sin_addr.s_addr = INADDR_ANY;
 
-		if(bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0) {
+		if (bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0) {
 			printf("bind error\n");
 			goto exit;
 		}
 
-		if(listen(server_fd, LISTEN_QLEN) != 0) {
+		if (listen(server_fd, LISTEN_QLEN) != 0) {
 			printf("listen error\n");
 			goto exit;
 		}
 
 		socket_used[server_fd] = 1;
 
-		if(server_fd > max_socket_fd)
+		if (server_fd > max_socket_fd) {
 			max_socket_fd = server_fd;
-	}
-	else {
+		}
+	} else {
 		printf("socket error\n");
 		goto exit;
 	}
 
-	while(1) {
+	while (1) {
 		int socket_fd;
 		unsigned char buf[512];
 		fd_set read_fds;
@@ -101,36 +106,35 @@ reconnect:
 		timeout.tv_sec = SELECT_TIMEOUT;
 		timeout.tv_usec = 0;
 
-		for(socket_fd = 0; socket_fd < MAX_SOCKETS; socket_fd ++)
-			if(socket_used[socket_fd])
+		for (socket_fd = 0; socket_fd < MAX_SOCKETS; socket_fd ++)
+			if (socket_used[socket_fd]) {
 				FD_SET(socket_fd, &read_fds);
+			}
 
-		if(select(max_socket_fd + 1, &read_fds, NULL, NULL, &timeout)) {
-			for(socket_fd = 0; socket_fd < MAX_SOCKETS; socket_fd ++) {
-				if(socket_used[socket_fd] && FD_ISSET(socket_fd, &read_fds)) {
-					if(socket_fd == server_fd) {
+		if (select(max_socket_fd + 1, &read_fds, NULL, NULL, &timeout)) {
+			for (socket_fd = 0; socket_fd < MAX_SOCKETS; socket_fd ++) {
+				if (socket_used[socket_fd] && FD_ISSET(socket_fd, &read_fds)) {
+					if (socket_fd == server_fd) {
 						struct sockaddr_in client_addr;
 						unsigned int client_addr_size = sizeof(client_addr);
 						int fd = accept(server_fd, (struct sockaddr *) &client_addr, &client_addr_size);
 
-						if(fd >= 0) {
+						if (fd >= 0) {
 							printf("accept socket fd(%d)\n", fd);
 							socket_used[fd] = 1;
 
-							if(fd > max_socket_fd)
+							if (fd > max_socket_fd) {
 								max_socket_fd = fd;
-						}
-						else {
+							}
+						} else {
 							printf("accept error\n");
 						}
-					}
-					else {
+					} else {
 						int read_size = recv(socket_fd, buf, sizeof(buf), MSG_DONTWAIT);
 
-						if(read_size > 0) {
+						if (read_size > 0) {
 							send(socket_fd, buf, read_size, MSG_DONTWAIT);
-						}
-						else {
+						} else {
 							printf("socket fd(%d) disconnected\n", socket_fd);
 							socket_used[socket_fd] = 0;
 							close(socket_fd);
@@ -138,8 +142,7 @@ reconnect:
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			printf("TCP server: no data in %d seconds\n", SELECT_TIMEOUT);
 		}
 
@@ -147,14 +150,18 @@ reconnect:
 	}
 
 exit:
-	if(server_fd >= 0)
+	if (server_fd >= 0) {
 		close(server_fd);
+	}
 
 	vTaskDelete(NULL);
 }
 
 void example_socket_select(void)
 {
-	if(xTaskCreate(example_socket_select_thread, ((const char*)"example_socket_select_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS)
+	if (xTaskCreate(example_socket_select_thread, ((const char *)"example_socket_select_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
 		printf("\n\r%s xTaskCreate(init_thread) failed", __FUNCTION__);
+	}
 }
+
+#endif //#if defined(CONFIG_EXAMPLE_SOCKET_SELECT) && CONFIG_EXAMPLE_SOCKET_SELECT

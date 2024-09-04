@@ -21,14 +21,32 @@ extern "C" {
 #endif
 #endif
 
+#define BUFFERED_PRINTF         0
+
+#if defined(__ICCARM__)
+#if defined(BUFFERED_PRINTF) && (BUFFERED_PRINTF == 1)
+#undef printf //libc may redefine to puts/putchar
+extern int buffered_printf(const char *fmt, ...);
+#define printf                buffered_printf
+#endif
+#endif
+
 #if defined (__GNUC__)
 #define CONFIG_PLATFORM_AMEBA_X 1
-extern int __wrap_printf(const char * fmt,...);
 char *__wrap_strtok(char *s, char const *ct);
 #undef printf //libc may redefine to puts/putchar
-#define printf __wrap_printf
+#if defined(BUFFERED_PRINTF) && (BUFFERED_PRINTF == 1)
+extern int buffered_printf(const char *fmt, ...);
+#define printf                buffered_printf
+#else
+extern int __wrap_printf(const char *fmt, ...);
+#define printf                __wrap_printf
+#endif
+
 #undef malloc //libc will redefine to malloc_r
+#ifndef PLATFORM_OHOS
 #define malloc pvPortMalloc
+#endif
 #undef strtok //libc will redefine to strtok_r
 #define strtok __wrap_strtok
 #endif
