@@ -28,8 +28,8 @@ On Linux, please install packages for the GCC environment.
 * Use command `apt-get install bc` to install "bc".
 
 # Configure the Project
-* For general configurations, you can configure the options in "platform_opts.h".
-* For BT configurations, you can configure the options in "platform_opts_bt.h".
+* For general configurations, you can configure the options in "/project/.../GCC-RELEASE/platform_opts.h".
+* For BT configurations, you can configure the options in "/project/.../GCC-RELEASE/platform_opts_bt.h".
 
 # Compile the Project
 1) Open the Cygwin Terminal or Linux terminal.
