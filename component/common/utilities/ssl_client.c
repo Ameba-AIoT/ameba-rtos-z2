@@ -7,7 +7,11 @@
 #if CONFIG_MBEDTLS_VERSION3 == 1
 #include "mbedtls/build_info.h"
 #else
+#if !defined(MBEDTLS_CONFIG_FILE)
 #include "mbedtls/config.h"
+#else
+#include MBEDTLS_CONFIG_FILE
+#endif
 #endif
 #include "mbedtls/platform.h"
 #include "mbedtls/net_sockets.h"
