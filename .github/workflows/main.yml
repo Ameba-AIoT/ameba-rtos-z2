@@ -1,0 +1,38 @@
+name: build amebaz2/z2plus
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: checkout ameba-rtos-z2 main branch
+              uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.event.pull_request.head.sha }}
+                  path: ameba-rtos-z2
+
+            - name: Build amebaz2
+              run: |
+                    echo "Setting up build environment"
+                    cd ameba-rtos-z2/project/realtek_amebaz2_v0_example/GCC-RELEASE/
+                    make clean
+                    echo "Building firmware image"
+                    make is
+                    echo "Build image completed"
+                    make clean
+
+            - name: Build amebaz2plus
+              run: |
+                    echo "Setting up build environment"
+                    cd ameba-rtos-z2/project/realtek_amebaz2plus_v0_example/GCC-RELEASE/
+                    make clean
+                    echo "Building firmware image"
+                    make is
+                    echo "Build image completed"
+                    make clean
