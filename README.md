@@ -23,7 +23,7 @@ Note:
 * During the Cygwin installation, please install "math -> bc" and "devel -> make".
 
 ## GCC Environment on Linux
-On Linux, please install packages for the GCC environment.
+On 64-bit Linux, please install packages for the GCC environment.
 * Use command `apt-get install make` to install "make".
 * Use command `apt-get install bc` to install "bc".
 
@@ -48,6 +48,8 @@ After a successfully compilation, the images `partition.bin`, `bootloader.bin`, 
 To download image to board, you can either
 * Directly download the image binary to board from GCC (J-Link debugger is required), please check the ApplicationNote chapter **SDK Build Environment Setup** for more details.
 * Or using the PG tool for Ameba-ZII (in /tools/AmebaZ2), please check the ApplicationNote chapter **Image Tool** for more details.
+
+**Note**: Please choose `flash_is.bin` when downloading image by PG Tool.
 
 # Release Notes
 
