@@ -27,12 +27,6 @@ MATTER_INCLUDE_APP    = $(MATTER_BUILDDIR)/Makefile.include.app.list
 DUMP_START_ADDRESS = 0x98000000
 DUMP_END_ADDRESS   = 0x98200000
 
-# Version control
-# -------------------------------------------------------------------
-
-FREERTOS_VERSION   = freertos_v10.0.1
-LWIP_VERSION       = lwip_v2.1.3
-
 # Initialize Toolchain related
 # -------------------------------------------------------------------
 
@@ -124,41 +118,12 @@ INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/board/amebaz2/src/
 INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/board/amebaz2/src/vendor_cmd
 INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_config
 INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/ble_central
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter
 INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/ble_peripheral
 INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/ble_scatternet
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_fuzz_test
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_ota_central_client
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_ancs
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_joylink_adapter
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/gap
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/inc
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/inc/amebaz2
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/platform
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/profile
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/utility
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/provisioner
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/device
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/common
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/provisioner
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/device
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_provisioner_rtk_demo
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_provisioner_rtk_demo/inc
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_device_rtk_demo
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/device_multiple_profile
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/provisioner_multiple_profile
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_test
 INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/board/common/inc
 INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/bt_airsync_config
 INCLUDES += -I../../../component/common/application/airsync/1.0.4
-INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/ble_throughput_test
-#INCLUDES += -I../../../component/common/application/jdsmart/2.1.22/joylink_ble/include
+INCLUDES += -I../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter
 
 INCLUDES += -I../../../component/soc/realtek/8710c/cmsis/rtl8710c/include
 INCLUDES += -I../../../component/soc/realtek/8710c/cmsis/rtl8710c/lib/include
@@ -188,6 +153,7 @@ INCLUDES += -I../../../component/common/application/amazon/amazon-ffs/ffs_demo/r
 SRC_C =
 SRAM_C =
 ERAM_C =
+
 #bluetooth - board
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/board/amebaz2/src/hci/bt_fwconfig.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/board/amebaz2/src/hci/bt_mp_patch.c
@@ -216,8 +182,6 @@ SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/server/
 #SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/server/hids_rmc.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/client/simple_ble_client.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/server/simple_ble_service.c
-SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/client/ota_client.c
-SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/client/dfu_client.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/board/common/src/trace_task.c
 
 #bluetooth - example - ble_central
@@ -233,27 +197,11 @@ SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_peripheral/
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_peripheral/ble_peripheral_at_cmd.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_peripheral/peripheral_app.c
 
-#bluetooth - example - ble_matter_adapter
-SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/ble_matter_adapter_service.c
-SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/ble_matter_adapter_app_task.c
-SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/ble_matter_adapter_app_main.c
-SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/ble_matter_adapter_app.c
-
 #bluetooth - example - ble_scatternet
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_scatternet/ble_scatternet_app.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_scatternet/ble_scatternet_app_main.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_scatternet/ble_scatternet_app_task.c
 
-#bluetooth - example - bt_fuzz_test
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_fuzz_test/bt_fuzz_test_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_fuzz_test/bt_fuzz_test_app_main.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_fuzz_test/bt_fuzz_test_app_task.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_fuzz_test/bt_fuzz_test_at_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_fuzz_test/bt_fuzz_test_link_mgr.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_fuzz_test/bt_fuzz_test_simple_ble_service.c \
-	../../../component/common/bluetooth/realtek/sdk/src/ble/profile/server/gls.c \
-	../../../component/common/bluetooth/realtek/sdk/src/ble/profile/server/hrs.c \
-	../../../component/common/bluetooth/realtek/sdk/src/ble/profile/server/ias.c
 #bluetooth - example - bt_beacon
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_beacon/bt_beacon_app.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_beacon/bt_beacon_app_main.c
@@ -277,343 +225,11 @@ SRC_C += ../../../component/common/application/airsync/1.0.4/epb_MmBp.c
 SRC_C += ../../../component/common/application/airsync/1.0.4/epb_WristBand.c
 SRC_C += ../../../component/common/application/airsync/1.0.4/wechat_airsync_protocol.c
 
-#bluetooth - example - bt_ota_central_client
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_ota_central_client/bt_ota_central_client_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_ota_central_client/bt_ota_central_client_app_main.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_ota_central_client/bt_ota_central_client_app_task.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_ota_central_client/bt_ota_central_client_link_mgr.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_ota_central_client/bt_ota_central_client_test_image.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_ota_central_client/bt_ota_central_client_at_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_ota_central_client/insert_write.c
-
-#bluetooth - example - bt_datatrans
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_app_queue.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_app_task.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_at_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_at_hci_cmd_process.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_central_application.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_main.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_module_param_config.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_multilink_manager.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_peripheral_application.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_profile.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_datatrans/bt_datatrans_uart.c
-
-#bluetooth - example - bt_ancs
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_ancs/bt_ancs.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_ancs/bt_ancs_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_ancs/bt_ancs_app_task.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_ancs/bt_ancs_main.c
-
-#bluetooth - example - bt_joylink_adapter
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_joylink_adapter/bt_joylink_adapter_app_main.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_joylink_adapter/bt_joylink_adapter_app_task.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_joylink_adapter/bt_joylink_adapter_peripheral_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_joylink_adapter/bt_joylink_adapter_service.c
-
-#bluetooth - example - ble_google_seamless
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_google_seamless/ble_google_seamless_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_google_seamless/ble_google_seamless_app_main.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_google_seamless/ble_google_seamless_app_task.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_google_seamless/google_seamless.c
-
-#bluetooth - example - bt_mesh_device_matter
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/bt_mesh_device_matter/bt_mesh_device_matter_adapter_service.c \
-         ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/bt_mesh_device_matter/bt_mesh_device_matter_app.c \
-         ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/bt_mesh_device_matter/bt_mesh_device_matter_app_main.c \
-         ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/bt_mesh_device_matter/bt_mesh_device_matter_app_task.c \
-         ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/bt_mesh_device_matter/bt_mesh_device_matter_cmd.c
-
-#bluetooth - example - bt_mesh_provisioner 
-#SRC_C += \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/bt_mesh_user_api.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/provisioner/bt_mesh_provisioner_api.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/client_cmd.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/mesh_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/mesh_user_cmd_parse.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/test_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/blob_client_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/customer_dfu_service.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/datatrans_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfu_distributor_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfu_initiator_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfudep_service.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/generic_client_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/light_client_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/ping_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/rmt_prov_client_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/blob_transfer_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/configuration_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/delay_msg_rsp.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/directed_forwarding_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/firmware_distribution_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/firmware_update_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_battery_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_default_transition_time_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_level_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_location_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_on_off_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_level_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_on_off_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_property_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/health_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_ctl_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_hsl_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lc_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lightness_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_xyl_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/private_beacon_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/datatrans_model.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/light_cwrgb_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/ping_control.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/tp_control.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scene_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scheduler_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/sensor_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/subnet_bridge_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/time_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/profile/datatrans_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/profile/datatrans_service.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/utility/mesh_data_dump.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/provisioner/bt_mesh_provisioner_app_main.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/provisioner/bt_mesh_provisioner_app_task.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/provisioner/provisioner_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/provisioner/provisioner_cmd.c
-
-#bluetooth - example - bt_mesh_device 
-#SRC_C += \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/bt_mesh_user_api.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/device/bt_mesh_device_api.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/device/device_idle_check.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/device/bt_mesh_device_app_main.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/device/bt_mesh_device_app_task.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/device/device_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/device/device_cmd.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/mesh_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/mesh_user_cmd_parse.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/test_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/blob_client_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/customer_dfu_service.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/datatrans_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfu_distributor_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfu_initiator_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfu_updater_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfudep_service.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/generic_server_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/light_server_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/ping_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/scene_server_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/scheduler_server_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/sensor_server_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/time_server_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/blob_transfer_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/delay_execution.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/delay_msg_rsp.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/firmware_update_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/health_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_admin_property_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_battery_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_client_property_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_default_transition_time_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_level_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_location_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_location_setup_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_manufacturer_property_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_on_off_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_level_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_level_setup_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_on_off_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_on_off_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_transition_time.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_user_property_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_ctl_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_ctl_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_ctl_temperature_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_hsl_hue_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_hsl_saturation_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_hsl_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_hsl_setup_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lc_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lc_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lightness_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lightness_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_xyl_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_xyl_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/datatrans_model.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/ping_control.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/tp_control.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scene_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scene_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scheduler_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scheduler_setup_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/sensor_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/sensor_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/time_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/time_setup_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/profile/datatrans_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/profile/datatrans_service.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/utility/mesh_data_dump.c
-
-#bluetooth - example - bt_mesh_provisioner_rtk_demo 
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_provisioner_rtk_demo/example_bt_mesh_provisioner_rtk_demo.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_provisioner_rtk_demo/src/bt_mesh_app_http_intf.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_provisioner_rtk_demo/src/bt_mesh_app_lib_intf.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_provisioner_rtk_demo/src/bt_mesh_app_list_intf.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_provisioner_rtk_demo/src/bt_mesh_broadcast_demo.c
-
-#bluetooth - example - bt_mesh_device_rtk_demo 
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_device_rtk_demo/example_bt_mesh_device_rtk_demo.c 
-
-#bluetooth - example - bt_mesh_test 
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_test/bt_mesh_app_user_cmd_parse.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_test/bt_mesh_datatrans_write_api.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_test/bt_mesh_device_test.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_test/bt_mesh_malloc_free.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_test/bt_mesh_receive_response.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_test/bt_mesh_test_result.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_test/bt_mesh_timer_handler.c
-
-#bluetooth - example - provisioner_multiple_profile
-#SRC_C += \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/bt_mesh_user_api.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/provisioner/bt_mesh_provisioner_api.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/client_cmd.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/mesh_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/mesh_user_cmd_parse.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/test_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/blob_client_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/customer_dfu_service.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/datatrans_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfu_distributor_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfu_initiator_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfudep_service.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/generic_client_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/light_client_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/ping_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/rmt_prov_client_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/blob_transfer_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/configuration_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/delay_msg_rsp.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/directed_forwarding_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/firmware_distribution_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/firmware_update_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_battery_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_default_transition_time_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_level_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_location_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_on_off_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_on_off_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_level_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_property_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/health_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_ctl_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_hsl_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lc_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lightness_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_xyl_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/private_beacon_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/datatrans_model.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/light_cwrgb_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/ping_control.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/tp_control.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scene_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scheduler_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/sensor_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/subnet_bridge_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/time_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/profile/datatrans_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/profile/datatrans_service.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/utility/mesh_data_dump.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/provisioner_multiple_profile/bt_mesh_provisioner_multiple_profile_app_main.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/provisioner_multiple_profile/bt_mesh_provisioner_multiple_profile_app_task.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/provisioner_multiple_profile/provisioner_multiple_profile_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/provisioner_multiple_profile/provisioner_multiple_profile_cmd.c
-
-#bluetooth - example - device_multiple_profile
-#SRC_C += \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/bt_mesh_user_api.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/device/bt_mesh_device_api.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/api/device/device_idle_check.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/mesh_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/mesh_user_cmd_parse.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/cmd/test_cmd.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/blob_client_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/customer_dfu_service.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/datatrans_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfu_distributor_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfu_initiator_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfu_updater_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/dfudep_service.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/generic_server_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/light_server_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/ping_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/scene_server_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/scheduler_server_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/sensor_server_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/common/time_server_app.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/blob_transfer_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/delay_execution.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/delay_msg_rsp.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/firmware_update_client.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/health_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_admin_property_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_battery_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_client_property_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_default_transition_time_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_level_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_location_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_location_setup_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_manufacturer_property_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_on_off_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_level_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_level_setup_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_on_off_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_power_on_off_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_transition_time.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/generic_user_property_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_ctl_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_ctl_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_ctl_temperature_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_hsl_hue_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_hsl_saturation_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_hsl_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_hsl_setup_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lc_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lc_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lightness_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_lightness_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_xyl_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/light_xyl_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/datatrans_model.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/ping_control.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/realtek/tp_control.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/sensor_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/sensor_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scene_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scene_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scheduler_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/scheduler_setup_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/time_server.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/model/time_setup_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/profile/datatrans_server.c \
-    ../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/profile/datatrans_service.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh/lib/utility/mesh_data_dump.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/device_multiple_profile/bt_mesh_device_multiple_profile_app_main.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/device_multiple_profile/bt_mesh_device_multiple_profile_app_task.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/device_multiple_profile/device_multiple_profile_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/bt_mesh_multiple_profile/device_multiple_profile/device_multiple_profile_cmd.c
-
-#bluetooth - example - ble_throughput_test
-#SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_throughput_test/ble_throughput_200.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_throughput_test/ble_throughput_200_sut.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_throughput_test/ble_throughput_app.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_throughput_test/ble_throughput_app_main.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_throughput_test/ble_throughput_app_task.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_throughput_test/ble_throughput_link_mgr.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_throughput_test/ble_throughput_test_case.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_throughput_test/ble_throughput_vendor_tp_client.c \
-	../../../component/common/bluetooth/realtek/sdk/example/ble_throughput_test/ble_throughput_vendor_tp_service.c
+#bluetooth - example - ble_matter_adapter
+SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/ble_matter_adapter_service.c
+SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/ble_matter_adapter_app_task.c
+SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/ble_matter_adapter_app_main.c
+SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_matter_adapter/ble_matter_adapter_app.c
 
 #bluetooth - example
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/bt_example_entry.c
