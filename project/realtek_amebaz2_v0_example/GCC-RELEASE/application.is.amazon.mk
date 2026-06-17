@@ -1,4 +1,22 @@
 
+OS := $(shell uname)
+
+# AWS directories
+# -------------------------------------------------------------------
+
+SDKROOTDIR            = ../../..
+AWS_FREERTOS_DIR      = $(SDKROOTDIR)/component/common/application/amazon-freertos
+AWS_FREERTOS_BUILDDIR = $(AWS_FREERTOS_DIR)/project/makefile/amebaz2
+
+AWS_INCLUDE           = $(AWS_FREERTOS_BUILDDIR)/Makefile.include.aws
+AWS_INCLUDE_HDR       = $(AWS_FREERTOS_BUILDDIR)/Makefile.include.hdr.list
+AWS_INCLUDE_APP       = $(AWS_FREERTOS_BUILDDIR)/Makefile.include.app.list
+
+# Version control
+# -------------------------------------------------------------------
+
+# FREERTOS_VERSION & LWIP_VERSION are declared in Makefile.include.matter.
+
 # Initialize tool chain
 # -------------------------------------------------------------------
 
@@ -11,8 +29,6 @@ AMEBAZ2_ROMSYMDIR = $(AMEBAZ2_BSPDIR)/ROM
 DUMP_START_ADDRESS = 0x98000000
 DUMP_END_ADDRESS = 0x98200000
 
-OS := $(shell uname)
-
 CROSS_COMPILE = $(ARM_GCC_TOOLCHAIN)/arm-none-eabi-
 
 # Compilation tools
@@ -24,8 +40,6 @@ LD = $(CROSS_COMPILE)gcc
 GDB = $(CROSS_COMPILE)gdb
 OBJCOPY = $(CROSS_COMPILE)objcopy
 OBJDUMP = $(CROSS_COMPILE)objdump
-
-OS := $(shell uname)
 
 LDSCRIPT := ./rtl8710c_ram.ld
 
@@ -82,14 +96,10 @@ INCLUDES += -I../../../component/common/network
 INCLUDES += -I../../../component/common/network/coap/include
 INCLUDES += -I../../../component/common/network/libcoap/include
 INCLUDES += -I../../../component/common/network/http2/nghttp2-1.31.0/includes
-INCLUDES += -I../../../component/common/network/lwip/lwip_v2.0.2/src/include
-INCLUDES += -I../../../component/common/network/lwip/lwip_v2.0.2/src/include/lwip
-INCLUDES += -I../../../component/common/network/lwip/lwip_v2.0.2/port/realtek
-INCLUDES += -I../../../component/common/network/lwip/lwip_v2.0.2/port/realtek/freertos
-#INCLUDES += -I../../../component/common/network/ssl/mbedtls-2.4.0/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls_config
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls_utils
+INCLUDES += -I../../../component/common/network/lwip/$(LWIP_VERSION)/src/include
+INCLUDES += -I../../../component/common/network/lwip/$(LWIP_VERSION)/src/include/lwip
+INCLUDES += -I../../../component/common/network/lwip/$(LWIP_VERSION)/port/realtek
+INCLUDES += -I../../../component/common/network/lwip/$(LWIP_VERSION)/port/realtek/freertos
 INCLUDES += -I../../../component/common/network/ssl/ssl_ram_map/rom
 INCLUDES += -I../../../component/common/drivers/wlan/realtek/include
 INCLUDES += -I../../../component/common/drivers/wlan/realtek/src/osdep
@@ -135,79 +145,7 @@ INCLUDES += -I../../../component/soc/realtek/8710c/misc/driver
 INCLUDES += -I../../../component/soc/realtek/8710c/misc/os
 
 INCLUDES += -I../../../component/os/freertos
-#INCLUDES += -I../../../component/os/freertos/freertos_v10.0.1/Source/include
-#INCLUDES += -I../../../component/os/freertos/freertos_v10.0.1/Source/portable/GCC/ARM_RTL8710C
-#os - freertos 10.4.3 start
-INCLUDES += -I../../../component/os/freertos/freertos_v10.4.3/include
-INCLUDES += -I../../../component/os/freertos/freertos_v10.4.3/portable/GCC/ARM_CM33_NTZ/non_secure
-#os - freertos 10.4.3 end
 INCLUDES += -I../../../component/os/os_dep/include
-
-INCLUDES += -I../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-ffs/ffs_demo/realtek/configs
-
-#Amazon Includes
-INCLUDES += -I../../../component/common/example/amazon_freertos
-INCLUDES += -I../../../lib_amazon/amazon-freertos/libraries/freertos_plus/standard/utils/include
-INCLUDES += -I../../../lib_amazon/amazon-freertos/libraries/logging/include
-INCLUDES += -I../../../lib_amazon/amazon-freertos/libraries/abstractions/wifi/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/unity/src
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/unity/extras/fixture/src
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/common/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/abstractions/platform/freertos/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/abstractions/platform/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/abstractions/secure_sockets/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/common/include/private
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/abstractions/pkcs11/corePKCS11/source/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/abstractions/pkcs11/corePKCS11/source/dependency/3rdparty/pkcs11
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/common/include/private
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/common/include/private
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/abstractions/backoff_algorithm/source/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/coreHTTP/source/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/coreHTTP/source/interface
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/abstractions/transport/secure_sockets
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/coreMQTT/source/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/jsmn
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/freertos_plus/aws/ota/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls_utils
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/freertos_plus/standard/crypto/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/demos/dev_mode_key_provisioning/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/aws/defender/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/mqtt/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/serializer/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/aws/shadow/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/mqtt/test/access
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/coreHTTP/source/dependency/3rdparty/http_parser
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/https/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/https/test/access
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/mqtt/src
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/c_sdk/standard/mqtt/test/mock
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/tinycbor/src
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/freertos_plus/aws/ota/src
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/freertos_plus/standard/tls/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/demos/common/pkcs11_helpers
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/demos/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/demos/network_manager
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/vendors/realtek/boards/amebaZ2/aws_demos/config_files
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/demos/common/http_demo_helpers
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/device_shadow_for_aws/source/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/coreJSON/source/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/demos/common/mqtt_demo_helpers
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/freertos_plus/aws/ota/test
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/jobs_for_aws/source/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/device_defender_for_aws/source/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/demos/device_defender_for_aws
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/abstractions/platform/include/platform
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/coreMQTT-Agent/source/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/abstractions/mqtt_agent/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/demos/common/mqtt_subscription_manager
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/ota_for_aws/source/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/ota_for_aws/source
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/ota_for_aws/source/portable
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/ota_for_aws/source/portable/os
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/abstractions/mqtt_agent/include
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/vendors/realtek/boards/amebaZ2/ports/ota
-INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libraries/coreMQTT-Agent/source/include
 
 # Source file list
 # -------------------------------------------------------------------
@@ -215,6 +153,7 @@ INCLUDES += -I../../../component/common/application/amazon/amazon-freertos/libra
 SRC_C =
 SRAM_C =
 ERAM_C =
+
 #bluetooth - board
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/board/amebaz2/src/hci/bt_fwconfig.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/board/amebaz2/src/hci/bt_mp_patch.c
@@ -243,8 +182,6 @@ SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/server/
 #SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/server/hids_rmc.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/client/simple_ble_client.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/server/simple_ble_service.c
-SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/client/ota_client.c
-SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/client/dfu_client.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/board/common/src/trace_task.c
 
 #bluetooth - example - ble_central
@@ -252,7 +189,6 @@ SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_central/ble
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_central/ble_central_app_task.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_central/ble_central_at_cmd.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_central/ble_central_client_app.c
-SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_central/ble_central_link_mgr.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/src/ble/profile/client/gcs_client.c
 
 #bluetooth - example - ble_peripheral
@@ -265,7 +201,6 @@ SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_peripheral/
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_scatternet/ble_scatternet_app.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_scatternet/ble_scatternet_app_main.c
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_scatternet/ble_scatternet_app_task.c
-SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/ble_scatternet/ble_scatternet_link_mgr.c
 
 #bluetooth - example - bt_beacon
 SRC_C += ../../../component/common/bluetooth/realtek/sdk/example/bt_beacon/bt_beacon_app.c
@@ -330,8 +265,8 @@ SRC_C += ../../../component/common/api/wifi/rtw_wpa_supplicant/wpa_supplicant/wi
 #network - app
 SRC_C += ../../../component/soc/realtek/8710c/misc/platform/ota_8710c.c
 SRC_C += ../../../component/common/api/network/src/ping_test.c
-SRC_C += ../../../component/common/utilities/ssl_client.c
-SRC_C += ../../../component/common/utilities/ssl_client_ext.c
+# SRC_C += ../../../component/common/utilities/ssl_client.c
+# SRC_C += ../../../component/common/utilities/ssl_client_ext.c
 SRC_C += ../../../component/common/utilities/tcptest.c
 SRC_C += ../../../component/common/api/network/src/wlan_network.c
 
@@ -374,197 +309,68 @@ SRC_C += ../../../component/common/network/sntp/sntp.c
 
 #network - lwip
 #network - lwip - api
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/api/api_lib.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/api/api_msg.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/api/err.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/api/netbuf.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/api/netdb.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/api/netifapi.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/api/sockets.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/api/tcpip.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/api/api_lib.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/api/api_msg.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/api/err.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/api/netbuf.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/api/netdb.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/api/netifapi.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/api/sockets.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/api/tcpip.c
 
 #network - lwip - core
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/def.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/dns.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/inet_chksum.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/init.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ip.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/mem.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/memp.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/netif.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/pbuf.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/raw.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/stats.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/sys.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/tcp.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/tcp_in.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/tcp_out.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/timeouts.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/udp.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/def.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/dns.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/inet_chksum.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/init.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ip.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/mem.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/memp.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/netif.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/pbuf.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/raw.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/stats.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/sys.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/tcp.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/tcp_in.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/tcp_out.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/timeouts.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/udp.c
 
 #network - lwip - core - ipv4
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv4/autoip.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv4/dhcp.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv4/etharp.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv4/icmp.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv4/igmp.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv4/ip4.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv4/ip4_addr.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv4/ip4_frag.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv4/autoip.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv4/dhcp.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv4/etharp.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv4/icmp.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv4/igmp.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv4/ip4.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv4/ip4_addr.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv4/ip4_frag.c
 
 #network - lwip - core - ipv6
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv6/dhcp6.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv6/ethip6.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv6/icmp6.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv6/inet6.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv6/ip6.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv6/ip6_addr.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv6/ip6_frag.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv6/mld6.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/core/ipv6/nd6.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv6/dhcp6.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv6/ethip6.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv6/icmp6.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv6/inet6.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv6/ip6.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv6/ip6_addr.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv6/ip6_frag.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv6/mld6.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/core/ipv6/nd6.c
 
 #network - lwip - netif
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/src/netif/ethernet.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/src/netif/ethernet.c
 
 #network - lwip - port
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/port/realtek/freertos/ethernetif.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/port/realtek/freertos/ethernetif.c
 SRC_C += ../../../component/common/drivers/wlan/realtek/src/osdep/lwip_intf.c
-SRC_C += ../../../component/common/network/lwip/lwip_v2.0.2/port/realtek/freertos/sys_arch.c
+SRC_C += ../../../component/common/network/lwip/$(LWIP_VERSION)/port/realtek/freertos/sys_arch.c
 
 #network - mdns
 SRC_C += ../../../component/common/network/mDNS/mDNSPlatform.c
 
 #network - ssl - mbedtls
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/aesni.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/blowfish.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/camellia.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/ccm.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/certs.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/cipher.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/cipher_wrap.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/cmac.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/debug.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/error.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/gcm.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/havege.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/md.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/md2.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/md4.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/md_wrap.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/memory_buffer_alloc.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/net_sockets.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/padlock.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/pkcs11.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/pkcs12.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/pkcs5.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/pkparse.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/platform.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/ripemd160.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/sha256.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/ssl_cache.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/ssl_ciphersuites.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/ssl_cli.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/ssl_cookie.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/ssl_srv.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/ssl_ticket.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/ssl_tls.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/threading.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/timing.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/version.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/version_features.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/x509.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/x509_create.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/x509_crl.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/x509_crt.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/x509_csr.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/x509write_crt.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/x509write_csr.c
-#SRC_C += ../../../component/common/network/ssl/mbedtls-2.4.0/library/xtea.c
-
-#amazon - mbedtls start
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/aes.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/aesni.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/arc4.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/aria.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/asn1parse.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/asn1write.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/base64.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls_rtk/bignum.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/blowfish.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/camellia.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ccm.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/certs.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/chacha20.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/chachapoly.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/cipher.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/cipher_wrap.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/cmac.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ctr_drbg.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/debug.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/des.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/dhm.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ecdh.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ecdsa.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ecjpake.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ecp.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ecp_curves.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/entropy.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/entropy_poll.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/error.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/gcm.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/havege.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/hkdf.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/hmac_drbg.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/md.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/md2.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/md4.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/md5.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/md_wrap.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/memory_buffer_alloc.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls_rtk/net_sockets.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/nist_kw.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/oid.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/padlock.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/pem.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/pk.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/pk_wrap.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/pkcs11.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/pkcs12.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/pkcs5.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/pkparse.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/pkwrite.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/platform.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/platform_util.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/poly1305.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ripemd160.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/rsa.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/rsa_internal.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/sha1.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/sha256.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/sha512.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_cache.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_ciphersuites.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_cli.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_cookie.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_srv.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_ticket.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_tls.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/threading.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/timing.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/version.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/version_features.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/x509.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/x509_create.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/x509_crl.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/x509_crt.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/x509_csr.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/x509write_crt.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/x509write_csr.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls/library/xtea.c
-
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls_utils/mbedtls_error.c
-SRC_C += ../../../component/common/application/amazon/amazon-freertos/libraries/3rdparty/mbedtls_utils/mbedtls_utils.c
-#amazon - mbedtls end
+#mbedtls definition at component/common/application/amazon-freertos/project/makefile/amebaz2/Makefile.include.app.list
 
 #network - ssl - ssl_ram_map
 SRC_C += ../../../component/common/network/ssl/ssl_ram_map/rom/rom_ssl_ram_map.c
@@ -583,33 +389,7 @@ SRC_C += ../../../component/os/os_dep/osdep_service.c
 SRC_C += ../../../component/os/freertos/freertos_pmu.c
 
 #os - freertos
-#SRC_C += ../../../component/os/freertos/freertos_v10.0.1/Source/croutine.c
-#SRC_C += ../../../component/os/freertos/freertos_v10.0.1/Source/event_groups.c
-#SRC_C += ../../../component/os/freertos/freertos_v10.0.1/Source/list.c
-#SRC_C += ../../../component/os/freertos/freertos_v10.0.1/Source/queue.c
-#SRC_C += ../../../component/os/freertos/freertos_v10.0.1/Source/stream_buffer.c
-#SRC_C += ../../../component/os/freertos/freertos_v10.0.1/Source/tasks.c
-#SRC_C += ../../../component/os/freertos/freertos_v10.0.1/Source/timers.c
-
-#os - freertos - portable
-#SRC_C += ../../../component/os/freertos/freertos_v10.0.1/Source/portable/MemMang/heap_5.c
-#SRC_C += ../../../component/os/freertos/freertos_v10.0.1/Source/portable/GCC/ARM_RTL8710C/port.c
-
-#amazon - freertos 10.4.3 start
-SRC_C += ../../../component/os/freertos/freertos_v10.4.3/croutine.c
-SRC_C += ../../../component/os/freertos/freertos_v10.4.3/event_groups.c
-SRC_C += ../../../component/os/freertos/freertos_v10.4.3/list.c
-SRC_C += ../../../component/os/freertos/freertos_v10.4.3/queue.c
-SRC_C += ../../../component/os/freertos/freertos_v10.4.3/stream_buffer.c
-SRC_C += ../../../component/os/freertos/freertos_v10.4.3/tasks.c
-SRC_C += ../../../component/os/freertos/freertos_v10.4.3/timers.c
-
-SRC_C += ../../../component/os/freertos/freertos_v10.4.3/portable/GCC/ARM_CM33_NTZ/non_secure/port.c
-SRC_C += ../../../component/os/freertos/freertos_v10.4.3/portable/GCC/ARM_CM33_NTZ/non_secure/portasm.c
-
-SRC_C += ../../../component/os/freertos/freertos_heap_rtk.c
-SRC_C += ../../../component/os/freertos/freertos_heap5_config.c
-#amazon - freertos 10.4.3 end
+#freertos definition at component/common/application/amazon-freertos/project/makefile/amebaz2/Makefile.include.app.list
 
 #peripheral - api
 SRC_C += ../../../component/common/mbed/targets/hal/rtl8710c/crypto_api.c
@@ -657,82 +437,7 @@ SRC_C += ../../../component/common/file_system/fatfs/r0.10c/src/ff.c
 SRC_C += ../../../component/common/file_system/fatfs/r0.10c/src/option/ccsbcs.c
 SRC_C += ../../../component/common/file_system/fatfs/disk_if/src/flash_fatfs.c
 
-#utilities - ffs and example
-#SRC_C += ../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/common/ffs_base64.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/common/ffs_base85.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/common/ffs_configuration_map.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/common/ffs_hex.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/common/ffs_json.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/common/ffs_logging.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/common/ffs_result.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/common/ffs_stream.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/common/ffs_wifi.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_device_details.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_json_value.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_registration_details.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_registration_state.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_wifi_connection_attempt.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_wifi_connection_details.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_wifi_connection_state.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_wifi_credentials.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_wifi_provisionee_state.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_wifi_scan_result.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/conversion/ffs_convert_wifi_security_protocol.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_compute_configuration_data_request.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_compute_configuration_data_response.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_configuration.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_device_details.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_error_details.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_get_wifi_credentials_request.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_get_wifi_credentials_response.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_post_wifi_scan_data_request.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_post_wifi_scan_data_response.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_registration_details.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_registration_state.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_report_request.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_report_response.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_report_result.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_start_pin_based_setup_request.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_start_pin_based_setup_response.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_start_provisioning_session_request.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_start_provisioning_session_response.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_wifi_connection_attempt.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_wifi_connection_details.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_wifi_connection_state.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_wifi_credentials.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_wifi_provisionee_state.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_wifi_scan_result.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/model/ffs_dss_wifi_security_protocol.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/ffs_dss_operation_compute_configuration_data.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/ffs_dss_operation_get_wifi_credentials.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/ffs_dss_operation_post_wifi_scan_data.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/ffs_dss_operation_report.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/ffs_dss_operation_start_pin_based_setup.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/dss/ffs_dss_operation_start_provisioning_session.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_linux/libffs/src/ffs/linux/ffs_linux_error_details.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_linux/libffs/src/ffs/linux/ffs_wifi_connection_attempt_list.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/wifi_provisionee/ffs_wifi_provisionee_encoded_setup_network.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/wifi_provisionee/ffs_wifi_provisionee_state.c  \
-#	../../../component/common/application/amazon/amazon-ffs/libffs/src/ffs/wifi_provisionee/ffs_wifi_provisionee_task.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/compat/ffs_rtk_configuration_map.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/compat/ffs_rtk_crypto.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/compat/ffs_rtk_http_client.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/compat/ffs_rtk_user_context.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/compat/ffs_rtk_wifi.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/network/ffs_rtk_dss_client.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/network/ffs_rtk_wifi_context.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/network/ffs_rtk_wifi_manager.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/network/ffs_rtk_wifi_scan.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/network/ffs_rtk_wifi_provisionee_setup_network.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/network/ffs_rtk_wifi_provisionee_user_network.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/platform/ffs_rtk_circular_buffer.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/platform/ffs_rtk_linked_list.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/common/src/ffs/platform/ffs_rtk_logging.c  \
-#	../../../component/common/application/amazon/amazon-ffs/ffs_demo/realtek/application/ffs_api.c  \
-#	../../../component/common/example/amazon_ffs/example_ffs.c
-
 #utilities - example
-SRC_C += ../../../component/common/example/amazon_freertos/example_amazon_freertos.c
 SRC_C += ../../../component/common/example/bcast/example_bcast.c
 SRC_C += ../../../component/common/example/cJSON/example_cJSON.c
 SRC_C += ../../../component/common/example/coap/example_coap.c
@@ -825,10 +530,6 @@ endif
 CFLAGS += -Wstrict-prototypes 
 CPPFLAGS += -std=c++11 -fno-use-cxa-atexit
 
-CFLAGS += -DCONFIG_AMAZON_FREERTOS
-CFLAGS += -DENABLE_AMAZON_COMMON
-CFLAGS += -DMBEDTLS_CONFIG_FILE=\"aws_mbedtls_config.h\"
-
 LFLAGS = 
 LFLAGS += -Os -march=armv8-m.main+dsp -mthumb -mcmse -mfloat-abi=soft -nostartfiles -nodefaultlibs -nostdlib -specs=nosys.specs
 LFLAGS += -Wl,--gc-sections -Wl,--warn-section-align -Wl,--cref -Wl,--build-id=none -Wl,--use-blx
@@ -881,6 +582,8 @@ RAMALL_BIN =
 OTA_BIN = 
 
 include toolchain.mk
+
+include $(AWS_INCLUDE_APP)
 
 # Compile
 # -------------------------------------------------------------------

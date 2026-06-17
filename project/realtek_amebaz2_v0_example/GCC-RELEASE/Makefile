@@ -53,3 +53,19 @@ clean_matter:
 	@$(MAKE) -f application.is.matter.mk clean
 
 endif
+
+#*****************************************************************************#
+#                        AWS FREERTOS MAKE DEFINES                            #
+#*****************************************************************************#
+
+ENABLE_AWS_FREERTOS = 0
+
+ifeq ($(ENABLE_AWS_FREERTOS), 1)
+
+SDKROOTDIR            = ../../..
+AWS_FREERTOS_DIR      = $(SDKROOTDIR)/component/common/application/amazon-freertos
+AWS_FREERTOS_BUILDDIR = $(AWS_FREERTOS_DIR)/project/makefile/amebaz2
+
+include $(AWS_FREERTOS_BUILDDIR)/Makefile
+
+endif

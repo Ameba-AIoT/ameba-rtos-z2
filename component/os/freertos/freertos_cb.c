@@ -3,7 +3,6 @@
 #include "diag.h"
 #include "platform_opts.h"
 
-#ifndef CONFIG_AMAZON_FREERTOS
 void vAssertCalled(uint32_t ulLine, const char *pcfile)
 {
 	//
@@ -21,14 +20,12 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 	rt_printf("MSP %x MSPLIM %x\n\r", __get_MSP(), __get_MSPLIM());
 	rt_printf("====================== \n\r");
 }
-#endif
 
 void vApplicationTickHook(void)
 {
 	asm(" nop");
 }
 
-#ifndef CONFIG_AMAZON_FREERTOS
 void vApplicationMallocFailedHook(void)
 {
 	char *pcCurrentTask = "NoTsk";
@@ -39,7 +36,6 @@ void vApplicationMallocFailedHook(void)
 	taskDISABLE_INTERRUPTS();
 	for (;;);
 }
-#endif
 
 // defined in port.c
 void vPortUsageFaultHandler(void);
