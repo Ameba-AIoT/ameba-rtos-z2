@@ -44,7 +44,7 @@ extern "C"
 #define FLASH_TYPE_GD 4
 #define FLASH_TYPE_GD32 5
 #define FLASH_TYPE_XTX 6
-#define FLASH_TYPE_EON 7
+#define FLASH_TYPE_ESMT 7                    // support for old AVL : EN25QH16B, EN25QH32B, EN25QH64A
 #define FLASH_TYPE_BOYA 8
 #define FLASH_TYPE_XMC 9
 #define FLASH_TYPE_ZBIT 10
@@ -52,6 +52,7 @@ extern "C"
 #define FLASH_TYPE_PUYA 12
 #define FLASH_TYPE_GTEC 13
 #define FLASH_TYPE_FM 14
+#define FLASH_TYPE_ESMT_SR2 15               // support for new AVL : EN25QE16A, EN25QX64A
 
 #define FLASH_CMD_ENSO      0xB1            // enter secured OTP
 #define FLASH_CMD_EXSO      0xC1            // exit secured OTP
