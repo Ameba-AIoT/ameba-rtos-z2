@@ -479,6 +479,7 @@ void hal_flash_set_quad_enable (phal_spic_adaptor_t phal_spic_adaptor)
         case FLASH_TYPE_ZBIT:
         case FLASH_TYPE_GTEC:
         case FLASH_TYPE_FM:
+        case FLASH_TYPE_ESMT_SR2:
             status_value = hal_flash_get_status(phal_spic_adaptor, cmd->rdsr2);
             if ((status_value & 0x2) == 0) {
                 hal_flash_set_status(phal_spic_adaptor, cmd->wrsr2, 0x2 | status_value);
@@ -504,7 +505,7 @@ void hal_flash_set_quad_enable (phal_spic_adaptor_t phal_spic_adaptor)
             }
             break;
 
-        case FLASH_TYPE_EON:
+        case FLASH_TYPE_ESMT:
             break;
 
         default:
@@ -537,6 +538,7 @@ void hal_flash_unset_quad_enable (phal_spic_adaptor_t phal_spic_adaptor)
         case FLASH_TYPE_ZBIT:
         case FLASH_TYPE_GTEC:
         case FLASH_TYPE_FM:
+        case FLASH_TYPE_ESMT_SR2:
             status_value = hal_flash_get_status(phal_spic_adaptor, cmd->rdsr2);
             hal_flash_set_status(phal_spic_adaptor, cmd->wrsr2, ~0x2 & status_value);
             break;
@@ -555,7 +557,7 @@ void hal_flash_unset_quad_enable (phal_spic_adaptor_t phal_spic_adaptor)
             spic_tx_cmd(phal_spic_adaptor, cmd->wrsr, 2, data);
             break;
             
-        case FLASH_TYPE_EON:
+        case FLASH_TYPE_ESMT:
         case FLASH_TYPE_MICRON:
         case FLASH_TYPE_WINBOND:         
             break;
@@ -1015,7 +1017,14 @@ void hal_flash_support_new_type (phal_spic_adaptor_t phal_spic_adaptor)
             break;
             
         case 0x1C:
-            phal_spic_adaptor->flash_type = FLASH_TYPE_EON;
+            phal_spic_adaptor->cmd = &new_flash_cmd;
+            if (phal_spic_adaptor->flash_id[1] == 0x70) {
+                /*old AVL, EN25QH16B, EN25QH32B, EN25QH64A, read/write : 05h/01h*/
+                phal_spic_adaptor->flash_type = FLASH_TYPE_ESMT;
+            } else {
+                /*new AVL, EN25QE16A, EN25QX64A, read/write : 09h&35h/31h*/
+                phal_spic_adaptor->flash_type = FLASH_TYPE_ESMT_SR2;
+            }
             break;
                    
         case 0x5E:
